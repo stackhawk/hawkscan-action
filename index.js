@@ -1,10 +1,19 @@
 const core = require('@actions/core');
+const exec = require('@actions/exec');
 const wait = require('./wait');
 
 
 // most @actions toolkit packages have async methods
 async function run() {
   try {
+    let githubEnv = process.env.GITHUB_ENV;
+    console.log('Here are my persistent environment variables...')
+    try {
+      await exec.exec(`cat ${githubEnv}`);
+    } catch (error) {
+      console.log(error)
+    }
+
     const ms = core.getInput('milliseconds');
     core.info(`Waiting ${ms} milliseconds ...`);
 
