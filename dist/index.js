@@ -19,6 +19,8 @@ async function run() {
     await wait(parseInt(ms));
     core.info((new Date()).toTimeString());
 
+    console.log('All the environment variables: ', process.env);
+
     core.setOutput('time', new Date().toTimeString());
   } catch (error) {
     core.setFailed(error.message);
