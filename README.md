@@ -1,116 +1,93 @@
-# Create a JavaScript Action
+# StackHawk HawkScan Action
 
-<p align="center">
-  <a href="https://github.com/actions/javascript-action/actions"><img alt="javscript-action status" src="https://github.com/actions/javascript-action/workflows/units-test/badge.svg"></a>
-</p>
+A GitHub Action for running [StackHawk](https://www.stackhawk.com/) [HawkScan](https://hub.docker.com/r/stackhawk/hawkscan) to find security issues in your application.
 
-Use this template to bootstrap the creation of a JavaScript action.:rocket:
+HawkScan scans a specified URL and sends results to the StackHawk platform for alerting, tracking, and triage.
 
-This template includes tests, linting, a validation workflow, publishing, and versioning guidance.
+## Inputs
 
-If you are new, there's also a simpler introduction.  See the [Hello World JavaScript Action](https://github.com/actions/hello-world-javascript-action)
+### Environment Variables
 
-## Create an action from this template
+You can use environment variables in your HawkScan configuration file to dynamically configure settings. *Be sure to declare any environments you wish to pass to HawkScan in the `environment-variables` input below*. For more information on using environment variables in HawkScan, [read the docs](https://docs.stackhawk.com/hawkscan/configuration/#environment-variable-runtime-overrides).
 
-Click the `Use this Template` and provide the new repo details for your action
+### `api-key`
 
-## Code in Main
+**Required** Your StackHawk API key.
 
-Install the dependencies
+### `environment-variables`
 
-```bash
-npm install
+**Optional** A space-separated list of environment variable to pass to HawkScan.
+
+For example:
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: stackhawk/hawkscan-action@v1
+      with:
+        api-key: ${{ secrets.HAWK_API_KEY }}
+        environment-variables: APP_HOST APP_ENV
+      env:
+        APP_HOST: http://example.com
+        APP_ENV: GitHub
 ```
 
-Run the tests :heavy_check_mark:
+### `configuration-files`
 
-```bash
-$ npm test
+**Optional** A space-separated list of HawkScan configuration files to use. Defaults to `stackhawk.yml`.
 
- PASS  ./index.test.js
-  ✓ throws invalid number (3ms)
-  ✓ wait 500 ms (504ms)
-  ✓ test runs (95ms)
-...
-```
+### `network`
 
-## Change action.yml
+**Optional** Docker network settings for running HawkScan.  Defaults to `bridge`.
 
-The action.yml defines the inputs and output for your action.
+The following options for `docker-network` are most commonly used:
+ - **`bridge`** (default): Use the default Docker bridge network setting for running the HawkScan container. This works in most cases if your scan target is a remote URL or a localhost address.
+ - **`host`**: Use Docker host networking mode. HawkScan will run with full access to the GitHub virtual environment hosts network stack. This works in most cases if your scan target is a remote URL or a localhost address.
+ - **`NETWORK`**: Use the user-defined Docker bridge network, `NETWORK`. This network may be created with `docker network create`, or `docker-compose`. This is appropriate for scanning other containers running locally on the GitHub virtual environment within a named Docker network.
 
-Update the action.yml with your name, description, inputs and outputs for your action.
+See the [Docker documentation](https://docs.docker.com/engine/reference/run/#network-settings) for more details on Docker network settings.
 
-See the [documentation](https://help.github.com/en/articles/metadata-syntax-for-github-actions)
+### `image`
 
-## Change the Code
+**Optional** The name of the HawkScan Docker image to use. Defaults to `stackhawk/hawkscan`.
 
-Most toolkit and CI/CD operations involve async operations so the action is run in an async function.
+### `version`
 
-```javascript
-const core = require('@actions/core');
-...
+**Optional** The version of HawkScan to run. Defaults to `latest`.
 
-async function run() {
-  try {
-      ...
-  }
-  catch (error) {
-    core.setFailed(error.message);
-  }
-}
+## Outputs
 
-run()
-```
+### `success`
 
-See the [toolkit documentation](https://github.com/actions/toolkit/blob/master/README.md#packages) for the various packages.
+Boolean: `true` if the scan exited successfully.
 
-## Package for distribution
-
-GitHub Actions will run the entry point from the action.yml. Packaging assembles the code into one file that can be checked in to Git, enabling fast and reliable execution and preventing the need to check in node_modules.
-
-Actions are run from GitHub repos.  Packaging the action will create a packaged action in the dist folder.
-
-Run prepare
-
-```bash
-npm run prepare
-```
-
-Since the packaged index.js is run from the dist folder.
-
-```bash
-git add dist
-```
-
-## Create a release branch
-
-Users shouldn't consume the action from master since that would be latest code and actions can break compatibility between major versions.
-
-Checkin to the v1 release branch
-
-```bash
-git checkout -b v1
-git commit -a -m "v1 release"
-```
-
-```bash
-git push origin v1
-```
-
-Note: We recommend using the `--license` option for ncc, which will create a license file for all of the production node modules used in your project.
-
-Your action is now published! :rocket:
-
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
-
-## Usage
-
-You can now consume the action by referencing the v1 branch
+## Examples
 
 ```yaml
-uses: actions/javascript-action@v1
-with:
-  milliseconds: 1000
-```
+on: [push]
 
-See the [actions tab](https://github.com/actions/javascript-action/actions) for runs of this action! :rocket:
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    name: Run a container and scan it
+    steps:
+    - name: Check out repo
+      uses: actions/checkout@v2
+    - name: Build and run my app
+      run: |
+        pip3 install -r requirements.txt
+        nohup python3 app.py &
+    - name: Scan my app
+      id: hawkscan
+      uses: stackhawk/hawkscan-action@v1
+      env:
+        HOST: http://localhost:5000
+      with:
+        api-key: ${{ secrets.HAWK_API_KEY }}
+        network: host
+    - name: Get scan success status
+      run: echo "Was the scan successful? ${{ steps.hawkscan.outputs.success }}"
+
+```

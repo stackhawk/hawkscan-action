@@ -1,13 +1,35 @@
-name: 'Wait'
-description: 'Wait a designated number of milliseconds'
+name: StackHawk HawkScan Action
+description: Run HawkScan
+
 inputs:
-  milliseconds:  # id of input
-    description: 'number of milliseconds to wait'
+  api-key:
+    description: StackHawk API key
     required: true
-    default: '1000'
+  environment-variables:
+    description: Space-separated list of environment variables to pass to HawkScan
+    required: true
+    default: ''
+  configuration-files:
+    description: Space-separated list of HawkScan configuration files to use
+    required: true
+    default: stackhawk.yml
+  network:
+    description: Docker network type or bridge name to use for scan
+    required: true
+    default: host
+  image:
+    description: HawkScan Docker image to use
+    required: true
+    default: stackhawk/hawkscan
+  version:
+    description: HawkScan Docker image version to use
+    required: true
+    default: latest
+
 outputs:
-  time: # output will be available to future steps
-    description: 'The message to output'
+  success: # output will be available to future steps
+    description: Whether HawkScan was successful or not - true or false
+
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: node12
+  main: dist/index.js
