@@ -8,7 +8,9 @@ HawkScan scans a specified URL and sends results to the StackHawk platform for a
 
 ### Environment Variables
 
-You can use environment variables in your HawkScan configuration file to dynamically configure settings. *Be sure to declare any environments you wish to pass to HawkScan in the `environment-variables` input below*. For more information on using environment variables in HawkScan, [read the docs](https://docs.stackhawk.com/hawkscan/configuration/#environment-variable-runtime-overrides).
+You can use environment variables in your HawkScan configuration file to dynamically configure settings. [read the HawkDocs](https://docs.stackhawk.com/hawkscan/configuration/#environment-variable-runtime-overrides) for more information about how to incorporate environment variables into your HawkScan configuration file, `stackhawk.yml`.
+
+*Be sure to declare any environments you wish to pass to HawkScan in the `environment-variables` input below*!
 
 ### `api-key`
 
