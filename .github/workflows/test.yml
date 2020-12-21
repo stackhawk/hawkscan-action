@@ -15,6 +15,7 @@ jobs:
     - run: npm ci
     - run: npm test
       env:
+        SHAWK_API_KEY: ${{ secrets.SHAWK_API_KEY }}
 
 
   # test action works running from the graph
@@ -30,7 +31,6 @@ jobs:
         network: bridge
         image: zconger/hawkscan
         version: beta
-
       env:
         ACTIONS_RUNNER_DEBUG: true
         ACTIONS_STEP_DEBUG: true
