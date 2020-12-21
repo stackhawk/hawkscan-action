@@ -22,7 +22,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: ./
       with:
-        api-key: ${{ secret.SHAWK_API_KEY }}
+        api-key: ${{ secrets.SHAWK_API_KEY }}
       env:
         ACTIONS_RUNNER_DEBUG: true
         ACTIONS_STEP_DEBUG: true
