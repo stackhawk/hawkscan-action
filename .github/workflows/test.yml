@@ -7,11 +7,11 @@ on:
       - 'releases/*'
 
 jobs:
-  env:
-    SHAWK_API_KEY: ${{ secrets.SHAWK_API_KEY }}
 
   # unit tests
   units:
+    env:
+      SHAWK_API_KEY: ${{ secrets.SHAWK_API_KEY }}
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
