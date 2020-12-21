@@ -18,6 +18,11 @@ test('wait 500 ms', async () => {
 // shows how the runner will run a javascript action with env / stdout protocol
 test('test runs', () => {
   process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
+  process.env['INPUT_ENVIRONMENT-VARIABLES'] = '';
+  process.env['INPUT_CONFIGURATIONS-FILES'] = 'stackhawk.yml';
+  process.env['INPUT_NETWORK'] = 'host';
+  process.env['INPUT_IMAGE'] = 'stackhawk/hawkscan';
+  process.env['INPUT_VERSION'] = 'latest';
   const ip = path.join(__dirname, 'index.js');
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
 })

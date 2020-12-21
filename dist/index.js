@@ -410,8 +410,9 @@ function buildDockerEnvironmentVariables(value) {
 // most @actions toolkit packages have async methods
 async function run() {
   try {
+    console.log('Starting HawkScan Action');
     // let githubEnv = process.env.GITHUB_ENV;
-    const workspace = process.env.GITHUB_WORKSPACE;
+    let workspace = process.env.GITHUB_WORKSPACE;
     const apiKey = core.getInput('api-key');
     const environmentVariables = core.getInput('environment-variables').split(" ");
     const configurationFiles = core.getInput('configuration-files');
@@ -419,10 +420,15 @@ async function run() {
     const image = core.getInput('image');
     const version = core.getInput('version');
 
-    const dockerEnvironmentVariables = environmentVariables.forEach(buildDockerEnvironmentVariables)
+    let dockerEnvironmentVariables = environmentVariables.forEach(buildDockerEnvironmentVariables);
+    if (dockerEnvironmentVariables === undefined ) {
+      dockerEnvironmentVariables = '';
+    }
+
     const dockerCommand = (`docker run -t --rm -v ${workspace}:/hawk ${dockerEnvironmentVariables} ` +
       `--env API_KEY=${apiKey} --network ${network} ${image}:${version} ${configurationFiles}`);
 
+    console.log(`Docker command: ${dockerCommand}`)
     core.info(dockerCommand)
 
     // core.info(`Waiting ${ms} milliseconds ...`);
