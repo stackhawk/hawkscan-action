@@ -26,3 +26,4 @@ jobs:
       env:
         ACTIONS_RUNNER_DEBUG: true
         ACTIONS_STEP_DEBUG: true
+        SHAWK_API_KEY: ${{ secret.SHAWK_API_KEY }}
