@@ -20,7 +20,7 @@ async function run() {
     const image = core.getInput('image');
     const version = core.getInput('version');
 
-    let dockerEnvironmentVariables = environmentVariables.forEach(buildDockerEnvironmentVariables);
+    let dockerEnvironmentVariables = await environmentVariables.forEach(buildDockerEnvironmentVariables);
     if (dockerEnvironmentVariables === undefined ) {
       dockerEnvironmentVariables = '';
     }
