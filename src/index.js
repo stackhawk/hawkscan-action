@@ -13,17 +13,17 @@ async function run() {
     const network = core.getInput('network');
     const image = core.getInput('image');
     const version = core.getInput('version');
-    const dryRun = core.getInput('dry-run')
+    const dryRun = core.getInput('dry-run');
 
     core.debug(`Environment Variables: ${environmentVariables} (${environmentVariables.length} length ${typeof environmentVariables})`);
-    core.debug(`Is environmentVariables[0] equal to ''? ${(environmentVariables[0] === '')}`)
+    core.debug(`Is environmentVariables[0] equal to ''? ${(environmentVariables[0] === '')}`);
 
     // Build a list of --env VAR flags for the docker run command
     const dockerEnvironmentVariables = environmentVariables.reduce((accumulator, currentValue) => {
       if (currentValue === '') {
-        return `${accumulator}`
+        return `${accumulator}`;
       } else {
-        return `--env ${currentValue} ${accumulator}`.trim()
+        return `--env ${currentValue} ${accumulator}`.trim();
       }
     }, '');
     core.debug(`Docker Environment Variables: ${dockerEnvironmentVariables}`);
@@ -35,8 +35,8 @@ async function run() {
 
     // Run or dry-run the scanner
     if ( dryRun.toLowerCase() === 'true' ) {
-      core.info(`DRY-RUN MODE: The following command[s] will not be run...`)
-      core.info(dockerCommand)
+      core.info(`DRY-RUN MODE: The following command[s] will not be run...`);
+      core.info(dockerCommand);
     } else {
       core.info(`Running HawkScan: ${image}:${version}...`);
       await exec.exec(dockerCommand);
