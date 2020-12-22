@@ -19,7 +19,7 @@ jobs:
     - run: npm test
 
   # test action works running from the graph
-  test:
+  max-config:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -36,3 +36,15 @@ jobs:
         ACTIONS_STEP_DEBUG: true
         HOST: localhost:5000
         APP_ENV: ApPeNvIrOnMeNt
+
+  min-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          api-key: ${{ secrets.SHAWK_API_KEY }}
+        env:
+          ACTIONS_RUNNER_DEBUG: true
+          ACTIONS_STEP_DEBUG: true
+          HOST: localhost:5000
