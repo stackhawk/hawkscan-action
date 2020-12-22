@@ -22,7 +22,11 @@ process.env['INPUT_DRY-RUN'] = "true"
 test('minimal configuration', () => {
   process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
   const ip = path.join('dist', 'index.js');
-  console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
+  try {
+    console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
+  } catch (error) {
+    console.log(error)
+  }
 })
 
 test('moderate configuration', () => {
