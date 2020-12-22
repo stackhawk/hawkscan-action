@@ -1,5 +1,5 @@
 const core = require('@actions/core');
-// const exec = require('@actions/exec');
+const exec = require('@actions/exec');
 // const wait = require('./wait');
 
 // most @actions toolkit packages have async methods
@@ -39,7 +39,7 @@ async function run() {
       core.info(dockerCommand)
     } else {
       core.info(`Running HawkScan: ${image}:${version}...`);
-      // await exec.exec(dockerCommand);
+      await exec.exec(dockerCommand);
     }
 
   } catch (error) {
