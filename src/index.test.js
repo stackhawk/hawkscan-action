@@ -21,14 +21,14 @@ process.env['INPUT_DRY-RUN'] = "true"
 
 test('minimal configuration', () => {
   process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
-  const ip = path.join(__dirname, 'index.js');
+  const ip = path.join('dist', 'index.js');
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
 })
 
 test('moderate configuration', () => {
   process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
   process.env['INPUT_ENVIRONMENT-VARIABLES'] = 'HOST';
-  const ip = path.join(__dirname, 'index.js');
+  const ip = path.join('dist', 'index.js');
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
 })
 
@@ -42,6 +42,6 @@ test('maxed-out configuration', () => {
   process.env['INPUT_VERSION'] = 'best';
   process.env['HOST'] = 'mylittletesthost';
   process.env['APP_ENV'] = 'unit_tests';
-  const ip = path.join(__dirname, 'index.js');
+  const ip = path.join('dist', 'index.js');
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
 })
