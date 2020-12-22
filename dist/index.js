@@ -414,12 +414,16 @@ async function run() {
     const image = core.getInput('image');
     const version = core.getInput('version');
 
-
-    core.debug(`Environment Variables: ${environmentVariables} (${environmentVariables.length} length)`);
+    core.debug(`Environment Variables: ${environmentVariables} (${environmentVariables.length} length ${typeof environmentVariables})`);
+    core.debug(`Is environmentVariables[0] equal to ''? ${(environmentVariables[0] === '')}`)
 
     // Build a list of --env VAR flags for the docker run command
     const dockerEnvironmentVariables = environmentVariables.reduce((accumulator, currentValue) => {
-      return `--env ${currentValue} ${accumulator}`.trim()
+      if (currentValue === '') {
+        return `${accumulator}`
+      } else {
+        return `--env ${currentValue} ${accumulator}`.trim()
+      }
     }, '');
     core.debug(`Docker Environment Variables: ${dockerEnvironmentVariables}`);
 
