@@ -39,7 +39,11 @@ async function run() {
       core.info(dockerCommand);
     } else {
       core.info(`Running HawkScan: ${image}:${version}...`);
-      await exec.exec(dockerCommand);
+      try {
+        await exec.exec(dockerCommand);
+      } catch (error) {
+        core.debug(error.toString());
+      }
     }
 
   } catch (error) {
