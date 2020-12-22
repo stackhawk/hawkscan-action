@@ -21,6 +21,7 @@ test('minimal configuration dry-run', () => {
   process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
   const ip = path.join('dist', 'index.js');
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
+  console.log(cp.execSync(`env`, {env: process.env}).toString());
 })
 
 test('moderate configuration dry-run', () => {
@@ -29,6 +30,7 @@ test('moderate configuration dry-run', () => {
   process.env['INPUT_ENVIRONMENT-VARIABLES'] = 'HOST';
   const ip = path.join('dist', 'index.js');
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
+  console.log(cp.execSync(`env`, {env: process.env}).toString());
 })
 
 // shows how the runner will run a javascript action with env / stdout protocol
@@ -44,6 +46,7 @@ test('maxed-out configuration dry-run', () => {
   process.env['APP_ENV'] = 'unit_tests';
   const ip = path.join('dist', 'index.js');
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
+  console.log(cp.execSync(`env`, {env: process.env}).toString());
 })
 
 test('docker run hawkscan', () => {
@@ -56,4 +59,5 @@ test('docker run hawkscan', () => {
   process.env['INPUT_VERSION'] = 'latest';
   const ip = path.join('dist', 'index.js');
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
+  console.log(cp.execSync(`env`, {env: process.env}).toString());
 })
