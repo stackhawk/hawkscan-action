@@ -406,6 +406,7 @@ let envArgs = "";
 function buildDockerEnvironmentVariables(value) {
   console.log(value)
   envArgs = `${envArgs} --env ${value}`.trim()
+  return envArgs
 }
 
 // most @actions toolkit packages have async methods
