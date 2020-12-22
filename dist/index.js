@@ -404,6 +404,7 @@ const core = __webpack_require__(186);
 
 let envArgs = "";
 function buildDockerEnvironmentVariables(value) {
+  console.log(value)
   envArgs = `${envArgs} --env ${value}`.trim()
 }
 

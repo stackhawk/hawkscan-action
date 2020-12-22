@@ -4,6 +4,7 @@ const core = require('@actions/core');
 
 let envArgs = "";
 function buildDockerEnvironmentVariables(value) {
+  console.log(value)
   envArgs = `${envArgs} --env ${value}`.trim()
 }
 
