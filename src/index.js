@@ -21,15 +21,17 @@ async function run() {
     const version = core.getInput('version');
 
     let dockerEnvironmentVariables = await environmentVariables.forEach(buildDockerEnvironmentVariables);
+    console.log(`Environment Variables: ${dockerEnvironmentVariables}`);
     if (dockerEnvironmentVariables === undefined ) {
       dockerEnvironmentVariables = '';
     }
+    console.log(`Environment Variables: ${dockerEnvironmentVariables}`);
 
     const dockerCommand = (`docker run -t --rm -v ${workspace}:/hawk ${dockerEnvironmentVariables} ` +
       `--env API_KEY=${apiKey} --network ${network} ${image}:${version} ${configurationFiles}`);
 
-    console.log(`Docker command: ${dockerCommand}`)
-    core.info(dockerCommand)
+    console.log(`Docker command: ${dockerCommand}`);
+    core.info(dockerCommand);
 
     // core.info(`Waiting ${ms} milliseconds ...`);
     // core.debug((new Date()).toTimeString()); // debug is only output if you set the secret `ACTIONS_RUNNER_DEBUG` to true
