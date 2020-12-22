@@ -5,6 +5,10 @@ inputs:
   api-key:
     description: StackHawk API key
     required: true
+  dry-run:
+    description: If set to `true`, show HawkScan commands, but don't run them
+    required: true
+    default: false
   environment-variables:
     description: Space-separated list of environment variables to pass to HawkScan
     required: true

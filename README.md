@@ -16,6 +16,10 @@ You can use environment variables in your HawkScan configuration file to dynamic
 
 **Required** Your StackHawk API key.
 
+### `dry-run`
+
+**Optional** If set to `true`, show HawkScan commands, but don't run them.
+
 ### `environment-variables`
 
 **Optional** A space-separated list of environment variable to pass to HawkScan.

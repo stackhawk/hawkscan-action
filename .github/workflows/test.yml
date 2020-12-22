@@ -26,6 +26,7 @@ jobs:
     - uses: ./
       with:
         api-key: ${{ secrets.SHAWK_API_KEY }}
+        dry-run: true
         environment-variables: HOST APP_ENV APP_ID
         configuration-files: stackhawk.yml stackhawk-test.yml
         network: bridge
@@ -44,6 +45,7 @@ jobs:
       - uses: ./
         with:
           api-key: ${{ secrets.SHAWK_API_KEY }}
+          dry-run: true
         env:
           ACTIONS_RUNNER_DEBUG: true
           ACTIONS_STEP_DEBUG: true

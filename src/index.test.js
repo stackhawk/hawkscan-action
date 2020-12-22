@@ -15,6 +15,10 @@ test('wait 500 ms', async () => {
   expect(delta).toBeGreaterThanOrEqual(500);
 });
 
+
+// Unit test the action in dry-run mode
+process.env['INPUT_DRY-RUN'] = "true"
+
 test('minimal configuration', () => {
   process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
   const ip = path.join(__dirname, 'index.js');

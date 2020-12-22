@@ -413,6 +413,7 @@ async function run() {
     const network = core.getInput('network');
     const image = core.getInput('image');
     const version = core.getInput('version');
+    const dryRun = core.getInput('dry-run')
 
     core.debug(`Environment Variables: ${environmentVariables} (${environmentVariables.length} length ${typeof environmentVariables})`);
     core.debug(`Is environmentVariables[0] equal to ''? ${(environmentVariables[0] === '')}`)
@@ -431,6 +432,15 @@ async function run() {
     const dockerCommand = (`docker run --tty --rm --volume ${workspace}:/hawk ${dockerEnvironmentVariables} ` +
       `--env API_KEY=${apiKey} --network ${network} ${image}:${version} ${configurationFiles}`);
     core.debug(`Docker command: ${dockerCommand}`);
+
+    // Run or dry-run the scanner
+    if ( dryRun.toLowerCase() === 'true' ) {
+      core.info(`DRY-RUN MODE: The following command[s] will not be run...`)
+      core.info(dockerCommand)
+    } else {
+      core.info(`Running HawkScan: ${image}:${version}...`);
+      // await exec.exec(dockerCommand);
+    }
 
   } catch (error) {
     core.setFailed(error.message);
