@@ -22,11 +22,7 @@ process.env['INPUT_DRY-RUN'] = "true"
 test('minimal configuration', () => {
   process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
   const ip = path.join('dist', 'index.js');
-  try {
-    console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
-  } catch (error) {
-    console.log(error)
-  }
+  console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
 })
 
 test('moderate configuration', () => {
@@ -40,12 +36,24 @@ test('moderate configuration', () => {
 test('maxed-out configuration', () => {
   process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
   process.env['INPUT_ENVIRONMENT-VARIABLES'] = 'HOST APP_ENV APP_ID';
-  process.env['INPUT_CONFIGURATIONS-FILES'] = 'stackhawktest.yml';
+  process.env['INPUT_CONFIGURATION-FILES'] = 'stackhawktest.yml';
   process.env['INPUT_NETWORK'] = 'test_net';
   process.env['INPUT_IMAGE'] = 'stackhawk/hawkscantastic';
   process.env['INPUT_VERSION'] = 'best';
   process.env['HOST'] = 'mylittletesthost';
   process.env['APP_ENV'] = 'unit_tests';
+  const ip = path.join('dist', 'index.js');
+  console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
+})
+
+test('docker run hawkscan', () => {
+  process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
+  process.env['INPUT_DRY-RUN'] = "false";
+  process.env['INPUT_ENVIRONMENT-VARIABLES'] = 'SHAWK_RESULTS_ENDPOINT SHAWK_AUTH_ENDPOINT';
+  process.env['INPUT_CONFIGURATION-FILES'] = 'test/stackhawk.yml';
+  process.env['INPUT_NETWORK'] = 'host';
+  process.env['INPUT_IMAGE'] = 'stackhawk/hawkscan';
+  process.env['INPUT_VERSION'] = 'latest';
   const ip = path.join('dist', 'index.js');
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
 })

@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: npm ci
+    - run: npm clean-install
     - run: npm test
 
   # test action works running from the graph
@@ -50,3 +50,16 @@ jobs:
           ACTIONS_RUNNER_DEBUG: true
           ACTIONS_STEP_DEBUG: true
           HOST: localhost:5000
+
+  acid-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          api-key: ${{ secrets.SHAWK_API_KEY }}
+          environment-variables: SHAWK_RESULTS_ENDPOINT SHAWK_AUTH_ENDPOINT
+          configuration-files: test/stackhawk.yml
+        env:
+          ACTIONS_RUNNER_DEBUG: true
+          ACTIONS_STEP_DEBUG: true

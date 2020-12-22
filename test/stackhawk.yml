@@ -1,0 +1,8 @@
+app:
+  applicationId: 9F5BC169-1CA0-4FB6-A178-8F128E5E3268
+  env: Action Tests
+  host: http://example.com
+
+hawk:
+  spider:
+    base: false
