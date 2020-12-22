@@ -16,6 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: npm clean-install
+    - run: env
     - run: npm test
 
   # test action works running from the graph
