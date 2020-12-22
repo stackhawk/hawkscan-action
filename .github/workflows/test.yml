@@ -34,6 +34,7 @@ jobs:
         image: zconger/hawkscan
         version: beta
       env:
+        SHAWK_API_KEY: ${{ secrets.SHAWK_API_KEY }}
         ACTIONS_RUNNER_DEBUG: true
         ACTIONS_STEP_DEBUG: true
         HOST: localhost:5000
@@ -48,6 +49,7 @@ jobs:
           api-key: ${{ secrets.SHAWK_API_KEY }}
           dry-run: true
         env:
+          SHAWK_API_KEY: ${{ secrets.SHAWK_API_KEY }}
           ACTIONS_RUNNER_DEBUG: true
           ACTIONS_STEP_DEBUG: true
           HOST: localhost:5000
@@ -62,5 +64,6 @@ jobs:
           environment-variables: SHAWK_RESULTS_ENDPOINT SHAWK_AUTH_ENDPOINT
           configuration-files: test/stackhawk.yml
         env:
+          SHAWK_API_KEY: ${{ secrets.SHAWK_API_KEY }}
           ACTIONS_RUNNER_DEBUG: true
           ACTIONS_STEP_DEBUG: true

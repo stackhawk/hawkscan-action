@@ -50,7 +50,7 @@ test('maxed-out configuration dry-run', () => {
 })
 
 test('docker run hawkscan', () => {
-  process.env['INPUT_DRY-RUN'] = "false";
+  process.env['INPUT_DRY-RUN'] = 'false';
   process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
   process.env['INPUT_ENVIRONMENT-VARIABLES'] = 'SHAWK_RESULTS_ENDPOINT SHAWK_AUTH_ENDPOINT';
   process.env['INPUT_CONFIGURATION-FILES'] = 'test/stackhawk.yml';
