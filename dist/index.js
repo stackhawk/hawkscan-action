@@ -1608,6 +1608,9 @@ async function run() {
   } catch (error) {
     core.setFailed(error.message);
   }
+
+  core.info('Environment variable dump follows:')
+  await exec.exec('env');
 }
 
 run();
