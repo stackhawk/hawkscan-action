@@ -6,9 +6,11 @@ const exec = require('@actions/exec');
 async function run() {
   try {
     console.log('Starting HawkScan Action');
+
+    // Gather inputs
     const workspace = process.env.GITHUB_WORKSPACE;
     const apiKey = core.getInput('api-key');
-    const environmentVariables = core.getInput('environment-variables').split(" ");
+    const environmentVariables = core.getInput('environment-variables').split(/[, \n]/);
     const configurationFiles = core.getInput('configuration-files');
     const network = core.getInput('network');
     const image = core.getInput('image');
