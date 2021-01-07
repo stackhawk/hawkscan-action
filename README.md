@@ -10,17 +10,17 @@ HawkScan scans a specified URL and sends results to the StackHawk platform for a
 
 You can use environment variables in your HawkScan configuration file to dynamically configure settings. [read the HawkDocs](https://docs.stackhawk.com/hawkscan/configuration/#environment-variable-runtime-overrides) for more information about how to incorporate environment variables into your HawkScan configuration file, `stackhawk.yml`.
 
-*Be sure to declare any environments you wish to pass to HawkScan in the `environment-variables` input below*!
+*Be sure to declare any environments you wish to pass to HawkScan in the `environmentVariables` input below*!
 
-### `api-key`
+### `apiKey`
 
 **Required** Your StackHawk API key.
 
-### `dry-run`
+### `dryRun`
 
 **Optional** If set to `true`, show HawkScan commands, but don't run them.
 
-### `environment-variables`
+### `environmentVariables`
 
 **Optional** A space-separated list of environment variable to pass to HawkScan.
 
@@ -33,24 +33,24 @@ jobs:
     - uses: actions/checkout@v2
     - uses: stackhawk/hawkscan-action@v1
       with:
-        api-key: ${{ secrets.HAWK_API_KEY }}
-        environment-variables: APP_HOST APP_ENV
+        apiKey: ${{ secrets.HAWK_API_KEY }}
+        environmentVariables: APP_HOST APP_ENV
       env:
         APP_HOST: http://example.com
-        APP_ENV: GitHub
+        APP_ENV: Preproduction
 ```
 
-### `configuration-files`
+### `configurationFiles`
 
 **Optional** A space-separated list of HawkScan configuration files to use. Defaults to `stackhawk.yml`.
 
 ### `network`
 
-**Optional** Docker network settings for running HawkScan.  Defaults to `bridge`.
+**Optional** Docker network settings for running HawkScan.  Defaults to `host`.
 
-The following options for `docker-network` are most commonly used:
- - **`bridge`** (default): Use the default Docker bridge network setting for running the HawkScan container. This works in most cases if your scan target is a remote URL or a localhost address.
- - **`host`**: Use Docker host networking mode. HawkScan will run with full access to the GitHub virtual environment hosts network stack. This works in most cases if your scan target is a remote URL or a localhost address.
+The following options for `network` are most available:
+ - **`host`** (default): Use Docker host networking mode. HawkScan will run with full access to the GitHub virtual environment hosts network stack. This works in most cases if your scan target is a remote URL or a localhost address.
+ - **`bridge`**: Use the default Docker bridge network setting for running the HawkScan container. This works in most cases if your scan target is a remote URL or a localhost address.
  - **`NETWORK`**: Use the user-defined Docker bridge network, `NETWORK`. This network may be created with `docker network create`, or `docker-compose`. This is appropriate for scanning other containers running locally on the GitHub virtual environment within a named Docker network.
 
 See the [Docker documentation](https://docs.docker.com/engine/reference/run/#network-settings) for more details on Docker network settings.
@@ -63,21 +63,13 @@ See the [Docker documentation](https://docs.docker.com/engine/reference/run/#net
 
 **Optional** The version of HawkScan to run. Defaults to `latest`.
 
-## Outputs
-
-### `success`
-
-Boolean: `true` if the scan exited successfully.
-
 ## Examples
 
 ```yaml
-on: [push]
-
 jobs:
   stackhawk-hawkscan:
     runs-on: ubuntu-latest
-    name: Run a container and scan it
+    name: Run my app and scan it
     steps:
     - name: Check out repo
       uses: actions/checkout@v2
@@ -86,14 +78,7 @@ jobs:
         pip3 install -r requirements.txt
         nohup python3 app.py &
     - name: Scan my app
-      id: hawkscan
       uses: stackhawk/hawkscan-action@v1
-      env:
-        HOST: http://localhost:5000
       with:
-        api-key: ${{ secrets.HAWK_API_KEY }}
-        network: host
-    - name: Get scan success status
-      run: echo "Was the scan successful? ${{ steps.hawkscan.outputs.success }}"
-
+        apiKey: ${{ secrets.HAWK_API_KEY }}
 ```

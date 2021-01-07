@@ -18,43 +18,44 @@ test('wait 500 ms', async () => {
 });
 
 test('minimal configuration dry-run', () => {
-  process.env['INPUT_DRY-RUN'] = "true"
-  process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
+  process.env['INPUT_DRYRUN'] = "true";
+  process.env['INPUT_APIKEY'] = "TEST_KEY";
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
-  console.log(cp.execSync(`env`, {env: process.env}).toString());
+  // console.log(cp.execSync(`env`, {env: process.env}).toString());
 })
 
 test('moderate configuration dry-run', () => {
-  process.env['INPUT_DRY-RUN'] = "true"
-  process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
-  process.env['INPUT_ENVIRONMENT-VARIABLES'] = 'HOST';
+  process.env['INPUT_DRYRUN'] = "true";
+  process.env['INPUT_APIKEY'] = process.env['SHAWK_API_KEY'];
+  process.env['INPUT_ENVIRONMENTVARIABLES'] = 'HOST';
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
-  console.log(cp.execSync(`env`, {env: process.env}).toString());
+  // console.log(cp.execSync(`env`, {env: process.env}).toString());
 })
 
 // shows how the runner will run a javascript action with env / stdout protocol
 test('maxed-out configuration dry-run', () => {
-  process.env['INPUT_DRY-RUN'] = "true"
-  process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
-  process.env['INPUT_ENVIRONMENT-VARIABLES'] = 'HOST APP_ENV APP_ID';
-  process.env['INPUT_CONFIGURATION-FILES'] = 'stackhawktest.yml';
+  process.env['INPUT_DRYRUN'] = "true";
+  process.env['INPUT_APIKEY'] = process.env['SHAWK_API_KEY'];
+  process.env['INPUT_ENVIRONMENTVARIABLES'] = 'HOST APP_ENV APP_ID';
+  process.env['INPUT_CONFIGURATIONFILES'] = 'stackhawktest.yml';
   process.env['INPUT_NETWORK'] = 'test_net';
   process.env['INPUT_IMAGE'] = 'stackhawk/hawkscantastic';
   process.env['INPUT_VERSION'] = 'best';
   process.env['HOST'] = 'mylittletesthost';
   process.env['APP_ENV'] = 'unit_tests';
-  console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
-  console.log(cp.execSync(`env`, {env: process.env}).toString());
+  const command = cp.execSync(`node ${ip}`, {env: process.env}).toString()
+  console.log(`command = ${command}`);
+  // console.log(cp.execSync(`env`, {env: process.env}).toString());
 })
 
-test('docker run hawkscan', () => {
-  process.env['INPUT_DRY-RUN'] = 'false';
-  process.env['INPUT_API-KEY'] = process.env['SHAWK_API_KEY'];
-  process.env['INPUT_ENVIRONMENT-VARIABLES'] = 'SHAWK_RESULTS_ENDPOINT SHAWK_AUTH_ENDPOINT';
-  process.env['INPUT_CONFIGURATION-FILES'] = 'test/stackhawk.yml';
-  process.env['INPUT_NETWORK'] = 'host';
-  process.env['INPUT_IMAGE'] = 'stackhawk/hawkscan';
-  process.env['INPUT_VERSION'] = 'latest';
-  console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
-  console.log(cp.execSync(`env`, {env: process.env}).toString());
-})
+// test('docker run hawkscan', () => {
+//   process.env['INPUT_DRYRUN'] = 'false';
+//   process.env['INPUT_APIKEY'] = process.env['SHAWK_API_KEY'];
+//   process.env['INPUT_ENVIRONMENTVARIABLES'] = 'SHAWK_RESULTS_ENDPOINT SHAWK_AUTH_ENDPOINT';
+//   process.env['INPUT_CONFIGURATIONFILES'] = 'test/stackhawk.yml';
+//   process.env['INPUT_NETWORK'] = 'host';
+//   process.env['INPUT_IMAGE'] = 'stackhawk/hawkscan';
+//   process.env['INPUT_VERSION'] = 'latest';
+//   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
+//   console.log(cp.execSync(`env`, {env: process.env}).toString());
+// })

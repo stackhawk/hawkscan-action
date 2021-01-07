@@ -2,18 +2,18 @@ name: StackHawk HawkScan Action
 description: Run HawkScan
 
 inputs:
-  api-key:
+  apiKey:
     description: StackHawk API key
     required: true
-  dry-run:
+  dryRun:
     description: If set to `true`, show HawkScan commands, but don't run them
     required: true
     default: false
-  environment-variables:
+  environmentVariables:
     description: Space-separated list of environment variables to pass to HawkScan
     required: true
     default: ''
-  configuration-files:
+  configurationFiles:
     description: Space-separated list of HawkScan configuration files to use
     required: true
     default: stackhawk.yml
@@ -30,10 +30,10 @@ inputs:
     required: true
     default: latest
 
-outputs:
-  success: # output will be available to future steps
-    description: Whether HawkScan was successful or not - true or false
-
 runs:
   using: node12
   main: dist/index.js
+
+branding:
+  icon: 'octagon'
+  color: 'green'
