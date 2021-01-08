@@ -1,7 +1,7 @@
 {
-  "name": "javascript-action",
+  "name": "hawkscan-action",
   "version": "1.0.0",
-  "description": "JavaScript Action Template",
+  "description": "StackHawk HawkScan Action",
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint .",

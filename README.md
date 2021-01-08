@@ -1,16 +1,17 @@
+[![StackHawk](https://www.stackhawk.com/wp-content/uploads/2019/07/stackhawk-long.png)](https://stackhawk.com)
+
 # StackHawk HawkScan Action
 
-A GitHub Action for running [StackHawk](https://www.stackhawk.com/) [HawkScan](https://hub.docker.com/r/stackhawk/hawkscan) to find security issues in your application.
+The [StackHawk](https://www.stackhawk.com/) [HawkScan](https://hub.docker.com/r/stackhawk/hawkscan) GitHub Action makes it easy to integrate application security testing into your CI pipeline.
 
-HawkScan scans a specified URL and sends results to the StackHawk platform for alerting, tracking, and triage.
+## About StackHawk
+Here's the rundown:
+
+* ⚡ **Dynamic Application Scanning:** Use HawkScan to find and fix security bugs in your web apps, before you push to production. Think of it as security integration testing. [Get started](https://docs.stackhawk.com/hawkscan/getting-started.html) with your first scan in minutes.
+* 🦸 **Built for Modern Dev Teams:** Automate scans with Docker commands, manage configs via YAML, and add app scanning as a build stage. We're built for dev teams that care about security and quality.
+* 🧰 **Vulnerability Management:** Document for compliance. Prioritize and manage fixes with integrations to existing ticketing tools. Point in time assessments are a thing of the past - there is a better way.
 
 ## Inputs
-
-### Environment Variables
-
-You can use environment variables in your HawkScan configuration file to dynamically configure settings. [read the HawkDocs](https://docs.stackhawk.com/hawkscan/configuration/#environment-variable-runtime-overrides) for more information about how to incorporate environment variables into your HawkScan configuration file, `stackhawk.yml`.
-
-*Be sure to declare any environments you wish to pass to HawkScan in the `environmentVariables` input below*!
 
 ### `apiKey`
 
