@@ -1556,67 +1556,98 @@ function copyFile(srcFile, destFile, force) {
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
 const core = __webpack_require__(186);
-const exec = __webpack_require__(514);
+const utilities = __webpack_require__(677);
 
-function gatherInputs() {
-  return {
-    workspace: process.env.GITHUB_WORKSPACE,
-    apiKey: core.getInput('apiKey'),
-    environmentVariables: core.getInput('environmentVariables').split(/[, \n]/),
-    configurationFiles: core.getInput('configurationFiles'),
-    network: core.getInput('network'),
-    image: core.getInput('image'),
-    version: core.getInput('version'),
-    dryRun: core.getInput('dryRun')
-  }
-}
 
 async function run() {
   try {
     console.log('Starting HawkScan Action');
 
     // Gather inputs
-    const inputs = gatherInputs();
+    const inputs = utilities.gatherInputs();
 
+    // Build our Docker command
+    const dockerCommand = utilities.buildDockerCommand(inputs);
 
-
-    core.debug(`Environment Variables: ${inputs.environmentVariables} (${inputs.environmentVariables.length} length ${typeof inputs.environmentVariables})`);
-    core.debug(`Is environmentVariables[0] equal to ''? ${(inputs.environmentVariables[0] === '')}`);
-
-    // Build a list of --env VAR flags for the docker run command
-    const dockerEnvironmentVariables = inputs.environmentVariables.reduce((accumulator, currentValue) => {
-      if (currentValue === '') {
-        return `${accumulator}`;
-      } else {
-        return `--env ${currentValue} ${accumulator}`.trim();
-      }
-    }, '');
-    core.debug(`Docker Environment Variables: ${dockerEnvironmentVariables}`);
-
-    // Build out the docker run command
-    const dockerCommand = (`docker run --tty --rm --volume ${inputs.workspace}:/hawk ${dockerEnvironmentVariables} ` +
-      `--env API_KEY=${inputs.apiKey} --network ${inputs.network} ${inputs.image}:${inputs.version} ${inputs.configurationFiles}`);
-    core.debug(`Docker command: ${dockerCommand}`);
-
-    // Run or dry-run the scanner
+    // Run the scanner
     if ( inputs.dryRun.toLowerCase() === 'true' ) {
-      core.info(`DRY-RUN MODE: The following command[s] will not be run...`);
+      core.info(`DRY-RUN MODE - The following command[s] will not be run:`);
       core.info(dockerCommand);
     } else {
-      core.info(`Running HawkScan: ${inputs.image}:${inputs.version}...`);
-      try {
-        await exec.exec(dockerCommand);
-      } catch (error) {
-        core.debug(error.toString());
-      }
+      await utilities.runCommand(dockerCommand);
     }
-
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
 run();
+
+
+/***/ }),
+
+/***/ 677:
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+const core = __webpack_require__(186);
+const exec = __webpack_require__(514);
+
+function checkNotEmpty(element) {
+  return (element !== null && element !== "");
+}
+
+module.exports.gatherInputs = function gatherInputs() {
+  let configurationFiles = core.getInput('configurationFiles')
+    .split(/[, \n]/)
+    .filter(checkNotEmpty);
+  if (configurationFiles.length === 0) {
+    configurationFiles = ['stackhawk.yml'];
+  }
+  return {
+    workspace: process.env.GITHUB_WORKSPACE || '',
+    apiKey: core.getInput('apiKey') || '',
+    environmentVariables: core.getInput('environmentVariables')
+      .split(/[, \n]/)
+      .filter(checkNotEmpty),
+    configurationFiles: configurationFiles,
+    network: core.getInput('network') || 'host',
+    image: core.getInput('image') || 'stackhawk/hawkscan',
+    version: core.getInput('version') || 'latest',
+    dryRun: core.getInput('dryRun') || 'false'
+  }
+}
+
+function stringifyArguments(list, prefix = '') {
+  return list.reduce((accumulator, currentValue) => {
+    if (currentValue === '') {
+      return `${accumulator}`;
+    } else {
+      return `${accumulator} ${prefix} ${currentValue}`.trim();
+    }
+  }, '')
+}
+
+module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
+  const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '--env');
+  const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
+  const dockerCommand = (`docker run --tty --rm --volume ${inputs.workspace}:/hawk ${dockerEnvironmentVariables} ` +
+    `--env API_KEY=${inputs.apiKey} --network ${inputs.network} ${inputs.image}:${inputs.version} ` +
+    `${dockerConfigurationFiles}`);
+  const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
+  core.debug(`Docker command: ${dockerCommandClean}`);
+  return dockerCommandClean
+}
+
+
+module.exports.runCommand = function runCommand(command) {
+  core.info(`Running command:`);
+  core.info(command);
+  try {
+    exec.exec(command);
+  } catch (error) {
+    core.debug(error.toString());
+  }
+}
 
 
 /***/ }),

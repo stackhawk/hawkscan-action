@@ -7,27 +7,26 @@ inputs:
     required: true
   dryRun:
     description: If set to `true`, show HawkScan commands, but don't run them
-    required: true
+    required: false
     default: false
   environmentVariables:
     description: Space-separated list of environment variables to pass to HawkScan
-    required: true
-    default: ''
+    required: false
   configurationFiles:
     description: Space-separated list of HawkScan configuration files to use
-    required: true
+    required: false
     default: stackhawk.yml
   network:
     description: Docker network type or bridge name to use for scan
-    required: true
+    required: false
     default: host
   image:
     description: HawkScan Docker image to use
-    required: true
+    required: false
     default: stackhawk/hawkscan
   version:
     description: HawkScan Docker image version to use
-    required: true
+    required: false
     default: latest
 
 runs:

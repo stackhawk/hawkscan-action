@@ -1,61 +1,88 @@
-const wait = require('../src/wait');
+// const wait = require('../src/wait');
+const utilities = require('../src/utilities');
 const process = require('process');
 const cp = require('child_process');
 const path = require('path');
 
 const ip = path.join('dist', 'index.js');
 
-test('throws invalid number', async () => {
-  await expect(wait('foo')).rejects.toThrow('milliseconds not a number');
+// Take an object of key/value pairs and convert it to input environment variables
+function buildInput(inputs) {
+  let key = "";
+  for(key in inputs) {
+    process.env[`INPUT_${key.replace(/ /g, '_').toUpperCase()}`] = inputs[key];
+  }
+}
+
+// Reset modules and remove input environment variables before each run
+beforeEach(() => {
+  jest.resetModules();
+  delete process.env.INPUT_DRYRUN;
+  delete process.env.INPUT_APIKEY;
+  delete process.env.INPUT_ENVIRONMENTVARIABLES;
+  delete process.env.INPUT_CONFIGURATIONFILES;
+  delete process.env.INPUT_NETWORK;
+  delete process.env.INPUT_IMAGE;
+  delete process.env.INPUT_VERSION;
 });
 
-test('wait 500 ms', async () => {
-  const start = new Date();
-  await wait(500);
-  const end = new Date();
-  let delta = Math.abs(end - start);
-  expect(delta).toBeGreaterThanOrEqual(500);
-});
+test('gather minimal inputs', () => {
+  const workspace = process.env.GITHUB_WORKSPACE || ''
+  expect(utilities.gatherInputs()).toEqual({
+    workspace: workspace,
+    apiKey: '',
+    environmentVariables: [],
+    configurationFiles: ['stackhawk.yml'],
+    network: 'host',
+    image: 'stackhawk/hawkscan',
+    version: 'latest',
+    dryRun: 'false'
+  })
+})
+
+test('gather max inputs', () => {
+  const workspace = process.env.GITHUB_WORKSPACE || ''
+  buildInput({
+    apiKey: 'testkey',
+    environmentVariables: 'this, that\nthem other',
+    configurationFiles: "one two, three\nfour",
+    network: 'nothingbutnet',
+    image: 'nginx',
+    version: 'remarkable',
+    dryRun: 'true'
+  })
+
+  expect(utilities.gatherInputs()).toEqual({
+    workspace: workspace,
+    apiKey: 'testkey',
+    environmentVariables: ['this', 'that', 'them', 'other'],
+    configurationFiles: ['one', 'two', 'three', 'four'],
+    network: 'nothingbutnet',
+    image: 'nginx',
+    version: 'remarkable',
+    dryRun: 'true'
+  })
+})
 
 test('minimal configuration dry-run', () => {
-  process.env['INPUT_DRYRUN'] = "true";
-  process.env['INPUT_APIKEY'] = "TEST_KEY";
+  buildInput({
+    dryRun: 'true',
+    apiKey: 'hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX'
+  })
   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
-  // console.log(cp.execSync(`env`, {env: process.env}).toString());
 })
 
-test('moderate configuration dry-run', () => {
-  process.env['INPUT_DRYRUN'] = "true";
-  process.env['INPUT_APIKEY'] = process.env['SHAWK_API_KEY'];
-  process.env['INPUT_ENVIRONMENTVARIABLES'] = 'HOST';
-  console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
-  // console.log(cp.execSync(`env`, {env: process.env}).toString());
-})
-
-// shows how the runner will run a javascript action with env / stdout protocol
 test('maxed-out configuration dry-run', () => {
-  process.env['INPUT_DRYRUN'] = "true";
-  process.env['INPUT_APIKEY'] = process.env['SHAWK_API_KEY'];
-  process.env['INPUT_ENVIRONMENTVARIABLES'] = 'HOST APP_ENV APP_ID';
-  process.env['INPUT_CONFIGURATIONFILES'] = 'stackhawktest.yml';
-  process.env['INPUT_NETWORK'] = 'test_net';
-  process.env['INPUT_IMAGE'] = 'stackhawk/hawkscantastic';
-  process.env['INPUT_VERSION'] = 'best';
+  buildInput({
+    dryRun: 'true',
+    apiKey: 'hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX',
+    environmentVariables: 'HOST APP_ENV',
+    configurationFiles: "stackhawk.yml stackhawktest.yml",
+    network: 'test_net',
+    image: 'stackhawk/hawkscantastic',
+    version: 'best',
+  })
   process.env['HOST'] = 'mylittletesthost';
   process.env['APP_ENV'] = 'unit_tests';
-  const command = cp.execSync(`node ${ip}`, {env: process.env}).toString()
-  console.log(`command = ${command}`);
-  // console.log(cp.execSync(`env`, {env: process.env}).toString());
+  console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
 })
-
-// test('docker run hawkscan', () => {
-//   process.env['INPUT_DRYRUN'] = 'false';
-//   process.env['INPUT_APIKEY'] = process.env['SHAWK_API_KEY'];
-//   process.env['INPUT_ENVIRONMENTVARIABLES'] = 'SHAWK_RESULTS_ENDPOINT SHAWK_AUTH_ENDPOINT';
-//   process.env['INPUT_CONFIGURATIONFILES'] = 'test/stackhawk.yml';
-//   process.env['INPUT_NETWORK'] = 'host';
-//   process.env['INPUT_IMAGE'] = 'stackhawk/hawkscan';
-//   process.env['INPUT_VERSION'] = 'latest';
-//   console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
-//   console.log(cp.execSync(`env`, {env: process.env}).toString());
-// })
