@@ -60,7 +60,7 @@ jobs:
     - uses: stackhawk/hawkscan-action@v1.2
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
-        environmentVariables: APP_HOST, APP_ENV
+        environmentVariables: APP_HOST APP_ENV
       env:
         APP_HOST: http://example.com
         APP_ENV: Pre-Production
