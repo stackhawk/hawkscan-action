@@ -1,10 +1,9 @@
 // const wait = require('../src/wait');
 const utilities = require('../src/utilities');
 const process = require('process');
-const cp = require('child_process');
-const path = require('path');
 
-const ip = path.join('dist', 'index.js');
+// Our workspace should be GITHUB_WORSPACE if it exists, or the current working directory otherwise
+const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
 
 // Take an object of key/value pairs and convert it to input environment variables
 function buildInput(inputs) {
@@ -27,7 +26,6 @@ beforeEach(() => {
 });
 
 test('gather minimal inputs', () => {
-  const workspace = process.env.GITHUB_WORKSPACE || ''
   expect(utilities.gatherInputs()).toEqual({
     workspace: workspace,
     apiKey: '',
@@ -37,40 +35,44 @@ test('gather minimal inputs', () => {
     image: 'stackhawk/hawkscan',
     version: 'latest',
     dryRun: 'false'
-  })
-})
+  });
+});
 
 test('gather max inputs', () => {
-  const workspace = process.env.GITHUB_WORKSPACE || ''
   buildInput({
     apiKey: 'testkey',
-    environmentVariables: 'this, that\nthem other',
-    configurationFiles: "one two, three\nfour",
+    environmentVariables: 'one, two\nthree four  five,,six,\n\n seven, ',
+    configurationFiles: "one.yml two.yml, three.yml\nfour.yml  five.yaml,,six.yml,\n\n seven.yml, ",
     network: 'nothingbutnet',
     image: 'nginx',
     version: 'remarkable',
     dryRun: 'true'
-  })
+  });
 
   expect(utilities.gatherInputs()).toEqual({
     workspace: workspace,
     apiKey: 'testkey',
-    environmentVariables: ['this', 'that', 'them', 'other'],
-    configurationFiles: ['one', 'two', 'three', 'four'],
+    environmentVariables: ['one', 'two', 'three', 'four', 'five', 'six', 'seven'],
+    configurationFiles: ['one.yml', 'two.yml', 'three.yml', 'four.yml', 'five.yaml', 'six.yml', 'seven.yml'],
     network: 'nothingbutnet',
     image: 'nginx',
     version: 'remarkable',
     dryRun: 'true'
-  })
-})
+  });
+});
 
 test('minimal configuration dry-run', () => {
   buildInput({
     dryRun: 'true',
     apiKey: 'hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX'
-  })
-  console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
-})
+  });
+  const inputs = utilities.gatherInputs();
+  const dockerCommand = utilities.buildDockerCommand(inputs);
+  expect(dockerCommand ===
+    `docker run --tty --rm --volume ${workspace}:/hawk --env API_KEY=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX ` +
+    `--network host stackhawk/hawkscan:latest stackhawk.yml`
+  );
+});
 
 test('maxed-out configuration dry-run', () => {
   buildInput({
@@ -81,8 +83,14 @@ test('maxed-out configuration dry-run', () => {
     network: 'test_net',
     image: 'stackhawk/hawkscantastic',
     version: 'best',
-  })
+  });
   process.env['HOST'] = 'mylittletesthost';
   process.env['APP_ENV'] = 'unit_tests';
-  console.log(cp.execSync(`node ${ip}`, {env: process.env}).toString());
-})
+  const inputs = utilities.gatherInputs();
+  const dockerCommand = utilities.buildDockerCommand(inputs);
+  expect(dockerCommand ===
+    `docker run --tty --rm --volume ${workspace}:/hawk --env HOST --env APP_ENV ` +
+    `--env API_KEY=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX --network test_net stackhawk/hawkscantastic:best ` +
+    `stackhawk.yml stackhawktest.yml`
+  );
+});
