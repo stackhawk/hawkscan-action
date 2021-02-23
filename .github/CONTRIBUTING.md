@@ -1,35 +1,38 @@
-## HawkScan Action Development
+## Develop
 
-To install dependencies
+To install and update dependencies:
 
 ```bash
 npm install
 ```
 
-To run tests :heavy_check_mark:
+To run tests:
 
 ```bash
 npm test
 ```
 
-## Package for distribution
+## Package for Distribution
 
-To prepare this action for distribution, you must package it before releasing it with:
+To prepare this action for distribution, you must package it:
 
 ```bash
 npm run prepare
 ```
 
-Packaging the action will create a packaged action in the `dist` folder. Packaging assembles the code, dependencies, and licenses into one file that can be checked in to Git, enabling fast and reliable execution and preventing the need to check in node_modules.
+Packaging will create a packaged single action file in the `dist` folder. The single file contains all the code, dependencies, and licenses, enabling fast and reliable execution and preventing the need to check in node_modules.
 
 GitHub Actions will run the entry point from `action.yml`. That entrypoint is currently defined as `dist/index.js`.
 
 ## Prepare a Version for Release
 
-Releases are created from the `main` branch. To prepare for a release, create a PR to `main` and make sure that your target release version is reflected in the following files:
+Releases are created from the `main` branch. To prepare for a release, bump the version number in all relevant files using [`bumpversion`](https://pypi.org/project/bump2version/). For instance, if the current version is `1.0.0`, and you want to bump it to `1.0.1`, run:
 
- * **`package.json`** - set `version`, e.g. `1.0.0`
- * **`README.md`** - set version in all YAML examples, e.g. `stackhawk/hawkscan-action@v1.0.0`
+```shell
+bumpversion patch
+```
+
+Use the `.bumpversion.cfg` file at the root of this project to define which files get updated by `bumpversion`. Currently this includes `.package.json` and `README.md`.
 
 ## Cut a Release
 
@@ -41,4 +44,4 @@ See the GitHub Actions [versioning documentation](https://github.com/actions/too
 
 ## Check the Marketplace
 
-To make sure the action has been released correctly, [view it on the Marketplace](https://github.com/marketplace/actions/stackhawk-hawkscan-action).
+To make sure the action has been released correctly, [view it on the Marketplace](https://github.com/marketplace/actions/stackhawk-hawkscan-action), and check the latest available version there.
