@@ -31,6 +31,8 @@ Releases are created from the `main` branch. To prepare for a release, create a 
  * **`package.json`** - set `version`, e.g. `1.0.0`
  * **`README.md`** - set version in all YAML examples, e.g. `stackhawk/hawkscan-action@v1.0.0`
 
+## Cut a Release
+
 When the `main` branch is stable and reflects the desired release version, create a new release in GitHub, and prepend the version name with a `v`, e.g. `v1.0.0`. Be sure to check the box at the top of the Release page:
 
 > ✅ *Publish this Action to the GitHub Marketplace*
