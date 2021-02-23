@@ -1,12 +1,12 @@
 ## HawkScan Action Development
 
-Install the dependencies
+To install dependencies
 
 ```bash
 npm install
 ```
 
-Run the tests :heavy_check_mark:
+To run tests :heavy_check_mark:
 
 ```bash
 npm test
@@ -14,43 +14,29 @@ npm test
 
 ## Package for distribution
 
-GitHub Actions will run the entry point from the action.yml. Packaging assembles the code into one file that can be checked in to Git, enabling fast and reliable execution and preventing the need to check in node_modules.
-
-Actions are run from GitHub repos.  Packaging the action will create a packaged action in the dist folder.
-
-Run prepare
+To prepare this action for distribution, you must package it before releasing it with:
 
 ```bash
 npm run prepare
 ```
 
-## Create a release branch
+Packaging the action will create a packaged action in the `dist` folder. Packaging assembles the code, dependencies, and licenses into one file that can be checked in to Git, enabling fast and reliable execution and preventing the need to check in node_modules.
 
-Users shouldn't consume the action from master since that would be latest code and actions can break compatibility between major versions.
+GitHub Actions will run the entry point from `action.yml`. That entrypoint is currently defined as `dist/index.js`.
 
-Checkin to the v1 release branch
+## Prepare a Version for Release
 
-```bash
-git checkout -b v1
-git commit -a -m "v1 release"
-```
+Releases are created from the `main` branch. To prepare for a release, create a PR to `main` and make sure that your target release version is reflected in the following files:
 
-```bash
-git push origin v1
-```
+ * **`package.json`** - set `version`, e.g. `1.0.0`
+ * **`README.md`** - set version in all YAML examples, e.g. `stackhawk/hawkscan-action@v1.0.0`
 
-Your action is now published! :rocket:
+When the `main` branch is stable and reflects the desired release version, create a new release in GitHub, and prepend the version name with a `v`, e.g. `v1.0.0`. Be sure to check the box at the top of the Release page:
 
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
+> ✅ *Publish this Action to the GitHub Marketplace*
 
-## Usage
+See the GitHub Actions [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) for more information about GitHub Actions versioning.
 
-You can now consume the action by referencing the v1 branch
+## Check the Marketplace
 
-```yaml
-uses: stackhawk/hawkscan-action@v1
-with:
-  apiKey: ${{ secrets.SHAWK_API_KEY }}
-```
-
-See the [actions tab](https://github.com/stackhawk/hawkscan-action/actions) for runs of this action! :rocket:
+To make sure the action has been released correctly, [view it on the Marketplace](https://github.com/marketplace/actions/stackhawk-hawkscan-action).
