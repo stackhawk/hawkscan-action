@@ -12,35 +12,52 @@ To run tests:
 npm test
 ```
 
+To lint the code:
+
+```bash
+npm run lint
+```
+
 ## Package for Distribution
 
-To prepare this action for distribution, you must package it:
+To prepare this action for distribution, you must package it into the `dist` directory:
 
 ```bash
 npm run prepare
 ```
 
-Packaging will create a packaged single action file in the `dist` folder. The single file contains all the code, dependencies, and licenses, enabling fast and reliable execution and preventing the need to check in node_modules.
+Better yet, you can lint, package, and test it all in one step:
 
-GitHub Actions will run the entry point from `action.yml`. That entrypoint is currently defined as `dist/index.js`.
-
-## Prepare a Version for Release
-
-Releases are created from the `main` branch. To prepare for a release, bump the version number in all relevant files using [`bumpversion`](https://pypi.org/project/bump2version/). For instance, if the current version is `1.0.0`, and you want to bump it to `1.0.1`, run:
-
-```shell
-bumpversion patch
+```bash
+npm run all
 ```
 
-Use the `.bumpversion.cfg` file at the root of this project to define which files get updated by `bumpversion`. Currently this includes `.package.json` and `README.md`.
+Packaging creates a single consolidated action file in the `dist` folder. That directory contains all code, dependencies, and licenses, enabling fast and reliable execution and preventing the need to check in the `node_modules` directory.
 
-## Cut a Release
+## Releasing and Publishing to the GitHub Marketplace
 
-When the `main` branch is stable and reflects the desired release version, create a new release in GitHub, and prepend the version name with a `v`, e.g. `v1.0.0`. Be sure to check the box at the top of the Release page:
+To release a new version of this action to the marketplace, you must do the following:
+ 1. Lint, package, and test the code in your feature branch
+ 2. Bump the version number in `package.json` and `README.md`
+ 3. Create a PR to `main` with your changes
+ 4. Once the PR is merged, tag and release it
+ 5. Publish the release to the GitHub Marketplace
+
+The `release-pr.sh` script handles steps 1 through 3, up to and including the creation of a PR.
+
+> `release-pr.sh` requires [bump2version](https://pypi.org/project/bump2version/) and [gh](https://cli.github.com/manual/installation).
+
+Run `release-pr.sh` with your desired bump level, **major**, **minor**, or **patch**:
+
+```shell
+./scripts/release-pr.sh -b patch
+```
+
+Once the PR is merged, the `.github/workflows/test.yml` workflow handles step 4, tagging and releasing, automatically.
+
+The final *manual* step is to [edit the release](https://github.com/stackhawk/hawkscan-action/releases) and publish it to the GitHub Marketplace.
 
 > ✅ *Publish this Action to the GitHub Marketplace*
-
-See the GitHub Actions [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md) for more information about GitHub Actions versioning.
 
 ## Check the Marketplace
 
