@@ -1,56 +1,64 @@
-## HawkScan Action Development
+## Develop
 
-Install the dependencies
+To install and update dependencies:
 
 ```bash
 npm install
 ```
 
-Run the tests :heavy_check_mark:
+To run tests:
 
 ```bash
 npm test
 ```
 
-## Package for distribution
+To lint the code:
 
-GitHub Actions will run the entry point from the action.yml. Packaging assembles the code into one file that can be checked in to Git, enabling fast and reliable execution and preventing the need to check in node_modules.
+```bash
+npm run lint
+```
 
-Actions are run from GitHub repos.  Packaging the action will create a packaged action in the dist folder.
+## Package for Distribution
 
-Run prepare
+To prepare this action for distribution, you must package it into the `dist` directory:
 
 ```bash
 npm run prepare
 ```
 
-## Create a release branch
-
-Users shouldn't consume the action from master since that would be latest code and actions can break compatibility between major versions.
-
-Checkin to the v1 release branch
+Better yet, you can lint, package, and test it all in one step:
 
 ```bash
-git checkout -b v1
-git commit -a -m "v1 release"
+npm run all
 ```
 
-```bash
-git push origin v1
+Packaging creates a single consolidated action file in the `dist` folder. That directory contains all code, dependencies, and licenses, enabling fast and reliable execution and preventing the need to check in the `node_modules` directory.
+
+## Releasing and Publishing to the GitHub Marketplace
+
+To release a new version of this action to the marketplace, you must do the following:
+ 1. Lint, package, and test the code in your feature branch
+ 2. Bump the version number in `package.json` and `README.md`
+ 3. Create a PR to `main` with your changes
+ 4. Once the PR is merged, tag and release it
+ 5. Publish the release to the GitHub Marketplace
+
+The `release-pr.sh` script handles steps 1 through 3, up to and including the creation of a PR.
+
+> `release-pr.sh` requires [bump2version](https://pypi.org/project/bump2version/) and [gh](https://cli.github.com/manual/installation).
+
+Run `release-pr.sh` with your desired bump level - **major**, **minor**, or **patch**:
+
+```shell
+./scripts/release-pr.sh -b patch
 ```
 
-Your action is now published! :rocket:
+Once the PR is merged, the `.github/workflows/test.yml` workflow handles step 4, tagging and releasing, automatically.
 
-See the [versioning documentation](https://github.com/actions/toolkit/blob/master/docs/action-versioning.md)
+The final *manual* step is to [edit the release](https://github.com/stackhawk/hawkscan-action/releases) and publish it to the GitHub Marketplace.
 
-## Usage
+> ✅ *Publish this Action to the GitHub Marketplace*
 
-You can now consume the action by referencing the v1 branch
+## Check the Marketplace
 
-```yaml
-uses: stackhawk/hawkscan-action@v1
-with:
-  apiKey: ${{ secrets.SHAWK_API_KEY }}
-```
-
-See the [actions tab](https://github.com/stackhawk/hawkscan-action/actions) for runs of this action! :rocket:
+To make sure the action has been released correctly, [view it on the Marketplace](https://github.com/marketplace/actions/stackhawk-hawkscan-action), and check the latest available version there.

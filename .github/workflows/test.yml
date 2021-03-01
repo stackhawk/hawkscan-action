@@ -4,57 +4,23 @@ on:
   push:
 
 jobs:
-
+  # Run JS unit tests
   unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-20.04
     env:
       SHAWK_API_KEY: ${{ secrets.SHAWK_API_KEY }}
-    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - run: npm install --only=dev
     - run: npm run lint
     - run: npm clean-install
-    - run: env
     - run: npm test
 
-  # test action works running from the graph
-  max-config:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: ./
-      with:
-        apiKey: ${{ secrets.SHAWK_API_KEY }}
-        dryRun: true
-        environmentVariables: |
-          HOST
-          APP_ENV
-          APP_ID
-        configurationFiles: stackhawk.yml stackhawk-test.yml
-        network: bridge
-        image: zconger/hawkscan
-        version: beta
-      env:
-        ACTIONS_RUNNER_DEBUG: true
-        ACTIONS_STEP_DEBUG: true
-        HOST: localhost:5000
-        APP_ENV: ApPeNvIrOnMeNt
-
-  min-config:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: ./
-        with:
-          apiKey: ${{ secrets.SHAWK_API_KEY }}
-          dryRun: true
-        env:
-          ACTIONS_RUNNER_DEBUG: true
-          ACTIONS_STEP_DEBUG: true
-          HOST: localhost:5000
-
+  # Run a HawkScan with this Action
   live-test:
-    runs-on: ubuntu-latest
+    name: Live Test
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - uses: ./
@@ -65,3 +31,28 @@ jobs:
         env:
           ACTIONS_RUNNER_DEBUG: true
           ACTIONS_STEP_DEBUG: true
+
+  # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
+  release-new-version:
+    name: Release New Version
+    runs-on: ubuntu-20.04
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs:
+      - unit-tests
+      - live-test
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Check Release Version
+        run: |
+          echo "RELEASE_VERSION=$(./scripts/version-check.sh)" >> $GITHUB_ENV
+      - name: Create Release
+        id: create_release
+        if: env.RELEASE_VERSION != ''
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.RELEASE_VERSION }}
+          release_name: HawkScan Action ${{ env.RELEASE_VERSION }}

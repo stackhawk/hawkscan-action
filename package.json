@@ -1,6 +1,6 @@
 {
   "name": "hawkscan-action",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "StackHawk HawkScan Action",
   "main": "src/index.js",
   "scripts": {
