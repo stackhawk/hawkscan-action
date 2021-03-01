@@ -47,7 +47,7 @@ The `release-pr.sh` script handles steps 1 through 3, up to and including the cr
 
 > `release-pr.sh` requires [bump2version](https://pypi.org/project/bump2version/) and [gh](https://cli.github.com/manual/installation).
 
-Run `release-pr.sh` with your desired bump level, **major**, **minor**, or **patch**:
+Run `release-pr.sh` with your desired bump level - **major**, **minor**, or **patch**:
 
 ```shell
 ./scripts/release-pr.sh -b patch
