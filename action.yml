@@ -35,5 +35,5 @@ runs:
   main: dist/index.js
 
 branding:
-  icon: 'hexagon'
-  color: '#00c4be'
+  icon: 'octagon'
+  color: 'green'
