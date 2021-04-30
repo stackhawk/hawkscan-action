@@ -1,10 +1,14 @@
 name: "action-tests"
-on:
+on: TRUE
+
+
   pull_request:
   push:
 
 jobs:
   # Run JS unit tests
+
+
   unit-tests:
     name: Unit Tests
     runs-on: ubuntu-20.04
@@ -56,3 +60,4 @@ jobs:
         with:
           tag_name: v${{ env.RELEASE_VERSION }}
           release_name: HawkScan Action ${{ env.RELEASE_VERSION }}
+[![action-tests](https://github.com/stackhawk/hawkscan-action/actions/workflows/test.yml/badge.svg)](https://github.com/stackhawk/hawkscan-action/actions/workflows/test.yml)
