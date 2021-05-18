@@ -25,6 +25,10 @@ inputs:
     description: HawkScan Docker image to use
     required: false
     default: stackhawk/hawkscan
+  codeScanningAlerts:
+    description: Register a Code Scanning Alert in GitHub if scan alerts exceed `hawk.failureThreshold`
+    required: false
+    default: false
   version:
     description: HawkScan Docker image version to use
     required: false

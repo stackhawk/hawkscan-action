@@ -1,4 +1,3 @@
-// const wait = require('../src/wait');
 const utilities = require('../src/utilities');
 const process = require('process');
 
@@ -68,10 +67,9 @@ test('minimal configuration dry-run', () => {
   });
   const inputs = utilities.gatherInputs();
   const dockerCommand = utilities.buildDockerCommand(inputs);
-  expect(dockerCommand ===
-    `docker run --tty --rm --volume ${workspace}:/hawk --env API_KEY=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX ` +
-    `--network host stackhawk/hawkscan:latest stackhawk.yml`
-  );
+  expect(dockerCommand)
+    .toEqual(`docker run --tty --rm --volume ${workspace}:/hawk --env API_KEY=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX ` +
+    `--network host stackhawk/hawkscan:latest stackhawk.yml`);
 });
 
 test('maxed-out configuration dry-run', () => {
@@ -88,9 +86,8 @@ test('maxed-out configuration dry-run', () => {
   process.env['APP_ENV'] = 'unit_tests';
   const inputs = utilities.gatherInputs();
   const dockerCommand = utilities.buildDockerCommand(inputs);
-  expect(dockerCommand ===
-    `docker run --tty --rm --volume ${workspace}:/hawk --env HOST --env APP_ENV ` +
+  expect(dockerCommand)
+    .toEqual(`docker run --tty --rm --volume ${workspace}:/hawk --env HOST --env APP_ENV ` +
     `--env API_KEY=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX --network test_net stackhawk/hawkscantastic:best ` +
-    `stackhawk.yml stackhawktest.yml`
-  );
+    `stackhawk.yml stackhawktest.yml`);
 });
