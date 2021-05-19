@@ -6,3 +6,4 @@ app:
 hawk:
   spider:
     base: false
+  failureThreshold: medium

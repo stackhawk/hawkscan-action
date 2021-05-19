@@ -22,6 +22,7 @@ beforeEach(() => {
   delete process.env.INPUT_NETWORK;
   delete process.env.INPUT_IMAGE;
   delete process.env.INPUT_VERSION;
+  delete process.env.INPUT_CODESCANNINGALERTS;
 });
 
 test('gather minimal inputs', () => {
@@ -33,7 +34,8 @@ test('gather minimal inputs', () => {
     network: 'host',
     image: 'stackhawk/hawkscan',
     version: 'latest',
-    dryRun: 'false'
+    dryRun: 'false',
+    codeScanningAlerts: 'false'
   });
 });
 
@@ -45,7 +47,8 @@ test('gather max inputs', () => {
     network: 'nothingbutnet',
     image: 'nginx',
     version: 'remarkable',
-    dryRun: 'true'
+    dryRun: 'true',
+    codeScanningAlerts: 'true'
   });
 
   expect(utilities.gatherInputs()).toEqual({
@@ -56,7 +59,8 @@ test('gather max inputs', () => {
     network: 'nothingbutnet',
     image: 'nginx',
     version: 'remarkable',
-    dryRun: 'true'
+    dryRun: 'true',
+    codeScanningAlerts: 'true'
   });
 });
 

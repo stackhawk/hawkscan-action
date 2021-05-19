@@ -34,7 +34,8 @@ module.exports.gatherInputs = function gatherInputs() {
     network: core.getInput('network') || 'host',
     image: core.getInput('image') || 'stackhawk/hawkscan',
     version: core.getInput('version') || 'latest',
-    dryRun: core.getInput('dryRun') || 'false'
+    dryRun: core.getInput('dryRun') || 'false',
+    codeScanningAlerts: core.getInput('codeScanningAlerts') || 'false'
   }
 }
 
@@ -49,13 +50,26 @@ module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
   return dockerCommandClean
 }
 
-
-module.exports.runCommand = function runCommand(command) {
+module.exports.runCommand = async function runCommand(command) {
   core.info(`Running command:`);
   core.info(command);
-  try {
-    exec.exec(command);
-  } catch (error) {
-    core.debug(error.toString());
-  }
+
+  let execOutput = '';
+  let execError = '';
+  let exitCode = 0;
+  const execOptions = {
+    ignoreReturnCode: false
+  };
+  const commandArray = command.split(" ");
+  execOptions.listeners = {
+    stdout: (data) => {
+      execOutput += data.toString();
+    },
+    stderr: (data) => {
+      execError += data.toString();
+    }
+  };
+  exitCode = exec.exec(commandArray[0], commandArray.slice(1), execOptions)
+    .catch(error => {core.error(error)});
+  return {exitCode, execOutput, execError}
 }

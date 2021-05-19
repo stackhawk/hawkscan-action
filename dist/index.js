@@ -1562,16 +1562,12 @@ const utilities = __nccwpck_require__(677);
 async function run() {
   try {
     console.log('Starting HawkScan Action');
-
-    // Gather inputs
     const inputs = utilities.gatherInputs();
-
-    // Build our Docker command
     const dockerCommand = utilities.buildDockerCommand(inputs);
 
     // Run the scanner
     if ( inputs.dryRun.toLowerCase() === 'true' ) {
-      core.info(`DRY-RUN MODE - The following command[s] will not be run:`);
+      core.info(`DRY-RUN MODE - The following command will not be run:`);
       core.info(dockerCommand);
     } else {
       await utilities.runCommand(dockerCommand);
@@ -1625,7 +1621,8 @@ module.exports.gatherInputs = function gatherInputs() {
     network: core.getInput('network') || 'host',
     image: core.getInput('image') || 'stackhawk/hawkscan',
     version: core.getInput('version') || 'latest',
-    dryRun: core.getInput('dryRun') || 'false'
+    dryRun: core.getInput('dryRun') || 'false',
+    codeScanningAlerts: core.getInput('codeScanningAlerts') || 'false'
   }
 }
 
@@ -1644,11 +1641,20 @@ module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
 module.exports.runCommand = function runCommand(command) {
   core.info(`Running command:`);
   core.info(command);
-  try {
-    exec.exec(command);
-  } catch (error) {
-    core.debug(error.toString());
-  }
+  let execOutput = '';
+  let execError = '';
+  const execOptions = {};
+  const commandArray = command.split(" ");
+  execOptions.listeners = {
+    stdout: (data) => {
+      execOutput += data.toString();
+    },
+    stderr: (data) => {
+      execError += data.toString();
+    }
+  };
+  const exitCode = exec.exec(commandArray[0], commandArray.slice(1), execOptions);
+  return {exitCode, execOutput, execError};
 }
 
 

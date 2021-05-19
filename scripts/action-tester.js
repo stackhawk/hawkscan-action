@@ -1,11 +1,7 @@
 #!/usr/bin/env node
-
 const utilities = require('../src/utilities');
 const process = require('process');
-const { exec, spawn } = require('child_process');
-
-// Our workspace should be GITHUB_WORSPACE if it exists, or the current working directory otherwise
-const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
+const { spawn } = require('child_process');
 
 // Take an object of key/value pairs and convert it to input environment variables
 function buildInput(inputs) {
@@ -24,6 +20,7 @@ function run() {
     network: 'host',
     image: 'stackhawk/hawkscan',
     version: 'latest',
+    codeScanningAlerts: 'true',
   });
   process.env['HOST'] = 'http://example.com';
   process.env['APP_ENV'] = 'unit_tests';
