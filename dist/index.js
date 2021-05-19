@@ -1558,22 +1558,22 @@ function copyFile(srcFile, destFile, force) {
 const core = __nccwpck_require__(186);
 const utilities = __nccwpck_require__(677);
 
-
 async function run() {
-  try {
-    console.log('Starting HawkScan Action');
-    const inputs = utilities.gatherInputs();
-    const dockerCommand = utilities.buildDockerCommand(inputs);
+  console.log('Starting HawkScan Action');
+  const inputs = utilities.gatherInputs();
+  const dockerCommand = utilities.buildDockerCommand(inputs);
 
-    // Run the scanner
-    if ( inputs.dryRun.toLowerCase() === 'true' ) {
-      core.info(`DRY-RUN MODE - The following command will not be run:`);
-      core.info(dockerCommand);
-    } else {
-      await utilities.runCommand(dockerCommand);
-    }
-  } catch (error) {
-    core.setFailed(error.message);
+  // let scanResults = {exitCode: 0, execOutput: '', execError: ''};
+
+  // Run the scanner
+  if ( inputs.dryRun.toLowerCase() === 'true' ) {
+    core.info(`DRY-RUN MODE - The following command will not be run:`);
+    core.info(dockerCommand);
+  } else {
+    const scanResults = await utilities.runCommand(dockerCommand)
+    core.info("Here's what happened.");
+    core.info(scanResults.exitCode.toString());
+    core.info('all done');
   }
 }
 
@@ -1637,14 +1637,16 @@ module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
   return dockerCommandClean
 }
 
-
-module.exports.runCommand = function runCommand(command) {
+module.exports.runCommand = async function runCommand(command) {
   core.info(`Running command:`);
   core.info(command);
+
   let execOutput = '';
   let execError = '';
-  const execOptions = {};
+  let exitCode = 0;
+  let execOptions = {}
   const commandArray = command.split(" ");
+  execOptions.ignoreReturnCode = true
   execOptions.listeners = {
     stdout: (data) => {
       execOutput += data.toString();
@@ -1653,8 +1655,10 @@ module.exports.runCommand = function runCommand(command) {
       execError += data.toString();
     }
   };
-  const exitCode = exec.exec(commandArray[0], commandArray.slice(1), execOptions);
-  return {exitCode, execOutput, execError};
+  await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
+    .then(data => {exitCode = data.toString()})
+    .catch(error => {core.error(error)});
+  return {exitCode, execOutput, execError}
 }
 
 
