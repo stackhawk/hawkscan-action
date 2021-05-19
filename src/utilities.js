@@ -57,10 +57,9 @@ module.exports.runCommand = async function runCommand(command) {
   let execOutput = '';
   let execError = '';
   let exitCode = 0;
-  const execOptions = {
-    ignoreReturnCode: false
-  };
+  let execOptions = {}
   const commandArray = command.split(" ");
+  execOptions.ignoreReturnCode = true
   execOptions.listeners = {
     stdout: (data) => {
       execOutput += data.toString();
@@ -69,7 +68,8 @@ module.exports.runCommand = async function runCommand(command) {
       execError += data.toString();
     }
   };
-  exitCode = exec.exec(commandArray[0], commandArray.slice(1), execOptions)
+  await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
+    .then(data => {exitCode = data.toString()})
     .catch(error => {core.error(error)});
   return {exitCode, execOutput, execError}
 }

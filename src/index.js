@@ -13,11 +13,10 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(dockerCommand);
   } else {
-    utilities.runCommand(dockerCommand)
-      .then((data) => {
-        core.info("Here's what happened.");
-        core.info(data.exitCode.toString());
-      })
+    const scanResults = await utilities.runCommand(dockerCommand)
+    core.info("Here's what happened.");
+    core.info(scanResults.exitCode.toString());
+    core.info('all done');
   }
 }
 
