@@ -1,5 +1,5 @@
 const core = require('@actions/core');
-
+const { Octokit } = require('@octokit/core');
 
 /*
   Need to extract:
@@ -8,7 +8,8 @@ const core = require('@actions/core');
     - Failure Threshold Setting
  */
 
-module.exports.uploadSarif = function uploadSarif(scanData) {
+// https://docs.github.com/en/rest/reference/code-scanning#upload-an-analysis-as-sarif-data--code-samples
+module.exports.uploadSarif = async function uploadSarif(scanData) {
   const resultsLink = scanData.resultsLink;
   const hawkscanVersion = scanData.hawkscanVersion;
   const failureThreshold = scanData.failureThreshold;
@@ -17,6 +18,28 @@ module.exports.uploadSarif = function uploadSarif(scanData) {
   core.debug(`Running SARIF upload with HawkScan version: ${scanData.hawkscanVersion}`);
   core.debug(`Running SARIF upload with failure threshold: ${scanData.failureThreshold}`);
   core.debug(`SARIF file contents:\n${sarifContent}`);
+
+  const githubToken = core.getInput('githubToken', { required: true });
+  const octokit = new Octokit({ auth: githubToken });
+  const githubRepository = process.env['GITHUB_REPOSITORY'];
+  if (value === undefined || value.length === 0) {
+    throw new Error(`${paramName} environment variable must be set`);
+  }
+  const [owner, repo] = githubRepository.split('/');
+  const ref = getRef();
+  const commit_sha = getRequiredEnvParam('GITHUB_SHA');
+  const zipped_sarif = zlib.gzipSync(JSON.stringify(sarif)).toString('base64');
+
+  await octokit.request('POST /repos/:owner/:repo/code-scanning/sarifs', {
+    owner,
+    repo,
+    commit_sha,
+    ref,
+    sarif: zipped_sarif,
+    tool_name: '42Crunch REST API Static Security Testing',
+    checkout_uri: url.pathToFileURL(process.cwd()).toString(),
+  });
+
 }
 
 function sarifBuilder(resultsLink, hawscanVersion, failureThreshold) {

@@ -25,13 +25,13 @@
   },
   "homepage": "https://github.com/actions/javascript-action#readme",
   "dependencies": {
-    "@actions/core": "^1.2.5",
+    "@actions/core": "^1.2.7",
     "@actions/exec": "^1.0.4",
     "@octokit/core": "^3.4.0",
     "process": "^0.11.10"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.27.0",
+    "@vercel/ncc": "^0.28.5",
     "eslint": "^7.20.0",
     "jest": "^26.1.0"
   }

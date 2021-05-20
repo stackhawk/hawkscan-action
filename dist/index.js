@@ -1,5 +1,4 @@
-require('./sourcemap-register.js');module.exports =
-/******/ (() => { // webpackBootstrap
+require('./sourcemap-register.js');/******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
 /***/ 241:
@@ -198,6 +197,7 @@ exports.getInput = getInput;
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function setOutput(name, value) {
+    process.stdout.write(os.EOL);
     command_1.issueCommand('set-output', { name }, value);
 }
 exports.setOutput = setOutput;
@@ -1552,51 +1552,11 @@ function copyFile(srcFile, destFile, force) {
 
 /***/ }),
 
-/***/ 351:
-/***/ ((__unused_webpack_module, __unused_webpack_exports, __nccwpck_require__) => {
-
-const core = __nccwpck_require__(186);
-const utilities = __nccwpck_require__(677);
-const sarif = __nccwpck_require__(348);
-
-async function run() {
-  console.log('Starting HawkScan Action');
-  const inputs = utilities.gatherInputs();
-  const dockerCommand = utilities.buildDockerCommand(inputs);
-  let exitCode = 0;
-  let scanResults;
-  let scanData;
-
-  // Run the scanner
-  if ( inputs.dryRun === 'true' ) {
-    core.info(`DRY-RUN MODE - The following command will not be run:`);
-    core.info(dockerCommand);
-  } else {
-    scanResults = await utilities.runCommand(dockerCommand);
-    scanData = scanResults.scanData;
-    exitCode = scanResults.exitCode;
-    core.debug(`Scanner exit code: ${exitCode} (${typeof exitCode})`);
-    core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
-  }
-
-  // Upload SARIF data
-  // if ( exitCode === 42 && resultsLink && inputs.codeScanningAlerts.toLowerCase() === 'true') {
-  if ( exitCode === 42 && scanData && inputs.codeScanningAlerts === 'true' ) {
-    await sarif.uploadSarif(scanData);
-  }
-
-  process.exit(exitCode);
-}
-
-run();
-
-
-/***/ }),
-
 /***/ 348:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(186);
+
 
 /*
   Need to extract:
@@ -1847,8 +1807,9 @@ module.exports = require("util");;
 /******/ 	// The require function
 /******/ 	function __nccwpck_require__(moduleId) {
 /******/ 		// Check if module is in cache
-/******/ 		if(__webpack_module_cache__[moduleId]) {
-/******/ 			return __webpack_module_cache__[moduleId].exports;
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
 /******/ 		}
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = __webpack_module_cache__[moduleId] = {
@@ -1873,11 +1834,48 @@ module.exports = require("util");;
 /************************************************************************/
 /******/ 	/* webpack/runtime/compat */
 /******/ 	
-/******/ 	__nccwpck_require__.ab = __dirname + "/";/************************************************************************/
-/******/ 	// module exports must be returned from runtime so entry inlining is disabled
-/******/ 	// startup
-/******/ 	// Load entry module and return exports
-/******/ 	return __nccwpck_require__(351);
+/******/ 	if (typeof __nccwpck_require__ !== 'undefined') __nccwpck_require__.ab = __dirname + "/";/************************************************************************/
+var __webpack_exports__ = {};
+// This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
+(() => {
+const core = __nccwpck_require__(186);
+const utilities = __nccwpck_require__(677);
+const sarif = __nccwpck_require__(348);
+
+async function run() {
+  console.log('Starting HawkScan Action');
+  const inputs = utilities.gatherInputs();
+  const dockerCommand = utilities.buildDockerCommand(inputs);
+  let exitCode = 0;
+  let scanResults;
+  let scanData;
+
+  // Run the scanner
+  if ( inputs.dryRun === 'true' ) {
+    core.info(`DRY-RUN MODE - The following command will not be run:`);
+    core.info(dockerCommand);
+  } else {
+    scanResults = await utilities.runCommand(dockerCommand);
+    scanData = scanResults.scanData;
+    exitCode = scanResults.exitCode;
+    core.debug(`Scanner exit code: ${exitCode} (${typeof exitCode})`);
+    core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
+  }
+
+  // Upload SARIF data
+  // if ( exitCode === 42 && resultsLink && inputs.codeScanningAlerts.toLowerCase() === 'true') {
+  if ( exitCode === 42 && scanData && inputs.codeScanningAlerts === 'true' ) {
+    await sarif.uploadSarif(scanData);
+  }
+
+  process.exit(exitCode);
+}
+
+run();
+
+})();
+
+module.exports = __webpack_exports__;
 /******/ })()
 ;
 //# sourceMappingURL=index.js.map
