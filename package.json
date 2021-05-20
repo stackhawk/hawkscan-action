@@ -27,6 +27,7 @@
   "dependencies": {
     "@actions/core": "^1.2.5",
     "@actions/exec": "^1.0.4",
+    "@octokit/core": "^3.4.0",
     "process": "^0.11.10"
   },
   "devDependencies": {

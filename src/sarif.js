@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 
+
 /*
   Need to extract:
     - Scan results link

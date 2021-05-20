@@ -29,9 +29,6 @@ jobs:
           environmentVariables: SHAWK_RESULTS_ENDPOINT, SHAWK_AUTH_ENDPOINT
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
-        env:
-          ACTIONS_RUNNER_DEBUG: true
-          ACTIONS_STEP_DEBUG: true
 
   # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
   release-new-version:
