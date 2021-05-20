@@ -24,6 +24,19 @@ function stringifyArguments(list, prefix = '') {
   }, '')
 }
 
+function linkFinder(input) {
+  const regex = /(?<=View on StackHawk platform: )(?<link>.*)/m;
+  const results = input.match(regex);
+  let link = null;
+  if (results && results.groups && results.groups.link) {
+    link = results.groups.link;
+    core.debug(`Found link to scan results: ${link}`);
+  } else {
+    core.error(`ERROR: expected a results link, but found only ${results}`);
+  }
+  return link;
+}
+
 // Gather all conditioned inputs
 module.exports.gatherInputs = function gatherInputs() {
   return {
@@ -34,8 +47,8 @@ module.exports.gatherInputs = function gatherInputs() {
     network: core.getInput('network') || 'host',
     image: core.getInput('image') || 'stackhawk/hawkscan',
     version: core.getInput('version') || 'latest',
-    dryRun: core.getInput('dryRun') || 'false',
-    codeScanningAlerts: core.getInput('codeScanningAlerts') || 'false'
+    dryRun: core.getInput('dryRun').toLowerCase() || 'false',
+    codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false'
   }
 }
 
@@ -51,25 +64,26 @@ module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
 }
 
 module.exports.runCommand = async function runCommand(command) {
-  core.info(`Running command:`);
-  core.info(command);
+  core.debug(`Running command:`);
+  core.debug(command);
 
   let execOutput = '';
-  let execError = '';
   let exitCode = 0;
-  let execOptions = {}
+  let resultsLink = '';
+  let execOptions = {};
   const commandArray = command.split(" ");
-  execOptions.ignoreReturnCode = true
+  execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
     stdout: (data) => {
       execOutput += data.toString();
-    },
-    stderr: (data) => {
-      execError += data.toString();
     }
   };
+
   await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
-    .then(data => {exitCode = data.toString()})
+    .then(data => {
+      exitCode = data;
+      resultsLink = linkFinder(execOutput);
+    })
     .catch(error => {core.error(error)});
-  return {exitCode, execOutput, execError}
+  return {exitCode, resultsLink};
 }

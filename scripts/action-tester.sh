@@ -8,7 +8,7 @@ export INPUT_NETWORK='host'
 export INPUT_IMAGE='stackhawk/hawkscan'
 export INPUT_VERSION='latest'
 export INPUT_CODESCANNINGALERTS='true'
-export HOST='http://example.com'
+export HOST='http://localhost:8080'
 export APP_ENV='unit_tests'
 
 node --trace-warnings ./src/index.js

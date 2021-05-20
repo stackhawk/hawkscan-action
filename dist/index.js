@@ -1558,23 +1558,37 @@ function copyFile(srcFile, destFile, force) {
 const core = __nccwpck_require__(186);
 const utilities = __nccwpck_require__(677);
 
+function uploadSarif(resultsLink) {
+  core.debug(`Running SARIF upload with results link ${resultsLink}`);
+}
+
 async function run() {
   console.log('Starting HawkScan Action');
   const inputs = utilities.gatherInputs();
   const dockerCommand = utilities.buildDockerCommand(inputs);
-
-  // let scanResults = {exitCode: 0, execOutput: '', execError: ''};
+  let exitCode = 0;
+  let scanResults;
+  let resultsLink;
 
   // Run the scanner
-  if ( inputs.dryRun.toLowerCase() === 'true' ) {
+  if ( inputs.dryRun === 'true' ) {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(dockerCommand);
   } else {
-    const scanResults = await utilities.runCommand(dockerCommand)
-    core.info("Here's what happened.");
-    core.info(scanResults.exitCode.toString());
-    core.info('all done');
+    scanResults = await utilities.runCommand(dockerCommand);
+    resultsLink = scanResults.resultsLink;
+    exitCode = scanResults.exitCode;
+    core.debug(`Scanner exit code: ${exitCode} (${typeof exitCode})`);
+    core.debug(`Link to scan results: ${resultsLink} (${typeof resultsLink})`);
   }
+
+  // Upload SARIF data
+  // if ( exitCode === 42 && resultsLink && inputs.codeScanningAlerts.toLowerCase() === 'true') {
+  if ( exitCode === 42 && resultsLink && inputs.codeScanningAlerts === 'true' ) {
+    await uploadSarif(resultsLink);
+  }
+
+  process.exit(exitCode);
 }
 
 run();
@@ -1611,6 +1625,19 @@ function stringifyArguments(list, prefix = '') {
   }, '')
 }
 
+function linkFinder(input) {
+  const regex = /(?<=View on StackHawk platform: )(?<link>.*)/m;
+  const results = input.match(regex);
+  let link = null;
+  if (results && results.groups && results.groups.link) {
+    link = results.groups.link;
+    core.debug(`Found link to scan results: ${link}`);
+  } else {
+    core.error(`ERROR: expected a results link, but found only ${results}`);
+  }
+  return link;
+}
+
 // Gather all conditioned inputs
 module.exports.gatherInputs = function gatherInputs() {
   return {
@@ -1621,8 +1648,8 @@ module.exports.gatherInputs = function gatherInputs() {
     network: core.getInput('network') || 'host',
     image: core.getInput('image') || 'stackhawk/hawkscan',
     version: core.getInput('version') || 'latest',
-    dryRun: core.getInput('dryRun') || 'false',
-    codeScanningAlerts: core.getInput('codeScanningAlerts') || 'false'
+    dryRun: core.getInput('dryRun').toLowerCase() || 'false',
+    codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false'
   }
 }
 
@@ -1638,27 +1665,28 @@ module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
 }
 
 module.exports.runCommand = async function runCommand(command) {
-  core.info(`Running command:`);
-  core.info(command);
+  core.debug(`Running command:`);
+  core.debug(command);
 
   let execOutput = '';
-  let execError = '';
   let exitCode = 0;
-  let execOptions = {}
+  let resultsLink = '';
+  let execOptions = {};
   const commandArray = command.split(" ");
-  execOptions.ignoreReturnCode = true
+  execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
     stdout: (data) => {
       execOutput += data.toString();
-    },
-    stderr: (data) => {
-      execError += data.toString();
     }
   };
+
   await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
-    .then(data => {exitCode = data.toString()})
+    .then(data => {
+      exitCode = data;
+      resultsLink = linkFinder(execOutput);
+    })
     .catch(error => {core.error(error)});
-  return {exitCode, execOutput, execError}
+  return {exitCode, resultsLink};
 }
 
 
