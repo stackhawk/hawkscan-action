@@ -1557,10 +1557,7 @@ function copyFile(srcFile, destFile, force) {
 
 const core = __nccwpck_require__(186);
 const utilities = __nccwpck_require__(677);
-
-function uploadSarif(resultsLink) {
-  core.debug(`Running SARIF upload with results link ${resultsLink}`);
-}
+const sarif = __nccwpck_require__(348);
 
 async function run() {
   console.log('Starting HawkScan Action');
@@ -1568,7 +1565,7 @@ async function run() {
   const dockerCommand = utilities.buildDockerCommand(inputs);
   let exitCode = 0;
   let scanResults;
-  let resultsLink;
+  let scanData;
 
   // Run the scanner
   if ( inputs.dryRun === 'true' ) {
@@ -1576,22 +1573,107 @@ async function run() {
     core.info(dockerCommand);
   } else {
     scanResults = await utilities.runCommand(dockerCommand);
-    resultsLink = scanResults.resultsLink;
+    scanData = scanResults.scanData;
     exitCode = scanResults.exitCode;
     core.debug(`Scanner exit code: ${exitCode} (${typeof exitCode})`);
-    core.debug(`Link to scan results: ${resultsLink} (${typeof resultsLink})`);
+    core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
   }
 
   // Upload SARIF data
   // if ( exitCode === 42 && resultsLink && inputs.codeScanningAlerts.toLowerCase() === 'true') {
-  if ( exitCode === 42 && resultsLink && inputs.codeScanningAlerts === 'true' ) {
-    await uploadSarif(resultsLink);
+  if ( exitCode === 42 && scanData && inputs.codeScanningAlerts === 'true' ) {
+    await sarif.uploadSarif(scanData);
   }
 
   process.exit(exitCode);
 }
 
 run();
+
+
+/***/ }),
+
+/***/ 348:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(186);
+
+/*
+  Need to extract:
+    - Scan results link
+    - HawkScan Version
+    - Failure Threshold Setting
+ */
+
+module.exports.uploadSarif = function uploadSarif(scanData) {
+  const resultsLink = scanData.resultsLink;
+  const hawkscanVersion = scanData.hawkscanVersion;
+  const failureThreshold = scanData.failureThreshold;
+  const sarifContent = sarifBuilder(resultsLink, hawkscanVersion, failureThreshold)
+  core.debug(`Running SARIF upload with results link: ${scanData.resultsLink}`);
+  core.debug(`Running SARIF upload with HawkScan version: ${scanData.hawkscanVersion}`);
+  core.debug(`Running SARIF upload with failure threshold: ${scanData.failureThreshold}`);
+  core.debug(`SARIF file contents:\n${sarifContent}`);
+}
+
+function sarifBuilder(resultsLink, hawscanVersion, failureThreshold) {
+  return JSON.stringify({
+    "version": "2.1.0",
+    "$schema": "http://json.schemastore.org/sarif-2.1.0",
+    "runs": [
+      {
+        "tool": {
+          "driver": {
+            "name": "HawkScan",
+            "version": hawscanVersion,
+            "semanticVersion": hawscanVersion,
+            "informationUri": "https://docs.stackhawk.com/hawkscan/",
+            "rules": [
+              {
+                "id": "alert/threshold-met",
+                "name": "alert/threshold-met",
+                "helpUri": "https://docs.stackhawk.com/web-app/scans.html#scan-details-page",
+                "help": {
+                  "text": "HawkScan found results that meet or exceed your failure threshold, `hawk.failureThreshold`"
+                },
+                "shortDescription": {
+                  "text": "HawkScan found results that meet or exceed your failure threshold"
+                },
+                "properties": {
+                  "tags": [
+                    "Alert Threshold Met"
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        "results": [
+          {
+            "level": "warning",
+            "locations": [
+              {
+                "id": 1,
+                "physicalLocation": {
+                  "region": {
+                    "startLine": 1
+                  },
+                  "artifactLocation": {
+                    "uri": "nofile.md"
+                  }
+                }
+              }
+            ],
+            "message": {
+              "text": `HawkScan found issues that meet or exceed your failure threshold.\n\`hawk.failureThreshold=${failureThreshold}\`.\nSee [Scan Results](${resultsLink}) for more details.`
+            },
+            "ruleId": "alert/threshold-met"
+          }
+        ]
+      }
+    ]
+  });
+}
 
 
 /***/ }),
@@ -1625,17 +1707,21 @@ function stringifyArguments(list, prefix = '') {
   }, '')
 }
 
-function linkFinder(input) {
-  const regex = /(?<=View on StackHawk platform: )(?<link>.*)/m;
-  const results = input.match(regex);
-  let link = null;
-  if (results && results.groups && results.groups.link) {
-    link = results.groups.link;
-    core.debug(`Found link to scan results: ${link}`);
+function stripAnsi(inputString) {
+  const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
+  return inputString.replace(ansiRegex, '');
+}
+
+function scanParser(input, regex, captureGroup) {
+  const matchResults = input.match(regex);
+  let capturedString = null;
+  if (matchResults && matchResults.groups && matchResults.groups[captureGroup]) {
+    capturedString = matchResults.groups[captureGroup];
+    core.debug(`Found captured string: ${capturedString}`);
   } else {
-    core.error(`ERROR: expected a results link, but found only ${results}`);
+    core.error(`ERROR: expected to capture a string, but found only ${matchResults}`);
   }
-  return link;
+  return stripAnsi(capturedString);
 }
 
 // Gather all conditioned inputs
@@ -1670,7 +1756,7 @@ module.exports.runCommand = async function runCommand(command) {
 
   let execOutput = '';
   let exitCode = 0;
-  let resultsLink = '';
+  let scanData = {};
   let execOptions = {};
   const commandArray = command.split(" ");
   execOptions.ignoreReturnCode = true;
@@ -1683,10 +1769,15 @@ module.exports.runCommand = async function runCommand(command) {
   await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
     .then(data => {
       exitCode = data;
-      resultsLink = linkFinder(execOutput);
+      scanData.resultsLink = scanParser(execOutput,
+        /(?<=View on StackHawk platform: )(?<group>.*)/m,'group');
+      scanData.failureThreshold = scanParser(execOutput,
+        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group');
+      scanData.hawkscanVersion = scanParser(execOutput,
+        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group');
     })
     .catch(error => {core.error(error)});
-  return {exitCode, resultsLink};
+  return {exitCode, scanData};
 }
 
 

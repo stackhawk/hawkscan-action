@@ -24,17 +24,21 @@ function stringifyArguments(list, prefix = '') {
   }, '')
 }
 
-function linkFinder(input) {
-  const regex = /(?<=View on StackHawk platform: )(?<link>.*)/m;
-  const results = input.match(regex);
-  let link = null;
-  if (results && results.groups && results.groups.link) {
-    link = results.groups.link;
-    core.debug(`Found link to scan results: ${link}`);
+function stripAnsi(inputString) {
+  const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
+  return inputString.replace(ansiRegex, '');
+}
+
+function scanParser(input, regex, captureGroup) {
+  const matchResults = input.match(regex);
+  let capturedString = null;
+  if (matchResults && matchResults.groups && matchResults.groups[captureGroup]) {
+    capturedString = matchResults.groups[captureGroup];
+    core.debug(`Found captured string: ${capturedString}`);
   } else {
-    core.error(`ERROR: expected a results link, but found only ${results}`);
+    core.error(`ERROR: expected to capture a string, but found only ${matchResults}`);
   }
-  return link;
+  return stripAnsi(capturedString);
 }
 
 // Gather all conditioned inputs
@@ -69,7 +73,7 @@ module.exports.runCommand = async function runCommand(command) {
 
   let execOutput = '';
   let exitCode = 0;
-  let resultsLink = '';
+  let scanData = {};
   let execOptions = {};
   const commandArray = command.split(" ");
   execOptions.ignoreReturnCode = true;
@@ -82,8 +86,13 @@ module.exports.runCommand = async function runCommand(command) {
   await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
     .then(data => {
       exitCode = data;
-      resultsLink = linkFinder(execOutput);
+      scanData.resultsLink = scanParser(execOutput,
+        /(?<=View on StackHawk platform: )(?<group>.*)/m,'group');
+      scanData.failureThreshold = scanParser(execOutput,
+        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group');
+      scanData.hawkscanVersion = scanParser(execOutput,
+        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group');
     })
     .catch(error => {core.error(error)});
-  return {exitCode, resultsLink};
+  return {exitCode, scanData};
 }

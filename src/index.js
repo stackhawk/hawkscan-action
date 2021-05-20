@@ -1,9 +1,6 @@
 const core = require('@actions/core');
 const utilities = require('./utilities');
-
-function uploadSarif(resultsLink) {
-  core.debug(`Running SARIF upload with results link ${resultsLink}`);
-}
+const sarif = require('./sarif');
 
 async function run() {
   console.log('Starting HawkScan Action');
@@ -11,7 +8,7 @@ async function run() {
   const dockerCommand = utilities.buildDockerCommand(inputs);
   let exitCode = 0;
   let scanResults;
-  let resultsLink;
+  let scanData;
 
   // Run the scanner
   if ( inputs.dryRun === 'true' ) {
@@ -19,16 +16,16 @@ async function run() {
     core.info(dockerCommand);
   } else {
     scanResults = await utilities.runCommand(dockerCommand);
-    resultsLink = scanResults.resultsLink;
+    scanData = scanResults.scanData;
     exitCode = scanResults.exitCode;
     core.debug(`Scanner exit code: ${exitCode} (${typeof exitCode})`);
-    core.debug(`Link to scan results: ${resultsLink} (${typeof resultsLink})`);
+    core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
   }
 
   // Upload SARIF data
   // if ( exitCode === 42 && resultsLink && inputs.codeScanningAlerts.toLowerCase() === 'true') {
-  if ( exitCode === 42 && resultsLink && inputs.codeScanningAlerts === 'true' ) {
-    await uploadSarif(resultsLink);
+  if ( exitCode === 42 && scanData && inputs.codeScanningAlerts === 'true' ) {
+    await sarif.uploadSarif(scanData);
   }
 
   process.exit(exitCode);
