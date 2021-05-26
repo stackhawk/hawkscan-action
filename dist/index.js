@@ -10732,7 +10732,7 @@ module.exports.gatherInputs = function gatherInputs() {
     version: core.getInput('version') || 'latest',
     dryRun: core.getInput('dryRun').toLowerCase() || 'false',
     codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false',
-    githubToken: core.getInput('githubToken') || ''
+    githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || ''
   }
 }
 
