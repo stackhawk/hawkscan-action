@@ -10582,10 +10582,10 @@ module.exports.uploadSarif = async function uploadSarif(scanData, githubToken) {
   const sarifZip = zlib.gzipSync(JSON.stringify(sarifContent)).toString('base64');
 
   await octokit.request(`POST /repos/${owner}/${repo}/code-scanning/sarifs`, {
-    owner,
-    repo,
+    // owner: owner,
+    // repo: repo,
     commit_sha: commitSha,
-    ref,
+    ref: ref,
     sarif: sarifZip,
     tool_name: 'StackHawk HawkScan Dynamic Application Security Test Scanner',
     checkout_uri: url.pathToFileURL(process.cwd()).toString(),
