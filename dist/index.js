@@ -10564,6 +10564,7 @@ const git = simpleGit();
 
 // https://docs.github.com/en/rest/reference/code-scanning#upload-an-analysis-as-sarif-data--code-samples
 module.exports.uploadSarif = async function uploadSarif(scanData, githubToken) {
+  let exitCode = 0;
   const resultsLink = scanData.resultsLink;
   const hawkscanVersion = scanData.hawkscanVersion;
   const failureThreshold = scanData.failureThreshold;
@@ -10577,23 +10578,32 @@ module.exports.uploadSarif = async function uploadSarif(scanData, githubToken) {
   const githubRepository = process.env['GITHUB_REPOSITORY'];
   if (githubRepository === undefined) throw new Error(`GITHUB_REPOSITORY environment variable must be set`);
   const [owner, repo] = githubRepository.split('/');
-  const ref = getRef();
-  const commitSha = process.env['GITHUB_SHA'] || git.revparse('HEAD');
+  const ref = await getRef();
+  const commitShaLocal = await git.revparse('HEAD')
+  const commitSha = process.env['GITHUB_SHA'] || commitShaLocal;
   const sarifZip = zlib.gzipSync(JSON.stringify(sarifContent)).toString('base64');
 
-  await octokit.request(`POST /repos/${owner}/${repo}/code-scanning/sarifs`, {
-    // owner: owner,
-    // repo: repo,
-    commit_sha: commitSha,
-    ref: ref,
-    sarif: sarifZip,
-    tool_name: 'StackHawk HawkScan Dynamic Application Security Test Scanner',
-    checkout_uri: url.pathToFileURL(process.cwd()).toString(),
-  });
+  try {
+    await octokit.request(`POST /repos/${owner}/${repo}/code-scanning/sarifs`, {
+      // owner: owner,
+      // repo: repo,
+      commit_sha: commitSha,
+      ref: ref,
+      sarif: sarifZip,
+      tool_name: 'StackHawk HawkScan Dynamic Application Security Test Scanner',
+      checkout_uri: url.pathToFileURL(process.cwd()).toString(),
+    });
+  } catch (e) {
+    exitCode = 1;
+    core.debug('Error uploading the SARIF results...')
+    core.error(e);
+  }
+  return exitCode
 }
 
-function getRef() {
-  const gitRef = process.env['GITHUB_REF'] || git.revparse(['--symbolic-full-name', 'HEAD']) ;
+async function getRef() {
+  const gitRefLocal = await git.revparse(['--symbolic-full-name', 'HEAD']);
+  const gitRef = process.env['GITHUB_REF'] || gitRefLocal;
   const pullRefRegex = /refs\/pull\/(\d+)\/merge/;
   if (pullRefRegex.test(gitRef)) {
     return gitRef.replace(pullRefRegex, 'refs/pull/$1/head');
