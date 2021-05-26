@@ -30,6 +30,7 @@ test('gather minimal inputs', () => {
     workspace: workspace,
     apiKey: '',
     environmentVariables: [],
+    githubToken: "",
     configurationFiles: ['stackhawk.yml'],
     network: 'host',
     image: 'stackhawk/hawkscan',
@@ -43,6 +44,7 @@ test('gather max inputs', () => {
   buildInput({
     apiKey: 'testkey',
     environmentVariables: 'one, two\nthree four  five,,six,\n\n seven, ',
+    githubToken: "gh.xXx.XxX",
     configurationFiles: "one.yml two.yml, three.yml\nfour.yml  five.yaml,,six.yml,\n\n seven.yml, ",
     network: 'nothingbutnet',
     image: 'nginx',
@@ -55,6 +57,7 @@ test('gather max inputs', () => {
     workspace: workspace,
     apiKey: 'testkey',
     environmentVariables: ['one', 'two', 'three', 'four', 'five', 'six', 'seven'],
+    githubToken: "gh.xXx.XxX",
     configurationFiles: ['one.yml', 'two.yml', 'three.yml', 'four.yml', 'five.yaml', 'six.yml', 'seven.yml'],
     network: 'nothingbutnet',
     image: 'nginx',

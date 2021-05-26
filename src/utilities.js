@@ -52,7 +52,8 @@ module.exports.gatherInputs = function gatherInputs() {
     image: core.getInput('image') || 'stackhawk/hawkscan',
     version: core.getInput('version') || 'latest',
     dryRun: core.getInput('dryRun').toLowerCase() || 'false',
-    codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false'
+    codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false',
+    githubToken: core.getInput('githubToken') || ''
   }
 }
 

@@ -25,7 +25,7 @@ async function run() {
   // Upload SARIF data
   // if ( exitCode === 42 && resultsLink && inputs.codeScanningAlerts.toLowerCase() === 'true') {
   if ( exitCode === 42 && scanData && inputs.codeScanningAlerts === 'true' ) {
-    await sarif.uploadSarif(scanData);
+    await sarif.uploadSarif(scanData, inputs.githubToken);
   }
 
   process.exit(exitCode);

@@ -33,6 +33,7 @@
   "devDependencies": {
     "@vercel/ncc": "^0.28.5",
     "eslint": "^7.20.0",
-    "jest": "^26.1.0"
+    "jest": "^26.1.0",
+    "simple-git": "^2.39.0"
   }
 }
