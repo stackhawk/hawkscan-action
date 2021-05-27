@@ -3,11 +3,10 @@ const utilities = require('./utilities');
 const sarif = require('./sarif');
 
 async function run() {
-  console.log('Starting HawkScan Action');
+  core.info('Starting HawkScan Action');
   const inputs = utilities.gatherInputs();
   const dockerCommand = utilities.buildDockerCommand(inputs);
   let exitCode = 0;
-  let scanResults;
   let scanData;
 
   // Run the scanner
@@ -15,17 +14,19 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(dockerCommand);
   } else {
-    scanResults = await utilities.runCommand(dockerCommand);
-    scanData = scanResults.scanData;
-    exitCode = scanResults.exitCode;
-    core.debug(`Scanner exit code: ${exitCode} (${typeof exitCode})`);
+    scanData = await utilities.runCommand(dockerCommand);
+    exitCode = scanData.exitCode;
+    core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
     core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
   }
 
   // Upload SARIF data
-  // if ( exitCode === 42 && resultsLink && inputs.codeScanningAlerts.toLowerCase() === 'true') {
-  if ( exitCode === 42 && scanData && inputs.codeScanningAlerts === 'true' ) {
-    await sarif.uploadSarif(scanData, inputs.githubToken);
+  if (scanData && inputs.codeScanningAlerts === 'true' ) {
+    if (exitCode === 0 || exitCode === 42) {
+      await sarif.uploadSarif(scanData, inputs.githubToken);
+    } else {
+      core.error(`Skipping SARIF upload due to scan error.`)
+    }
   }
 
   process.exit(exitCode);

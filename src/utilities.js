@@ -73,7 +73,6 @@ module.exports.runCommand = async function runCommand(command) {
   core.debug(command);
 
   let execOutput = '';
-  let exitCode = 0;
   let scanData = {};
   let execOptions = {};
   const commandArray = command.split(" ");
@@ -86,14 +85,16 @@ module.exports.runCommand = async function runCommand(command) {
 
   await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
     .then(data => {
-      exitCode = data;
+      scanData.exitCode = data;
       scanData.resultsLink = scanParser(execOutput,
-        /(?<=View on StackHawk platform: )(?<group>.*)/m,'group');
+        /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group');
       scanData.failureThreshold = scanParser(execOutput,
         /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group');
       scanData.hawkscanVersion = scanParser(execOutput,
         /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group');
     })
-    .catch(error => {core.error(error)});
-  return {exitCode, scanData};
+    .catch(error => {
+      core.error(error)
+    });
+  return scanData;
 }
