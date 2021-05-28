@@ -94,6 +94,28 @@ The following options for `network` are available:
 
 See the [Docker documentation](https://docs.docker.com/engine/reference/run/#network-settings) for more details on Docker network settings.
 
+### `codeScanningAlerts`
+
+**Optional** *(requires `githubToken`)* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.github.com/en/code-security/secure-coding/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning).
+
+For example:
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: stackhawk/hawkscan-action@v1.2.1
+      with:
+        apiKey: ${{ secrets.HAWK_API_KEY }}
+        codeScanningAlerts: true
+        githubToken: ${{ github.token }}
+```
+
+### `githubToken`
+
+**Optional** If set to `${{ github.token }}`, gives HawkScan Action a temporary GitHub API token to enable uploading SARIF data. This input is required if `codeScanningAlerts` is set to `true`.
+
 ## Examples
 
 The following example shows how to run HawkScan with a StackHawk platform API key stored as a GitHub Actions secret environment variable, `HAWK_API_KEY`. In this workflow, GitHub Actions will checkout your repository, build your Python app, and run it. It then uses the HawkScan Action to run HawkScan with the given API key. HawkScan automatically finds the `stackhawk.yml` configuration file at the root of your repository and runs a scan based on that configuration.
