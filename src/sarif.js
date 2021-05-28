@@ -82,7 +82,7 @@ function sarifBuilder(scanData) {
                 },
                 "properties": {
                   "tags": [
-                    "StackHawk"
+                    "stackhawk"
                   ]
                 }
               }
