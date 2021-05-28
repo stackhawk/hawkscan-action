@@ -87,11 +87,11 @@ module.exports.runCommand = async function runCommand(command) {
     .then(data => {
       scanData.exitCode = data;
       scanData.resultsLink = scanParser(execOutput,
-        /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group');
+        /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
       scanData.failureThreshold = scanParser(execOutput,
-        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group');
+        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
       scanData.hawkscanVersion = scanParser(execOutput,
-        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group');
+        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
     })
     .catch(error => {
       core.error(error)
