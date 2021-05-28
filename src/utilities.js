@@ -36,9 +36,13 @@ function scanParser(input, regex, captureGroup) {
     capturedString = matchResults.groups[captureGroup];
     core.debug(`Found captured string: ${capturedString}`);
   } else {
-    core.error(`ERROR: expected to capture a string, but found only ${matchResults}`);
+    core.warning(`ERROR: expected to capture a string, but found only ${matchResults}`);
   }
-  return stripAnsi(capturedString);
+  if (capturedString) {
+    return stripAnsi(capturedString)
+  } else {
+    return null
+  }
 }
 
 // Gather all conditioned inputs
