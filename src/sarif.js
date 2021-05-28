@@ -82,8 +82,7 @@ function sarifBuilder(scanData) {
                 },
                 "properties": {
                   "tags": [
-                    "StackHawk",
-                    "HawkScan"
+                    "StackHawk"
                   ]
                 }
               }
