@@ -10702,8 +10702,7 @@ function sarifBuilder(scanData) {
                 },
                 "properties": {
                   "tags": [
-                    "StackHawk",
-                    "HawkScan"
+                    "StackHawk"
                   ]
                 }
               }
@@ -10783,9 +10782,13 @@ function scanParser(input, regex, captureGroup) {
     capturedString = matchResults.groups[captureGroup];
     core.debug(`Found captured string: ${capturedString}`);
   } else {
-    core.error(`ERROR: expected to capture a string, but found only ${matchResults}`);
+    core.warning(`WARNING: expected to capture a string, but found only ${matchResults}`);
   }
-  return stripAnsi(capturedString);
+  if (capturedString !== null) {
+    return stripAnsi(capturedString)
+  } else {
+    return null
+  }
 }
 
 // Gather all conditioned inputs
@@ -10834,11 +10837,11 @@ module.exports.runCommand = async function runCommand(command) {
     .then(data => {
       scanData.exitCode = data;
       scanData.resultsLink = scanParser(execOutput,
-        /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group');
+        /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
       scanData.failureThreshold = scanParser(execOutput,
-        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group');
+        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
       scanData.hawkscanVersion = scanParser(execOutput,
-        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group');
+        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
     })
     .catch(error => {
       core.error(error)
