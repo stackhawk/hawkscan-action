@@ -104,7 +104,7 @@ function sarifBuilder(scanData) {
               "startLine": 1
             },
             "artifactLocation": {
-              "uri": "nofile"
+              "uri": "./nofile"
             }
           }
         }
