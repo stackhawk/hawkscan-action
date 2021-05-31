@@ -10695,14 +10695,14 @@ function sarifBuilder(scanData) {
                 "name": "alert/threshold-met",
                 "helpUri": "https://docs.stackhawk.com/web-app/scans.html#scan-details-page",
                 "help": {
-                  "text": "StackHawk found results that meet or exceed your failure threshold, `hawk.failureThreshold`"
+                  "text": "StackHawk found results that meet or exceed your failure threshold (`hawk.failureThreshold`)."
                 },
                 "shortDescription": {
                   "text": "StackHawk found results that meet or exceed your failure threshold"
                 },
                 "properties": {
                   "tags": [
-                    "stackhawk"
+                    "🦅"
                   ]
                 }
               }
@@ -10715,7 +10715,7 @@ function sarifBuilder(scanData) {
   };
   if (scanData.exitCode === 42) {
     sarif.runs[0].results[0] = {
-      "level": "",
+      "level": "note",
       "locations": [
         {
           "id": 1,
@@ -10730,7 +10730,7 @@ function sarifBuilder(scanData) {
         }
       ],
       "message": {
-        "text": `StackHawk found issues that meet or exceed your failure threshold.\n\`hawk.failureThreshold=${scanData.failureThreshold}\`.\nSee [Scan Results](${scanData.resultsLink}) for more details.`
+        "text": `StackHawk found issues that meet or exceed your failure threshold (\`hawk.failureThreshold=${scanData.failureThreshold}\`).\nSee [Scan Results](${scanData.resultsLink}) for more details.`
       },
       "ruleId": "alert/threshold-met"
     }
