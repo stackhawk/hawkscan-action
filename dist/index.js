@@ -10724,7 +10724,7 @@ function sarifBuilder(scanData) {
               "startLine": 1
             },
             "artifactLocation": {
-              "uri": "nofile.md"
+              "uri": "./nofile"
             }
           }
         }
@@ -10782,7 +10782,7 @@ function scanParser(input, regex, captureGroup) {
     capturedString = matchResults.groups[captureGroup];
     core.debug(`Found captured string: ${capturedString}`);
   } else {
-    core.warning(`WARNING: expected to capture a string, but found only ${matchResults}`);
+    core.debug(`Scan results regex parser expected to capture a string, but found only ${matchResults}`);
   }
   if (capturedString !== null) {
     return stripAnsi(capturedString)
