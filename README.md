@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.2.1
+    - uses: stackhawk/hawkscan-action@v1.3.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.2.1
+    - uses: stackhawk/hawkscan-action@v1.3.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.2.1
+    - uses: stackhawk/hawkscan-action@v1.3.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         environmentVariables: APP_HOST APP_ENV
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.2.1
+    - uses: stackhawk/hawkscan-action@v1.3.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         configurationFiles: stackhawk.yml stackhawk-extra.yml
@@ -93,6 +93,28 @@ The following options for `network` are available:
  - **`NETWORK`**: Use the user-defined Docker bridge network, `NETWORK`. This network may be created with `docker network create`, or `docker-compose`. This is appropriate for scanning other containers running locally on the GitHub virtual environment within a named Docker network.
 
 See the [Docker documentation](https://docs.docker.com/engine/reference/run/#network-settings) for more details on Docker network settings.
+
+### `codeScanningAlerts`
+
+**Optional** *(requires `githubToken`)* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.github.com/en/code-security/secure-coding/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning).
+
+For example:
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: stackhawk/hawkscan-action@v1.3.0
+      with:
+        apiKey: ${{ secrets.HAWK_API_KEY }}
+        codeScanningAlerts: true
+        githubToken: ${{ github.token }}
+```
+
+### `githubToken`
+
+**Optional** If set to `${{ github.token }}`, gives HawkScan Action a temporary GitHub API token to enable uploading SARIF data. This input is required if `codeScanningAlerts` is set to `true`.
 
 ## Examples
 
@@ -111,7 +133,7 @@ jobs:
         pip3 install -r requirements.txt
         nohup python3 app.py &
     - name: Scan my app
-      uses: stackhawk/hawkscan-action@v1.2.1
+      uses: stackhawk/hawkscan-action@v1.3.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -135,7 +157,7 @@ jobs:
         APP_HOST: 'http://localhost:5000'
         APP_ID: AE624DB7-11FC-4561-B8F2-2C8ECF77C2C7
         APP_ENV: Development
-      uses: stackhawk/hawkscan-action@v1.2.1
+      uses: stackhawk/hawkscan-action@v1.3.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true

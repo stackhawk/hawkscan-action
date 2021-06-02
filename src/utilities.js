@@ -24,6 +24,27 @@ function stringifyArguments(list, prefix = '') {
   }, '')
 }
 
+function stripAnsi(inputString) {
+  const ansiRegex = /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g
+  return inputString.replace(ansiRegex, '');
+}
+
+function scanParser(input, regex, captureGroup) {
+  const matchResults = input.match(regex);
+  let capturedString = null;
+  if (matchResults && matchResults.groups && matchResults.groups[captureGroup]) {
+    capturedString = matchResults.groups[captureGroup];
+    core.debug(`Found captured string: ${capturedString}`);
+  } else {
+    core.debug(`Scan results regex parser expected to capture a string, but found only ${matchResults}`);
+  }
+  if (capturedString !== null) {
+    return stripAnsi(capturedString)
+  } else {
+    return null
+  }
+}
+
 // Gather all conditioned inputs
 module.exports.gatherInputs = function gatherInputs() {
   return {
@@ -34,7 +55,9 @@ module.exports.gatherInputs = function gatherInputs() {
     network: core.getInput('network') || 'host',
     image: core.getInput('image') || 'stackhawk/hawkscan',
     version: core.getInput('version') || 'latest',
-    dryRun: core.getInput('dryRun') || 'false'
+    dryRun: core.getInput('dryRun').toLowerCase() || 'false',
+    codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false',
+    githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || ''
   }
 }
 
@@ -49,13 +72,33 @@ module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
   return dockerCommandClean
 }
 
+module.exports.runCommand = async function runCommand(command) {
+  core.debug(`Running command:`);
+  core.debug(command);
 
-module.exports.runCommand = function runCommand(command) {
-  core.info(`Running command:`);
-  core.info(command);
-  try {
-    exec.exec(command);
-  } catch (error) {
-    core.debug(error.toString());
-  }
+  let execOutput = '';
+  let scanData = {};
+  let execOptions = {};
+  const commandArray = command.split(" ");
+  execOptions.ignoreReturnCode = true;
+  execOptions.listeners = {
+    stdout: (data) => {
+      execOutput += data.toString();
+    }
+  };
+
+  await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
+    .then(data => {
+      scanData.exitCode = data;
+      scanData.resultsLink = scanParser(execOutput,
+        /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
+      scanData.failureThreshold = scanParser(execOutput,
+        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
+      scanData.hawkscanVersion = scanParser(execOutput,
+        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
+    })
+    .catch(error => {
+      core.error(error)
+    });
+  return scanData;
 }
