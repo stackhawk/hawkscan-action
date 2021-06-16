@@ -98,6 +98,8 @@ See the [Docker documentation](https://docs.docker.com/engine/reference/run/#net
 
 **Optional** *(requires `githubToken`)* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.github.com/en/code-security/secure-coding/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning).
 
+The `codeScanningAlerts` feature works in conjunction with the HawkScan's [`hawk.failureThreshold`](https://docs.stackhawk.com/hawkscan/configuration/#hawk) configuration option. If your scan produces alerts that meet or exceed your `hawk.failureThreshold` alert level, it will trigger a Code Scanning alert in GitHub with a link to your scan results.
+
 For example:
 ```yaml
 jobs:
