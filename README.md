@@ -96,9 +96,9 @@ See the [Docker documentation](https://docs.docker.com/engine/reference/run/#net
 
 ### `codeScanningAlerts`
 
-**Optional** *(requires `githubToken`)* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.github.com/en/code-security/secure-coding/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning).
+**Optional** *(requires [`githubToken`](#githubtoken))* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.github.com/en/code-security/secure-coding/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning).
 
-The `codeScanningAlerts` feature works in conjunction with the HawkScan's [`hawk.failureThreshold`](https://docs.stackhawk.com/hawkscan/configuration/#hawk) configuration option. If your scan produces alerts that meet or exceed your `hawk.failureThreshold` alert level, it will trigger a Code Scanning alert in GitHub with a link to your scan results.
+The `codeScanningAlerts` feature works in conjunction with the HawkScan's [`hawk.failureThreshold`](https://docs.stackhawk.com/hawkscan/configuration/#hawk) configuration option. If your scan produces alerts that meet or exceed your `hawk.failureThreshold` alert level, it will fail the scan with exit code 42, and trigger a Code Scanning alert in GitHub with a link to your scan results.
 
 For example:
 ```yaml
@@ -113,6 +113,8 @@ jobs:
         codeScanningAlerts: true
         githubToken: ${{ github.token }}
 ```
+
+> NOTE: GitHub Code Scanning features are free for public repositories. For private repositories, a GitHub Advanced Security license is required.
 
 ### `githubToken`
 
