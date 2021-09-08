@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.0
+    - uses: stackhawk/hawkscan-action@v1.3.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.0
+    - uses: stackhawk/hawkscan-action@v1.3.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.0
+    - uses: stackhawk/hawkscan-action@v1.3.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         environmentVariables: APP_HOST APP_ENV
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.0
+    - uses: stackhawk/hawkscan-action@v1.3.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         configurationFiles: stackhawk.yml stackhawk-extra.yml
@@ -96,7 +96,9 @@ See the [Docker documentation](https://docs.docker.com/engine/reference/run/#net
 
 ### `codeScanningAlerts`
 
-**Optional** *(requires `githubToken`)* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.github.com/en/code-security/secure-coding/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning).
+**Optional** *(requires [`githubToken`](#githubtoken))* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.github.com/en/code-security/secure-coding/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning).
+
+The `codeScanningAlerts` feature works in conjunction with the HawkScan's [`hawk.failureThreshold`](https://docs.stackhawk.com/hawkscan/configuration/#hawk) configuration option. If your scan produces alerts that meet or exceed your `hawk.failureThreshold` alert level, it will fail the scan with exit code 42, and trigger a Code Scanning alert in GitHub with a link to your scan results.
 
 For example:
 ```yaml
@@ -105,12 +107,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.0
+    - uses: stackhawk/hawkscan-action@v1.3.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         codeScanningAlerts: true
         githubToken: ${{ github.token }}
 ```
+
+> NOTE: GitHub Code Scanning features are free for public repositories. For private repositories, a [GitHub Advanced Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security) license is required.
 
 ### `githubToken`
 
@@ -133,7 +137,7 @@ jobs:
         pip3 install -r requirements.txt
         nohup python3 app.py &
     - name: Scan my app
-      uses: stackhawk/hawkscan-action@v1.3.0
+      uses: stackhawk/hawkscan-action@v1.3.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -157,7 +161,7 @@ jobs:
         APP_HOST: 'http://localhost:5000'
         APP_ID: AE624DB7-11FC-4561-B8F2-2C8ECF77C2C7
         APP_ENV: Development
-      uses: stackhawk/hawkscan-action@v1.3.0
+      uses: stackhawk/hawkscan-action@v1.3.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
