@@ -114,7 +114,7 @@ jobs:
         githubToken: ${{ github.token }}
 ```
 
-> NOTE: GitHub Code Scanning features are free for public repositories. For private repositories, a GitHub Advanced Security license is required.
+> NOTE: GitHub Code Scanning features are free for public repositories. For private repositories, a [GitHub Advanced Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security) license is required.
 
 ### `githubToken`
 
