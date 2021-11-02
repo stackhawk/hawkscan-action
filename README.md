@@ -1,4 +1,4 @@
-[![StackHawk](https://www.stackhawk.com/wp-content/uploads/2019/07/stackhawk-long.png)](https://stackhawk.com)
+[![StackHawk](https://www.stackhawk.com/stackhawk-light-long@2x.png)](https://stackhawk.com)
 
 # StackHawk HawkScan Action
 

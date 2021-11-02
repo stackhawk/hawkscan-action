@@ -26,7 +26,7 @@ To prepare this action for distribution, you must package it into the `dist` dir
 npm run prepare
 ```
 
-Better yet, you can lint, package, and test it all in one step:
+Better yet, you can test, lint, and package it all in one step:
 
 ```bash
 npm run all
