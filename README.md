@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.2
+    - uses: stackhawk/hawkscan-action@v1.3.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.2
+    - uses: stackhawk/hawkscan-action@v1.3.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.2
+    - uses: stackhawk/hawkscan-action@v1.3.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         environmentVariables: APP_HOST APP_ENV
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.2
+    - uses: stackhawk/hawkscan-action@v1.3.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         configurationFiles: stackhawk.yml stackhawk-extra.yml
@@ -107,7 +107,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.2
+    - uses: stackhawk/hawkscan-action@v1.3.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         codeScanningAlerts: true
@@ -137,7 +137,7 @@ jobs:
         pip3 install -r requirements.txt
         nohup python3 app.py &
     - name: Scan my app
-      uses: stackhawk/hawkscan-action@v1.3.2
+      uses: stackhawk/hawkscan-action@v1.3.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -161,7 +161,7 @@ jobs:
         APP_HOST: 'http://localhost:5000'
         APP_ID: AE624DB7-11FC-4561-B8F2-2C8ECF77C2C7
         APP_ENV: Development
-      uses: stackhawk/hawkscan-action@v1.3.2
+      uses: stackhawk/hawkscan-action@v1.3.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
@@ -176,3 +176,7 @@ jobs:
 ```
 
 The configuration above will perform a dry run, meaning it will only print out the Docker command that it would run if `dryRun` were set to `false`, which is the default. It will pass the environment variables `APP_HOST`, `APP_ID`, and `APP_ENV` to HawkScan so that they can be used in the `stackhawk.yml` and `stackhawk-extra.yml` configuration files. Finally, it tells HawkScan to use the `stackhawk.yml` configuration file and overlay the `stackhawk-extra.yml` configuration file on top of it.
+
+## Need Help?
+
+If you have questions or need some help, please email us at support@stackhawk.com.
