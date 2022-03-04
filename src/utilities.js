@@ -69,7 +69,7 @@ module.exports.gatherInputs = function gatherInputs() {
 //     `${dockerConfigurationFiles}`);
 //   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
 //   core.debug(`Docker command: ${dockerCommandClean}`);
-//   return dockerCommandClean
+//   return dockerCommandClean 
 // }
 
 module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
