@@ -14676,7 +14676,7 @@ async function setup() {
         // Expose the tool by adding it to the PATH
         core.addPath(path.join(pathToCLI, download.binPath));
 
-        return pathToCLI;
+        return pathToCLI.concat('/hawk-2.1.0/');
     } catch (e) {
         core.info(e)
         core.setFailed(e);
@@ -14786,7 +14786,7 @@ module.exports.runCommand = async function runCommand(command, cliPath) {
   let execOutput = '';
   let scanData = {};
   let execOptions = {};
-  const commandArray = cliPath.concat('/', command).split(" ");
+  const commandArray = cliPath.concat(command).split(" ");
   core.info(commandArray);
   execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
