@@ -73,7 +73,7 @@ module.exports.gatherInputs = function gatherInputs() {
 // }
 
 module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
-  const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '--env');
+  const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '-e');
   const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
   const dockerCommand = (`hawk ${dockerEnvironmentVariables} ` +
       `-e API_KEY=${inputs.apiKey} ` +
