@@ -14765,14 +14765,14 @@ module.exports.gatherInputs = function gatherInputs() {
 //     `${dockerConfigurationFiles}`);
 //   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
 //   core.debug(`Docker command: ${dockerCommandClean}`);
-//   return dockerCommandClean 
+//   return dockerCommandClean
 // }
 
 module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
-  const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '-e');
+ // const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '-e');
   const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
-  const dockerCommand = (`hawk ${dockerEnvironmentVariables} ` +
-      `-e API_KEY=${inputs.apiKey} ` +
+  const dockerCommand = (`hawk ` +
+      `--api-key=${inputs.apiKey} ` +
       `${dockerConfigurationFiles}`);
   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
   core.debug(`Docker command: ${dockerCommandClean}`);
