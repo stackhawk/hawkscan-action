@@ -14771,9 +14771,9 @@ module.exports.gatherInputs = function gatherInputs() {
 module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
  // const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '-e');
   const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
-  const dockerCommand = (`hawk scan ` +
+  const dockerCommand = (`hawk ` +
       `--api-key=${inputs.apiKey} ` +
-      `${dockerConfigurationFiles}`);
+      `${dockerConfigurationFiles} scan`);
   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
   core.debug(`Docker command: ${dockerCommandClean}`);
   return dockerCommandClean
