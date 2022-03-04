@@ -14773,7 +14773,7 @@ module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
   const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
   const dockerCommand = (`hawk ` +
       `--api-key=${inputs.apiKey} ` +
-      `${dockerConfigurationFiles} scan`);
+      `scan ${dockerConfigurationFiles}`);
   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
   core.debug(`Docker command: ${dockerCommandClean}`);
   return dockerCommandClean
