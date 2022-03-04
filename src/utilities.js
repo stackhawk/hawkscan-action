@@ -61,12 +61,23 @@ module.exports.gatherInputs = function gatherInputs() {
   }
 }
 
+// module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
+//   const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '--env');
+//   const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
+//   const dockerCommand = (`docker run --tty --rm --volume ${inputs.workspace}:/hawk ${dockerEnvironmentVariables} ` +
+//     `--env API_KEY=${inputs.apiKey} --network ${inputs.network} ${inputs.image}:${inputs.version} ` +
+//     `${dockerConfigurationFiles}`);
+//   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
+//   core.debug(`Docker command: ${dockerCommandClean}`);
+//   return dockerCommandClean
+// }
+
 module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
   const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '--env');
   const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
-  const dockerCommand = (`docker run --tty --rm --volume ${inputs.workspace}:/hawk ${dockerEnvironmentVariables} ` +
-    `--env API_KEY=${inputs.apiKey} --network ${inputs.network} ${inputs.image}:${inputs.version} ` +
-    `${dockerConfigurationFiles}`);
+  const dockerCommand = (`hawk ${dockerEnvironmentVariables} ` +
+      `-e API_KEY=${inputs.apiKey} ` +
+      `${dockerConfigurationFiles}`);
   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
   core.debug(`Docker command: ${dockerCommandClean}`);
   return dockerCommandClean

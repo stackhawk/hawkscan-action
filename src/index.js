@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const utilities = require('./utilities');
 const sarif = require('./sarif');
+const { setup } = require('./setup');
 
 async function run() {
   core.info('Starting HawkScan Action');
@@ -14,6 +15,7 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(dockerCommand);
   } else {
+    await setup()
     scanData = await utilities.runCommand(dockerCommand);
     exitCode = scanData.exitCode;
     core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);

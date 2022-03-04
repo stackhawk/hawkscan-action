@@ -1,5 +1,6 @@
 const utilities = require('../src/utilities');
 const process = require('process');
+const { setup } = require('../src/setup');
 
 // Our workspace should be GITHUB_WORSPACE if it exists, or the current working directory otherwise
 const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
@@ -98,4 +99,22 @@ test('maxed-out configuration dry-run', () => {
     .toEqual(`docker run --tty --rm --volume ${workspace}:/hawk --env HOST --env APP_ENV ` +
     `--env API_KEY=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX --network test_net stackhawk/hawkscantastic:best ` +
     `stackhawk.yml stackhawktest.yml`);
+});
+
+// test('minimal configuration dry-run', async() => {
+//   buildInput({
+//     dryRun: 'true',
+//     apiKey: 'hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX',
+//     version: '2.1.0'
+//   });
+//   const inputs = utilities.gatherInputs();
+//   const dockerCommand = utilities.buildDockerCommand(inputs);
+//   // expect(dockerCommand)
+//   //     .toEqual(`docker run --tty --rm --volume ${workspace}:/hawk --env API_KEY=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX ` +
+//   //         `--network host stackhawk/hawkscan:latest stackhawk.yml`);
+//   try {
+//     await setup();
+//   } catch (e) {
+//     expect(e).toMatch('error');
+//   }
 });
