@@ -90,7 +90,7 @@ module.exports.runCommand = async function runCommand(command, cliPath) {
   let execOutput = '';
   let scanData = {};
   let execOptions = {};
-  const commandArray = cliPath.concat(['/', command]).split(" ");
+  const commandArray = cliPath.concat('/', command).split(" ");
   core.info(commandArray);
   execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
