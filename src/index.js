@@ -15,8 +15,8 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(dockerCommand);
   } else {
-    await setup()
-    scanData = await utilities.runCommand(dockerCommand);
+    const cliBin = await setup()
+    scanData = await utilities.runCommand(dockerCommand, cliBin);
     exitCode = scanData.exitCode;
     core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
     core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);

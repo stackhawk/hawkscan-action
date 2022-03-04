@@ -14675,6 +14675,8 @@ async function setup() {
         core.info(pathToCLI)
         // Expose the tool by adding it to the PATH
         core.addPath(path.join(pathToCLI, download.binPath));
+
+        return pathToCLI;
     } catch (e) {
         core.info(e)
         core.setFailed(e);
@@ -14777,14 +14779,15 @@ module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
   return dockerCommandClean
 }
 
-module.exports.runCommand = async function runCommand(command) {
+module.exports.runCommand = async function runCommand(command, cliPath) {
   core.debug(`Running command:`);
   core.debug(command);
 
   let execOutput = '';
   let scanData = {};
   let execOptions = {};
-  const commandArray = command.split(" ");
+  const commandArray = cliPath.concat(command).split(" ");
+  core.info(commandArray);
   execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
     stdout: (data) => {
@@ -15021,8 +15024,8 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(dockerCommand);
   } else {
-    await setup()
-    scanData = await utilities.runCommand(dockerCommand);
+    const cliBin = await setup()
+    scanData = await utilities.runCommand(dockerCommand, cliBin);
     exitCode = scanData.exitCode;
     core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
     core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);

@@ -83,14 +83,15 @@ module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
   return dockerCommandClean
 }
 
-module.exports.runCommand = async function runCommand(command) {
+module.exports.runCommand = async function runCommand(command, cliPath) {
   core.debug(`Running command:`);
   core.debug(command);
 
   let execOutput = '';
   let scanData = {};
   let execOptions = {};
-  const commandArray = command.split(" ");
+  const commandArray = cliPath.concat(command).split(" ");
+  core.info(commandArray);
   execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
     stdout: (data) => {
