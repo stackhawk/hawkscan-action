@@ -21,10 +21,13 @@ async function setup() {
         const extract = download.url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
         const pathToCLI = await extract(pathToTarball);
 
-        core.info(pathToCLI)
-        // Expose the tool by adding it to the PATH
-        core.addPath(path.join( pathToCLI.concat(`/hawk-${version}//`), download.binPath));
+        core.info(pathToCLI.concat('/hawk-2.1.0/'))
 
+        core.info(pathToCLI.concat(`/hawk-${version}//`));
+        // Expose the tool by adding it to the PATH
+        core.addPath(path.join(pathToCLI.concat(`/hawk-${version}//`), download.binPath));
+
+        core.info(path.toString())
        // return pathToCLI.concat('/hawk-2.1.0/');
     } catch (e) {
         core.info(e)
