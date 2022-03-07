@@ -26,7 +26,7 @@ async function setup() {
 
         core.info(pathToCLI.concat(`/hawk-${cliVersion}/`));
         // Expose the tool by adding it to the PATH
-        core.addPath(path.join(pathToCLI.concat(`/hawk-${cliVersion}/`), download.binPath));
+        core.addPath(path.join(pathToCLI, download.binPath));
 
         core.info(process.env.PATH);
         core.info(process.env.GITHUB_ACTION_PATH);
