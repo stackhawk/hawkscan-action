@@ -6,7 +6,7 @@ const { setup } = require('./setup');
 async function run() {
   core.info('Starting HawkScan Action');
   const inputs = utilities.gatherInputs();
-  const dockerCommand = utilities.buildDockerCommand(inputs);
+  const dockerCommand = utilities.buildCLICommand(inputs);
   let exitCode = 0;
   let scanData;
 
@@ -15,8 +15,8 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(dockerCommand);
   } else {
-    const cliBin = await setup()
-    scanData = await utilities.runCommand(dockerCommand, cliBin);
+    await setup()
+    scanData = await utilities.runCommand(dockerCommand);
     exitCode = scanData.exitCode;
     core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
     core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);

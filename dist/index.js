@@ -14674,9 +14674,9 @@ async function setup() {
 
         core.info(pathToCLI)
         // Expose the tool by adding it to the PATH
-        core.addPath(path.join(pathToCLI, download.binPath));
+        core.addPath(path.join( pathToCLI.concat(`/hawk-${version}//`), download.binPath));
 
-        return pathToCLI.concat('/hawk-2.1.0/');
+       // return pathToCLI.concat('/hawk-2.1.0/');
     } catch (e) {
         core.info(e)
         core.setFailed(e);
@@ -14768,25 +14768,24 @@ module.exports.gatherInputs = function gatherInputs() {
 //   return dockerCommandClean
 // }
 
-module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
- // const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '-e');
-  const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
+module.exports.buildCLICommand = function buildDockerCommand(inputs) {
+  const configurationFiles = stringifyArguments(inputs.configurationFiles);
   const dockerCommand = (`hawk ` +
       `--api-key=${inputs.apiKey} ` +
-      `scan ${dockerConfigurationFiles}`);
+      `scan ${configurationFiles}`);
   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
   core.debug(`Docker command: ${dockerCommandClean}`);
   return dockerCommandClean
 }
 
-module.exports.runCommand = async function runCommand(command, cliPath) {
+module.exports.runCommand = async function runCommand(command) {
   core.debug(`Running command:`);
   core.debug(command);
 
   let execOutput = '';
   let scanData = {};
   let execOptions = {};
-  const commandArray = cliPath.concat(command).split(" ");
+  const commandArray = command.split(" ");
   core.info(commandArray);
   execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
@@ -15015,7 +15014,7 @@ const { setup } = __nccwpck_require__(7521);
 async function run() {
   core.info('Starting HawkScan Action');
   const inputs = utilities.gatherInputs();
-  const dockerCommand = utilities.buildDockerCommand(inputs);
+  const dockerCommand = utilities.buildCLICommand(inputs);
   let exitCode = 0;
   let scanData;
 
@@ -15024,8 +15023,8 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(dockerCommand);
   } else {
-    const cliBin = await setup()
-    scanData = await utilities.runCommand(dockerCommand, cliBin);
+    await setup()
+    scanData = await utilities.runCommand(dockerCommand);
     exitCode = scanData.exitCode;
     core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
     core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);

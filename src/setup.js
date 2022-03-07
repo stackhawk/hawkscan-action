@@ -23,9 +23,9 @@ async function setup() {
 
         core.info(pathToCLI)
         // Expose the tool by adding it to the PATH
-        core.addPath(path.join(pathToCLI, download.binPath));
+        core.addPath(path.join( pathToCLI.concat(`/hawk-${version}//`), download.binPath));
 
-        return pathToCLI.concat('/hawk-2.1.0/');
+       // return pathToCLI.concat('/hawk-2.1.0/');
     } catch (e) {
         core.info(e)
         core.setFailed(e);

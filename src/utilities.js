@@ -72,25 +72,24 @@ module.exports.gatherInputs = function gatherInputs() {
 //   return dockerCommandClean
 // }
 
-module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
- // const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '-e');
-  const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
+module.exports.buildCLICommand = function buildDockerCommand(inputs) {
+  const configurationFiles = stringifyArguments(inputs.configurationFiles);
   const dockerCommand = (`hawk ` +
       `--api-key=${inputs.apiKey} ` +
-      `scan ${dockerConfigurationFiles}`);
+      `scan ${configurationFiles}`);
   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
   core.debug(`Docker command: ${dockerCommandClean}`);
   return dockerCommandClean
 }
 
-module.exports.runCommand = async function runCommand(command, cliPath) {
+module.exports.runCommand = async function runCommand(command) {
   core.debug(`Running command:`);
   core.debug(command);
 
   let execOutput = '';
   let scanData = {};
   let execOptions = {};
-  const commandArray = cliPath.concat(command).split(" ");
+  const commandArray = command.split(" ");
   core.info(commandArray);
   execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
