@@ -14653,6 +14653,7 @@ const path = __nccwpck_require__(1017);
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
 const { getDownloadObject } = __nccwpck_require__(7254);
+const process = __nccwpck_require__(7282);
 
 async function setup() {
     try {
@@ -14678,7 +14679,8 @@ async function setup() {
         // Expose the tool by adding it to the PATH
         core.addPath(path.join(pathToCLI.concat(`/hawk-${cliVersion}/`), download.binPath));
 
-        core.info(path.toString())
+        core.info(process.env.PATH);
+        core.info(process.env.GITHUB_ACTION_PATH);
        // return pathToCLI.concat('/hawk-2.1.0/');
     } catch (e) {
         core.info(e)
@@ -14901,6 +14903,14 @@ module.exports = require("os");
 
 "use strict";
 module.exports = require("path");
+
+/***/ }),
+
+/***/ 7282:
+/***/ ((module) => {
+
+"use strict";
+module.exports = require("process");
 
 /***/ }),
 

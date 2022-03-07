@@ -2,6 +2,7 @@ const path = require('path');
 const core = require('@actions/core');
 const tc = require('@actions/tool-cache');
 const { getDownloadObject } = require('./cli_utils');
+const process = require("process");
 
 async function setup() {
     try {
@@ -27,7 +28,8 @@ async function setup() {
         // Expose the tool by adding it to the PATH
         core.addPath(path.join(pathToCLI.concat(`/hawk-${cliVersion}/`), download.binPath));
 
-        core.info(path.toString())
+        core.info(process.env.PATH);
+        core.info(process.env.GITHUB_ACTION_PATH);
        // return pathToCLI.concat('/hawk-2.1.0/');
     } catch (e) {
         core.info(e)
