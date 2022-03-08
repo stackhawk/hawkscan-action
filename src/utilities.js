@@ -61,25 +61,25 @@ module.exports.gatherInputs = function gatherInputs() {
   }
 }
 
-// module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
-//   const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '--env');
-//   const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
-//   const dockerCommand = (`docker run --tty --rm --volume ${inputs.workspace}:/hawk ${dockerEnvironmentVariables} ` +
-//     `--env API_KEY=${inputs.apiKey} --network ${inputs.network} ${inputs.image}:${inputs.version} ` +
-//     `${dockerConfigurationFiles}`);
-//   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
-//   core.debug(`Docker command: ${dockerCommandClean}`);
-//   return dockerCommandClean
-// }
-
-module.exports.buildCLICommand = function buildDockerCommand(inputs) {
-  const configurationFiles = stringifyArguments(inputs.configurationFiles);
-  const dockerCommand = (`hawk ` +
-      `--api-key=${inputs.apiKey} ` +
-      `scan ${configurationFiles}`);
+module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
+  const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '--env');
+  const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
+  const dockerCommand = (`docker run --tty --rm --volume ${inputs.workspace}:/hawk ${dockerEnvironmentVariables} ` +
+    `--env API_KEY=${inputs.apiKey} --network ${inputs.network} ${inputs.image}:${inputs.version} ` +
+    `${dockerConfigurationFiles}`);
   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
   core.debug(`Docker command: ${dockerCommandClean}`);
   return dockerCommandClean
+}
+
+module.exports.buildCLICommand = function buildDockerCommand(inputs) {
+  const configurationFiles = stringifyArguments(inputs.configurationFiles);
+  const cliCommand = (`hawk ` +
+      `--api-key=${inputs.apiKey} ` +
+      `scan ${configurationFiles}`);
+  const cleanCliClean = cliCommand.replace(/  +/g, ' ')
+  core.debug(`CLI command: ${cleanCliClean}`);
+  return cleanCliClean
 }
 
 module.exports.runCommand = async function runCommand(command) {

@@ -14481,33 +14481,7 @@ function wrappy (fn, cb) {
 /***/ 7254:
 /***/ ((module) => {
 
-// const os = require('os');
-// const path = require('path');
-//
-// // arch in [arm, x32, x64...] (https://nodejs.org/api/os.html#os_os_arch)
-// // return value in [amd64, 386, arm]
-// function mapArch(arch) {
-//     const mappings = {
-//         x32: '386',
-//         x64: 'amd64'
-//     };
-//     return mappings[arch] || arch;
-// }
-//
-// // os in [darwin, linux, win32...] (https://nodejs.org/api/os.html#os_os_platform)
-// // return value in [darwin, linux, windows]
-// function mapOS(os) {
-//     const mappings = {
-//         darwin: 'macOS',
-//         win32: 'windows'
-//     };
-//     return mappings[os] || os;
-// }
-
 function getDownloadObject(version) {
-    // const platform = os.platform();
-    // const filename = `gh_${ version }_${ mapOS(platform) }_${ mapArch(os.arch()) }`;
-    // const extension = platform === 'win32' ? 'zip' : 'tar.gz';
     const binPath = `/hawk-${ version }`;
     const url = `https://download.stackhawk.com/hawk/cli/hawk-${ version }.zip`;
     return {
@@ -14653,7 +14627,6 @@ const path = __nccwpck_require__(1017);
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
 const { getDownloadObject } = __nccwpck_require__(7254);
-const process = __nccwpck_require__(7282);
 
 async function setup() {
     try {
@@ -14663,25 +14636,16 @@ async function setup() {
         // Download the specific version of the tool, e.g. as a tarball/zipball
         const cliVersion = version === 'latest' ? '2.1.0' : version;
         const download = getDownloadObject(cliVersion);
-        core.info(download.url)
-        core.info(download.binPath)
+
         const pathToTarball = await tc.downloadTool(download.url);
 
-        core.info(pathToTarball)
-
-        // Extract the tarball/zipball onto host runner
+        // Extract the zip onto host runner
         const extract = download.url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
         const pathToCLI = await extract(pathToTarball);
 
-        core.info(pathToCLI.concat('/hawk-2.1.0/'))
-
-        core.info(pathToCLI.concat(`/hawk-${cliVersion}/`));
         // Expose the tool by adding it to the PATH
         core.addPath(path.join(pathToCLI, download.binPath));
 
-        core.info(process.env.PATH);
-        core.info(process.env.GITHUB_ACTION_PATH);
-       // return pathToCLI.concat('/hawk-2.1.0/');
     } catch (e) {
         core.info(e)
         core.setFailed(e);
@@ -14689,10 +14653,6 @@ async function setup() {
 }
 
 module.exports ={ setup }
-
-// if (require.main === module) {
-//     setup();
-// }
 
 /***/ }),
 
@@ -14762,25 +14722,25 @@ module.exports.gatherInputs = function gatherInputs() {
   }
 }
 
-// module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
-//   const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '--env');
-//   const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
-//   const dockerCommand = (`docker run --tty --rm --volume ${inputs.workspace}:/hawk ${dockerEnvironmentVariables} ` +
-//     `--env API_KEY=${inputs.apiKey} --network ${inputs.network} ${inputs.image}:${inputs.version} ` +
-//     `${dockerConfigurationFiles}`);
-//   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
-//   core.debug(`Docker command: ${dockerCommandClean}`);
-//   return dockerCommandClean
-// }
-
-module.exports.buildCLICommand = function buildDockerCommand(inputs) {
-  const configurationFiles = stringifyArguments(inputs.configurationFiles);
-  const dockerCommand = (`hawk ` +
-      `--api-key=${inputs.apiKey} ` +
-      `scan ${configurationFiles}`);
+module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
+  const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '--env');
+  const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
+  const dockerCommand = (`docker run --tty --rm --volume ${inputs.workspace}:/hawk ${dockerEnvironmentVariables} ` +
+    `--env API_KEY=${inputs.apiKey} --network ${inputs.network} ${inputs.image}:${inputs.version} ` +
+    `${dockerConfigurationFiles}`);
   const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
   core.debug(`Docker command: ${dockerCommandClean}`);
   return dockerCommandClean
+}
+
+module.exports.buildCLICommand = function buildDockerCommand(inputs) {
+  const configurationFiles = stringifyArguments(inputs.configurationFiles);
+  const cliCommand = (`hawk ` +
+      `--api-key=${inputs.apiKey} ` +
+      `scan ${configurationFiles}`);
+  const cleanCliClean = cliCommand.replace(/  +/g, ' ')
+  core.debug(`CLI command: ${cleanCliClean}`);
+  return cleanCliClean
 }
 
 module.exports.runCommand = async function runCommand(command) {
@@ -14903,14 +14863,6 @@ module.exports = require("os");
 
 "use strict";
 module.exports = require("path");
-
-/***/ }),
-
-/***/ 7282:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("process");
 
 /***/ }),
 

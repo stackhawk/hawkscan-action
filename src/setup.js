@@ -2,7 +2,6 @@ const path = require('path');
 const core = require('@actions/core');
 const tc = require('@actions/tool-cache');
 const { getDownloadObject } = require('./cli_utils');
-const process = require("process");
 
 async function setup() {
     try {
@@ -12,25 +11,16 @@ async function setup() {
         // Download the specific version of the tool, e.g. as a tarball/zipball
         const cliVersion = version === 'latest' ? '2.1.0' : version;
         const download = getDownloadObject(cliVersion);
-        core.info(download.url)
-        core.info(download.binPath)
+
         const pathToTarball = await tc.downloadTool(download.url);
 
-        core.info(pathToTarball)
-
-        // Extract the tarball/zipball onto host runner
+        // Extract the zip onto host runner
         const extract = download.url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
         const pathToCLI = await extract(pathToTarball);
 
-        core.info(pathToCLI.concat('/hawk-2.1.0/'))
-
-        core.info(pathToCLI.concat(`/hawk-${cliVersion}/`));
         // Expose the tool by adding it to the PATH
         core.addPath(path.join(pathToCLI, download.binPath));
 
-        core.info(process.env.PATH);
-        core.info(process.env.GITHUB_ACTION_PATH);
-       // return pathToCLI.concat('/hawk-2.1.0/');
     } catch (e) {
         core.info(e)
         core.setFailed(e);
@@ -38,7 +28,3 @@ async function setup() {
 }
 
 module.exports ={ setup }
-
-// if (require.main === module) {
-//     setup();
-// }
