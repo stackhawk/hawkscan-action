@@ -31,6 +31,20 @@ jobs:
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
 
+    # Run a HawkScan with this Action
+  ajax-test:
+    name: Live Test
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          apiKey: ${{ secrets.SHAWK_API_KEY }}
+          githubToken: ${{ github.token }}
+          environmentVariables: SHAWK_RESULTS_ENDPOINT, SHAWK_AUTH_ENDPOINT
+          configurationFiles: __tests__/stackhawk_spider.yml
+          codeScanningAlerts: true
+
   # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
   release-new-version:
     name: Release New Version
