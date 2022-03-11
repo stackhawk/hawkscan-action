@@ -44,6 +44,7 @@ jobs:
           environmentVariables: SHAWK_RESULTS_ENDPOINT, SHAWK_AUTH_ENDPOINT
           configurationFiles: __tests__/stackhawk_spider.yml
           codeScanningAlerts: true
+      - run: sudo apt-get install firefox
 
   # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
   release-new-version:

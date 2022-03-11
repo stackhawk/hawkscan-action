@@ -6,4 +6,5 @@ app:
 hawk:
   spider:
     ajax: true
+    base: false
   failureThreshold: high
