@@ -33,11 +33,10 @@ jobs:
 
     # Run a HawkScan with this Action
   ajax-test:
-    name: Live Test
+    name: Ajax Live Test
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - run: sudo apt-get install firefox
       - uses: ./
         with:
           apiKey: ${{ secrets.SHAWK_API_KEY }}
