@@ -14999,17 +14999,17 @@ const { setup } = __nccwpck_require__(7521);
 async function run() {
   core.info('Starting HawkScan Action');
   const inputs = utilities.gatherInputs();
-  const dockerCommand = utilities.buildCLICommand(inputs);
+  const cliCommand = utilities.buildCLICommand(inputs);
   let exitCode = 0;
   let scanData;
 
   // Run the scanner
   if ( inputs.dryRun === 'true' ) {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
-    core.info(dockerCommand);
+    core.info(cliCommand);
   } else {
     await setup()
-    scanData = await utilities.runCommand(dockerCommand);
+    scanData = await utilities.runCommand(cliCommand);
     exitCode = scanData.exitCode;
     core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
     core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
