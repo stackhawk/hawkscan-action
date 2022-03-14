@@ -14733,7 +14733,7 @@ module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
   return dockerCommandClean
 }
 
-module.exports.buildCLICommand = function buildDockerCommand(inputs) {
+module.exports.buildCLICommand = function buildCLICommand(inputs) {
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
   const cliCommand = (`hawk ` +
       `--api-key=${inputs.apiKey} ` +
@@ -14751,7 +14751,6 @@ module.exports.runCommand = async function runCommand(command) {
   let scanData = {};
   let execOptions = {};
   const commandArray = command.split(" ");
-  core.info(commandArray);
   execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
     stdout: (data) => {
