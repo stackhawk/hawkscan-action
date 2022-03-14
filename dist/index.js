@@ -14479,7 +14479,9 @@ function wrappy (fn, cb) {
 /***/ }),
 
 /***/ 7254:
-/***/ ((module) => {
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const https = __nccwpck_require__(5687);
 
 function getDownloadObject(version) {
     const binPath = `/hawk-${ version }`;
@@ -14490,7 +14492,26 @@ function getDownloadObject(version) {
     };
 }
 
-module.exports = { getDownloadObject }
+async function getLatestVersion() {
+    return new Promise(function(resolve, reject) {
+        https.get('https://api.stackhawk.com/hawkscan/version', (res) => {
+            if (res.statusCode !== 200)
+                reject(res);
+            let data = "";
+            res.on('data', function (chunk) {
+                data += chunk
+            });
+            res.on('end', function () {
+                resolve(data);
+            });
+
+        }).on('error', (e) => {
+            console.error(e);
+            reject(e);
+        });
+    });
+}
+module.exports = { getDownloadObject, getLatestVersion }
 
 /***/ }),
 
@@ -14626,7 +14647,7 @@ function sarifBuilder(scanData) {
 const path = __nccwpck_require__(1017);
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
-const { getDownloadObject } = __nccwpck_require__(7254);
+const { getDownloadObject, getLatestVersion } = __nccwpck_require__(7254);
 
 async function setup() {
     try {
@@ -14634,7 +14655,7 @@ async function setup() {
         const version = core.getInput('version');
 
         // Download the specific version of the tool, e.g. as a tarball/zipball
-        const cliVersion = version === 'latest' ? '2.1.0' : version;
+        const cliVersion = version === 'latest' ? await getLatestVersion() : version;
         const download = getDownloadObject(cliVersion);
 
         const pathToTarball = await tc.downloadTool(download.url);

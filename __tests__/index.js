@@ -1,5 +1,6 @@
 const utilities = require('../src/utilities');
 const process = require('process');
+const { getDownloadObject, getLatestVersion } = require('../src/cli_utils');
 
 // Our workspace should be GITHUB_WORSPACE if it exists, or the current working directory otherwise
 const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
@@ -110,4 +111,16 @@ test('cli dry-run', () => {
   const cliCommand  = utilities.buildCLICommand(inputs);
   expect(cliCommand)
       .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX scan stackhawk.yml`);
+});
+
+test('get latest version', async () => {
+   await getLatestVersion().then(function (data) {
+     expect(data).toEqual('2.1.1');
+   });
+});
+
+test('get download object', () => {
+  const downloadObject = getDownloadObject('2.1.0');
+  expect(downloadObject.url).toEqual('https://download.stackhawk.com/hawk/cli/hawk-2.1.0.zip');
+  expect(downloadObject.binPath).toEqual('/hawk-2.1.0');
 });

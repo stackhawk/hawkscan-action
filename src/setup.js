@@ -1,7 +1,7 @@
 const path = require('path');
 const core = require('@actions/core');
 const tc = require('@actions/tool-cache');
-const { getDownloadObject } = require('./cli_utils');
+const { getDownloadObject, getLatestVersion } = require('./cli_utils');
 
 async function setup() {
     try {
@@ -9,7 +9,7 @@ async function setup() {
         const version = core.getInput('version');
 
         // Download the specific version of the tool, e.g. as a tarball/zipball
-        const cliVersion = version === 'latest' ? '2.1.0' : version;
+        const cliVersion = version === 'latest' ? await getLatestVersion() : version;
         const download = getDownloadObject(cliVersion);
 
         const pathToTarball = await tc.downloadTool(download.url);
