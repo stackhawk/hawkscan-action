@@ -113,12 +113,6 @@ test('cli dry-run', () => {
       .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX scan stackhawk.yml`);
 });
 
-test('get latest version', async () => {
-   await getLatestVersion().then(function (data) {
-     expect(data).toEqual('2.1.1');
-   });
-});
-
 test('get download object', () => {
   const downloadObject = getDownloadObject('2.1.0');
   expect(downloadObject.url).toEqual('https://download.stackhawk.com/hawk/cli/hawk-2.1.0.zip');
