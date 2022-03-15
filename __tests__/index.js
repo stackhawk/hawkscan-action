@@ -1,6 +1,6 @@
 const utilities = require('../src/utilities');
 const process = require('process');
-const { getDownloadObject, getLatestVersion } = require('../src/cli_utils');
+const { getDownloadObject } = require('../src/cli_utils');
 
 // Our workspace should be GITHUB_WORSPACE if it exists, or the current working directory otherwise
 const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
