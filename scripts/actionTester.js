@@ -25,8 +25,8 @@ function run() {
   process.env['HOST'] = 'http://example.com';
   process.env['APP_ENV'] = 'unit_tests';
   const inputs = utilities.gatherInputs();
-  const dockerCommand = utilities.buildCLICommand(inputs);
-  const scanCommandList = dockerCommand.split(" ");
+  const cliCommand = utilities.buildCLICommand(inputs);
+  const scanCommandList = cliCommand.split(" ");
   const scanCommand = scanCommandList[0];
   const scanArgs = scanCommandList.slice(1);
   const scanner = spawn(scanCommand, scanArgs);
