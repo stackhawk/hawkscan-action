@@ -17,14 +17,6 @@ inputs:
     description: Space-separated list of HawkScan configuration files to use
     required: false
     default: stackhawk.yml
-  network:
-    description: Docker network type or bridge name to use for scan
-    required: false
-    default: host
-  image:
-    description: HawkScan Docker image to use
-    required: false
-    default: stackhawk/hawkscan
   codeScanningAlerts:
     description: If `true`, Register a Code Scanning Alert in GitHub if scan alerts exceed `hawk.failureThreshold`
     required: false
@@ -34,7 +26,7 @@ inputs:
     required: false
     default: ${{ github.token }}}
   version:
-    description: HawkScan Docker image version to use
+    description: HawkScan CLI version to use
     required: false
     default: latest
 

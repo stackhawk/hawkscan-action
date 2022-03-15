@@ -17,8 +17,6 @@ function run() {
     apiKey: 'hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX',
     environmentVariables: 'HOST APP_ENV SHAWK_RESULTS_ENDPOINT SHAWK_AUTH_ENDPOINT',
     configurationFiles: "__tests__/stackhawk.yml",
-    network: 'host',
-    image: 'stackhawk/hawkscan',
     version: 'latest',
     codeScanningAlerts: 'true',
   });

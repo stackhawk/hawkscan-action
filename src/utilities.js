@@ -50,26 +50,12 @@ module.exports.gatherInputs = function gatherInputs() {
   return {
     workspace: process.env.GITHUB_WORKSPACE || process.cwd(),
     apiKey: core.getInput('apiKey') || '',
-    environmentVariables: stringToList(core.getInput('environmentVariables')),
     configurationFiles: stringToList(core.getInput('configurationFiles') || 'stackhawk.yml'),
-    network: core.getInput('network') || 'host',
-    image: core.getInput('image') || 'stackhawk/hawkscan',
     version: core.getInput('version') || 'latest',
     dryRun: core.getInput('dryRun').toLowerCase() || 'false',
     codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false',
     githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || ''
   }
-}
-
-module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
-  const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '--env');
-  const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
-  const dockerCommand = (`docker run --tty --rm --volume ${inputs.workspace}:/hawk ${dockerEnvironmentVariables} ` +
-    `--env API_KEY=${inputs.apiKey} --network ${inputs.network} ${inputs.image}:${inputs.version} ` +
-    `${dockerConfigurationFiles}`);
-  const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
-  core.debug(`Docker command: ${dockerCommandClean}`);
-  return dockerCommandClean
 }
 
 module.exports.buildCLICommand = function buildCLICommand(inputs) {

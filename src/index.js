@@ -16,7 +16,7 @@ async function run() {
     core.info(cliCommand);
   } else {
     await setup()
-    scanData = await utilities.runCommand(cliCommand);
+   // scanData = await utilities.runCommand(cliCommand);
     exitCode = scanData.exitCode;
     core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
     core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
