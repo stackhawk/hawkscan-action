@@ -16184,7 +16184,7 @@ module.exports.runCommand = async function runCommand(command) {
     }
   };
 
-  let subProcess =  await spawn(command, execOptions);
+  let subProcess =  spawn(command, execOptions);
       // .then(data => {
       //   scanData.exitCode = data;
       //   scanData.resultsLink = scanParser(execOutput,
@@ -16198,12 +16198,20 @@ module.exports.runCommand = async function runCommand(command) {
       //   core.error(error)
       // });
 
-  subProcess.stdout.on('data', (data) => {
-    execOutput += data.toString();
-  });
+  if (subProcess.stdout) {
+    subProcess.stdout.on('data', (data) => {
+      execOutput += data.toString();
+    });
+  }
 
   subProcess.on('close', (code) => {
-    console.log(`child process close all stdio with code ${code}`);
+    scanData.exitCode = code;
+    scanData.resultsLink = scanParser(execOutput,
+        /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
+    scanData.failureThreshold = scanParser(execOutput,
+        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
+    scanData.hawkscanVersion = scanParser(execOutput,
+        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
   });
 
   subProcess.on('exit', (code) => {
@@ -16232,6 +16240,7 @@ module.exports.killProcess = async function killProcess() {
   core.debug(`Killing process ${process.pid}`)
    kill(Number(processId), 2)
 }
+
 
 /***/ }),
 
