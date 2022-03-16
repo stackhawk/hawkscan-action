@@ -1,12 +1,11 @@
 const core = require("@actions/core");
-const {kill} = require("process");
 
 let childProcessId = -1;
 
 function killChildProcess() {
     core.debug(`Killing process ${childProcessId}`)
     if (childProcessId > 0)
-        kill(Number(childProcessId), 'SIGINT');
+        process.kill(Number(childProcessId), 'SIGTERM');
 }
 
 module.exports.addSignalHandler = function addSignalHandler(){

@@ -16067,14 +16067,13 @@ module.exports ={ setup }
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
-const {kill} = __nccwpck_require__(7282);
 
 let childProcessId = -1;
 
 function killChildProcess() {
     core.debug(`Killing process ${childProcessId}`)
     if (childProcessId > 0)
-        kill(Number(childProcessId), 'SIGINT');
+        process.kill(Number(childProcessId), 'SIGTERM');
 }
 
 module.exports.addSignalHandler = function addSignalHandler(){
@@ -16360,14 +16359,6 @@ module.exports = require("os");
 
 "use strict";
 module.exports = require("path");
-
-/***/ }),
-
-/***/ 7282:
-/***/ ((module) => {
-
-"use strict";
-module.exports = require("process");
 
 /***/ }),
 
