@@ -175,18 +175,18 @@ module.exports.killProcess = async function killProcess() {
 
 function spawnChild(...args) {
   const child = spawn(...args)
-  const stdout = child.stdout ? {} : ''
-  const stderr = child.stderr ? {} : ''
+  let stdout = '';
+  let stderr = '';
 
   if (child.stdout) {
     child.stdout.on('data', data => {
-      stdout.append(data)
+      stdout += data.toString()
     })
   }
 
   if (child.stderr) {
     child.stderr.on('data', data => {
-      stderr.append(data)
+      stderr += data.toString()
     })
   }
 
