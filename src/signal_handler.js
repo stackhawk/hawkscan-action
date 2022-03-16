@@ -14,4 +14,16 @@ module.exports.addSignalHandler = function addSignalHandler(){
         killChildProcess();
         process.exit();
     });
+
+    process.on('SIGHUP', () => {
+        core.debug('SIGHUP received');
+        killChildProcess();
+        process.exit();
+    });
+
+    process.on('SIGTERM', () => {
+        core.debug('SIGTERM received');
+        killChildProcess();
+        process.exit();
+    });
 }
