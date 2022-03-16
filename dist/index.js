@@ -16082,8 +16082,6 @@ module.exports.addSignalHandler = function addSignalHandler(){
         core.debug('SIGINT received');
         if (process.pid !== childProcessId){
             killChildProcess();
-        } else {
-            process.exit();
         }
     });
 }
