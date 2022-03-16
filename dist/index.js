@@ -16069,8 +16069,7 @@ module.exports ={ setup }
 const core = __nccwpck_require__(2186);
 const {kill} = __nccwpck_require__(7282);
 
-
-module.exports.killChildProcess = function killChildProcess() {
+function killChildProcess() {
     let processId = core.getState("SubProcessId");
 
     core.debug(`Killing process ${process.pid}`)
@@ -16081,7 +16080,7 @@ module.exports.addSignalHandler = function addSignalHandler(){
     process.on('SIGINT', () => {
         core.debug('SIGINT received');
         if (process.pid !== (Number(core.getState("SubProcessId")))) {
-            this.killChildProcess();
+            killChildProcess();
         }
         process.exit();
     });
