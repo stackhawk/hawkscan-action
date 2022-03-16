@@ -16078,14 +16078,12 @@ function killChildProcess() {
 module.exports.addSignalHandler = function addSignalHandler(){
     process.on('SIGINT', () => {
         core.debug(`SIGINT received for ${process.pid}`);
-        if (process.pid !== childProcessId){
-            killChildProcess();
+        killChildProcess();
 
-            setTimeout(() => {
-                console.log('Exiting.');
-                process.exit(1);
-            }, 1000);
-        }
+        setTimeout(() => {
+            console.log('Exiting.');
+            process.exit(1);
+        }, 1000);
     });
 
     process.on('SIGTERM', () => {
