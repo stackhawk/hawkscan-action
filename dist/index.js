@@ -16970,7 +16970,7 @@ module.exports ={ setup }
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
-const {ps } = __nccwpck_require__(9318);
+const ps = __nccwpck_require__(9318);
 
 
 let childProcess = '';

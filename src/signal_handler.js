@@ -1,5 +1,5 @@
 const core = require("@actions/core");
-const {ps } = require("ps-node");
+const ps = require("ps-node");
 
 
 let childProcess = '';
