@@ -5,14 +5,16 @@ const {exec} = require("child_process");
 let childProcess = '';
 
 function killChildProcess() {
-    exec('ps', function(err, stdout, stderr) {
-        core.debug(stdout);
-        core.debug(stderr);
-    });
 
-    exec('pgrep java', function(err, stdout, stderr) {
+    exec('pgrep java', function(err, stdout) {
         core.debug(stdout);
-        core.debug(stderr);
+        let result = stdout.toString().split('\n');
+        result.forEach(element => {
+            core.debug(element)
+            let pid = parseInt(element);
+            if (!isNaN(pid) && pid > -1)
+                process.kill(pid, 'SIGINT')
+        });
     });
     core.debug(`Killing process ${childProcess.pid}`)
     childProcess.kill('SIGINT');
