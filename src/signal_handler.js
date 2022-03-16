@@ -11,11 +11,6 @@ module.exports.addSignalHandler = function addSignalHandler(){
     process.on('SIGINT', () => {
         core.debug(`SIGINT received for ${process.pid}`);
         killChildProcess();
-
-        setTimeout(() => {
-            console.log('Exiting.');
-            process.exit(1);
-        }, 1000);
     });
 
     process.on('SIGTERM', () => {
