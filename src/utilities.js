@@ -1,5 +1,7 @@
 const core = require('@actions/core');
-const exec = require('@actions/exec');
+// const exec = require('@actions/exec');
+const { spawn } = require('child_process');
+const {kill} = require("process");
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
 function checkNotEmpty(element) {
@@ -68,6 +70,37 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   return cleanCliClean
 }
 
+// module.exports.runCommand = async function runCommand(command) {
+//   core.debug(`Running command:`);
+//   core.debug(command);
+//
+//   let execOutput = '';
+//   let scanData = {};
+//   let execOptions = {};
+//   const commandArray = command.split(" ");
+//   execOptions.ignoreReturnCode = true;
+//   execOptions.listeners = {
+//     stdout: (data) => {
+//       execOutput += data.toString();
+//     }
+//   };
+//
+//   await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
+//     .then(data => {
+//       scanData.exitCode = data;
+//       scanData.resultsLink = scanParser(execOutput,
+//         /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
+//       scanData.failureThreshold = scanParser(execOutput,
+//         /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
+//       scanData.hawkscanVersion = scanParser(execOutput,
+//         /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
+//     })
+//     .catch(error => {
+//       core.error(error)
+//     });
+//   return scanData;
+// }
+
 module.exports.runCommand = async function runCommand(command) {
   core.debug(`Running command:`);
   core.debug(command);
@@ -75,7 +108,7 @@ module.exports.runCommand = async function runCommand(command) {
   let execOutput = '';
   let scanData = {};
   let execOptions = {};
-  const commandArray = command.split(" ");
+  // const commandArray = command.split(" ");
   execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
     stdout: (data) => {
@@ -83,18 +116,51 @@ module.exports.runCommand = async function runCommand(command) {
     }
   };
 
-  await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
-    .then(data => {
-      scanData.exitCode = data;
-      scanData.resultsLink = scanParser(execOutput,
+  let subProcess =  spawn.spawn(command, execOptions);
+      // .then(data => {
+      //   scanData.exitCode = data;
+      //   scanData.resultsLink = scanParser(execOutput,
+      //       /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
+      //   scanData.failureThreshold = scanParser(execOutput,
+      //       /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
+      //   scanData.hawkscanVersion = scanParser(execOutput,
+      //       /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
+      // })
+      // .catch(error => {
+      //   core.error(error)
+      // });
+
+  subProcess.stdout.on('data', (data) => {
+    execOutput += data.toString();
+  });
+
+  subProcess.on('close', (code) => {
+    console.log(`child process close all stdio with code ${code}`);
+  });
+
+  subProcess.on('exit', (code) => {
+    scanData.exitCode = code;
+    scanData.resultsLink = scanParser(execOutput,
         /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-      scanData.failureThreshold = scanParser(execOutput,
+    scanData.failureThreshold = scanParser(execOutput,
         /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-      scanData.hawkscanVersion = scanParser(execOutput,
+    scanData.hawkscanVersion = scanParser(execOutput,
         /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-    })
-    .catch(error => {
-      core.error(error)
-    });
+  });
+
+  subProcess.on('error', (err) => {
+     core.error(err)
+  });
+
+  core.saveState("SubProcessId", process.pid)
+
+  core.debug(`Starting process ${process.pid}`)
   return scanData;
+}
+
+module.exports.killProcess = async function killProcess() {
+   let processId = core.getState("SubProcessId");
+
+  core.debug(`Killing process ${process.pid}`)
+   kill(Number(processId), 2)
 }

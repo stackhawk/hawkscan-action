@@ -15,8 +15,20 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(cliCommand);
   } else {
+    process.on('SIGTERM', () => {
+      core.debug('Recieved Sigterm')
+      utilities.killProcess()
+    });
+    process.on('SIGINT', () => {
+      core.debug('Recieved sigint')
+      utilities.killProcess()
+    });
+    process.on('SIGKILL', () => {
+      core.debug('Recieved SIGKILL')
+      utilities.killProcess()
+    });
     await setup()
-   // scanData = await utilities.runCommand(cliCommand);
+    scanData = await utilities.runCommand(cliCommand);
     exitCode = scanData.exitCode;
     core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
     core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
