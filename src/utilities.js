@@ -127,7 +127,7 @@ module.exports.runCommand = async function runCommand(command) {
             /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
       })
       .catch(error => {
-        core.error(error)
+        core.error(error);
       });
 
   // if (subProcess.stdout) {
@@ -178,28 +178,29 @@ function spawnChild(...args) {
 
   if (child.stdout) {
     child.stdout.on('data', data => {
-      stdout += data.toString()
+      stdout += data.toString();
     })
   }
 
   if (child.stderr) {
     child.stderr.on('data', data => {
-      stderr += data.toString()
+      stderr += data.toString();
     })
   }
 
   const promise = new Promise((resolve, reject) => {
-    child.on('error', reject)
+    child.on('error', reject);
 
     child.on('close', code => {
       if (code === 0) {
-        resolve(stdout)
+        resolve(stdout);
       } else {
         const err = new Error(`child exited with code ${code}`)
-        err.code = code
-        err.stderr = stderr
-        err.stdout = stdout
-        reject(err)
+        err.code = code;
+        err.stderr = stderr;
+        err.stdout = stdout;
+        core.debug(err.stderr);
+        resolve(stdout);
       }
     })
   })
