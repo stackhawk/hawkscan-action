@@ -17,15 +17,24 @@ async function run() {
   } else {
     process.on('SIGTERM', () => {
       core.debug('Recieved Sigterm')
-      utilities.killProcess()
+      if (process.pid !== (Number(core.getState("SubProcessId")))) {
+        utilities.killProcess();
+      }
+      process.exit();
     });
     process.on('SIGINT', () => {
-      core.debug('Recieved sigint')
-      utilities.killProcess()
+      core.debug('Recieved sigint');
+      if (process.pid !== (Number(core.getState("SubProcessId")))) {
+        utilities.killProcess();
+      }
+      process.exit();
     });
     process.on('SIGHUP', () => {
-      core.debug('Recieved SIGHUP')
-      utilities.killProcess()
+      core.debug('Recieved SIGHUP');
+      if (process.pid !== (Number(core.getState("SubProcessId")))) {
+        utilities.killProcess();
+      }
+      process.exit();
     });
 
     await setup()

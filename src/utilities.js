@@ -105,25 +105,17 @@ module.exports.runCommand = async function runCommand(command) {
   core.debug(`Running command:`);
   core.debug(command);
 
-  let execOutput = '';
   let scanData = {};
-  let execOptions = {};
   const commandArray = command.split(" ");
-  execOptions.ignoreReturnCode = true;
-  execOptions.listeners = {
-    stdout: (data) => {
-      execOutput += data.toString();
-    }
-  };
 
   await spawnChild(commandArray[0], commandArray.slice(1))
-      .then(data => {
-        scanData.exitCode = data;
-        scanData.resultsLink = scanParser(execOutput,
+      .then((data, code) => {
+        scanData.exitCode = code;
+        scanData.resultsLink = scanParser(data,
             /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-        scanData.failureThreshold = scanParser(execOutput,
+        scanData.failureThreshold = scanParser(data,
             /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-        scanData.hawkscanVersion = scanParser(execOutput,
+        scanData.hawkscanVersion = scanParser(data,
             /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
       })
       .catch(error => {
@@ -197,14 +189,14 @@ function spawnChild(command, args) {
 
     child.on('close', code => {
       if (code === 0) {
-        resolve(stdout);
+        resolve(stdout, code);
       } else {
         const err = new Error(`child exited with code ${code}`)
         err.code = code;
         err.stderr = stderr;
         err.stdout = stdout;
         core.debug(err.stderr);
-        resolve(stdout);
+        resolve(stdout, code);
       }
     })
   })
