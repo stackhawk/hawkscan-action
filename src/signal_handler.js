@@ -4,7 +4,7 @@ let childProcessId = -1;
 
 function killChildProcess() {
     core.debug(`Killing process ${childProcessId}`)
-    process.kill(Number(childProcessId), 'SIGTERM');
+    process.kill(Number(childProcessId), 'SIGKILL');
 }
 
 module.exports.addSignalHandler = function addSignalHandler(){
