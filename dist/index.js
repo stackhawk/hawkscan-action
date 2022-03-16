@@ -16477,10 +16477,11 @@ async function run() {
       core.debug('Recieved sigint')
       utilities.killProcess()
     });
-    process.on('SIGKILL', () => {
-      core.debug('Recieved SIGKILL')
+    process.on('SIGHUP', () => {
+      core.debug('Recieved SIGHUP')
       utilities.killProcess()
     });
+
     await setup()
     scanData = await utilities.runCommand(cliCommand);
     exitCode = scanData.exitCode;
