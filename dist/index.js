@@ -16184,51 +16184,51 @@ module.exports.runCommand = async function runCommand(command) {
     }
   };
 
-  let subProcess =  spawn(command, execOptions);
-      // .then(data => {
-      //   scanData.exitCode = data;
-      //   scanData.resultsLink = scanParser(execOutput,
-      //       /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-      //   scanData.failureThreshold = scanParser(execOutput,
-      //       /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-      //   scanData.hawkscanVersion = scanParser(execOutput,
-      //       /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-      // })
-      // .catch(error => {
-      //   core.error(error)
-      // });
+  let subProcess =  await spawnChild(command)
+      .then(data => {
+        scanData.exitCode = data;
+        scanData.resultsLink = scanParser(execOutput,
+            /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
+        scanData.failureThreshold = scanParser(execOutput,
+            /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
+        scanData.hawkscanVersion = scanParser(execOutput,
+            /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
+      })
+      .catch(error => {
+        core.error(error)
+      });
 
-  if (subProcess.stdout) {
-    subProcess.stdout.on('data', (data) => {
-      execOutput += data.toString();
-    });
-  }
+  // if (subProcess.stdout) {
+  //   subProcess.stdout.on('data', (data) => {
+  //     execOutput += data.toString();
+  //   });
+  // }
+  //
+  // subProcess.on('close', (code) => {
+  //   scanData.exitCode = code;
+  //   scanData.resultsLink = scanParser(execOutput,
+  //       /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
+  //   scanData.failureThreshold = scanParser(execOutput,
+  //       /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
+  //   scanData.hawkscanVersion = scanParser(execOutput,
+  //       /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
+  // });
+  //
+  // subProcess.on('exit', (code) => {
+  //   scanData.exitCode = code;
+  //   scanData.resultsLink = scanParser(execOutput,
+  //       /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
+  //   scanData.failureThreshold = scanParser(execOutput,
+  //       /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
+  //   scanData.hawkscanVersion = scanParser(execOutput,
+  //       /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
+  // });
+  //
+  // subProcess.on('error', (err) => {
+  //    core.error(err)
+  // });
 
-  subProcess.on('close', (code) => {
-    scanData.exitCode = code;
-    scanData.resultsLink = scanParser(execOutput,
-        /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-    scanData.failureThreshold = scanParser(execOutput,
-        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-    scanData.hawkscanVersion = scanParser(execOutput,
-        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-  });
-
-  subProcess.on('exit', (code) => {
-    scanData.exitCode = code;
-    scanData.resultsLink = scanParser(execOutput,
-        /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-    scanData.failureThreshold = scanParser(execOutput,
-        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-    scanData.hawkscanVersion = scanParser(execOutput,
-        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-  });
-
-  subProcess.on('error', (err) => {
-     core.error(err)
-  });
-
-  core.saveState("SubProcessId", process.pid)
+  core.saveState("SubProcessId", subProcess.pid)
 
   core.debug(`Starting process ${process.pid}`)
   return scanData;
@@ -16239,6 +16239,44 @@ module.exports.killProcess = async function killProcess() {
 
   core.debug(`Killing process ${process.pid}`)
    kill(Number(processId), 2)
+}
+
+function spawnChild(args) {
+  const child = spawn(...args)
+  const stdout = child.stdout ? {} : ''
+  const stderr = child.stderr ? {} : ''
+
+  if (child.stdout) {
+    child.stdout.on('data', data => {
+      stdout.append(data)
+    })
+  }
+
+  if (child.stderr) {
+    child.stderr.on('data', data => {
+      stderr.append(data)
+    })
+  }
+
+  const promise = new Promise((resolve, reject) => {
+    child.on('error', reject)
+
+    child.on('close', code => {
+      if (code === 0) {
+        resolve(stdout)
+      } else {
+        const err = new Error(`child exited with code ${code}`)
+        err.code = code
+        err.stderr = stderr
+        err.stdout = stdout
+        reject(err)
+      }
+    })
+  })
+
+  promise.child = child
+
+  return promise
 }
 
 
