@@ -20,7 +20,7 @@ function killChildProcess() {
             }
         });
     });
-    exec('tasklist', function(err, stdout, stderr) {
+    exec('ps', function(err, stdout, stderr) {
         core.debug(stdout);
         core.debug(stderr);
     });
