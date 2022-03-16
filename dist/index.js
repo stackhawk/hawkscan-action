@@ -16176,7 +16176,7 @@ module.exports.runCommand = async function runCommand(command) {
   let execOutput = '';
   let scanData = {};
   let execOptions = {};
-  // const commandArray = command.split(" ");
+  const commandArray = command.split(" ");
   execOptions.ignoreReturnCode = true;
   execOptions.listeners = {
     stdout: (data) => {
@@ -16184,7 +16184,7 @@ module.exports.runCommand = async function runCommand(command) {
     }
   };
 
-  let subProcess =  await spawnChild(command)
+  let subProcess =  await spawnChild(commandArray[0], commandArray.slice(1))
       .then(data => {
         scanData.exitCode = data;
         scanData.resultsLink = scanParser(execOutput,
