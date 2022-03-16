@@ -1,10 +1,10 @@
 const core = require("@actions/core");
 
-let childProcessId = -1;
+let childProcess = '';
 
 function killChildProcess() {
-    core.debug(`Killing process ${childProcessId}`)
-    process.kill(Number(childProcessId), 'SIGKILL');
+    core.debug(`Killing process ${childProcess.pid}`)
+    childProcess.kill('SIGINT');
 }
 
 module.exports.addSignalHandler = function addSignalHandler(){
@@ -17,21 +17,9 @@ module.exports.addSignalHandler = function addSignalHandler(){
         core.debug(`SIGTERM received for ${process.pid}`);
         killChildProcess();
     });
-
-    process.on('SIGHUP', () => {
-        core.debug(`SIGHUP received for ${process.pid}`);
-        if (process.pid !== childProcessId){
-            killChildProcess();
-
-            setTimeout(() => {
-                console.log('Exiting.');
-                process.exit(1);
-            }, 1000);
-        }
-    });
 }
 
-module.exports.addChildProcessId = function addChildProcessId(id){
-    core.debug(`Starting process ${id}`)
-    childProcessId = id;
+module.exports.addChildProcessId = function addChildProcessId(child){
+    core.debug(`Starting process ${child.pid}`)
+    childProcess = child;
 }

@@ -91,7 +91,7 @@ function spawnChild(command, args) {
 
   promise.child = child
 
-  addChildProcessId(child.pid);
+  addChildProcessId(child);
   return promise
 }
 
