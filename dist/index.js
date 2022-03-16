@@ -16079,9 +16079,7 @@ function killChildProcess() {
 module.exports.addSignalHandler = function addSignalHandler(){
     process.on('SIGINT', () => {
         core.debug('SIGINT received');
-        if (process.pid !== (Number(core.getState("SubProcessId")))) {
-            killChildProcess();
-        }
+        killChildProcess();
         process.exit();
     });
 }
