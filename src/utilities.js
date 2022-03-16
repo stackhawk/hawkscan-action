@@ -173,7 +173,7 @@ module.exports.killProcess = async function killProcess() {
    kill(Number(processId), 2)
 }
 
-function spawnChild(args) {
+function spawnChild(...args) {
   const child = spawn(...args)
   const stdout = child.stdout ? {} : ''
   const stderr = child.stderr ? {} : ''
