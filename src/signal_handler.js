@@ -4,8 +4,8 @@ const {kill} = require("process");
 function killChildProcess() {
     let processId = core.getState("SubProcessId");
 
-    core.debug(`Killing process ${process.pid}`)
-    kill(Number(processId), 2)
+    core.debug(`Killing process ${processId}`)
+    kill(Number(processId), 2);
 }
 
 module.exports.addSignalHandler = function addSignalHandler(){
@@ -13,6 +13,8 @@ module.exports.addSignalHandler = function addSignalHandler(){
         core.debug('SIGINT received');
         if (process.pid !== Number(core.getState("SubProcessId"))){
             killChildProcess();
+        } else {
+            process.exit();
         }
     });
 
