@@ -1,7 +1,5 @@
 const core = require('@actions/core');
-// const exec = require('@actions/exec');
 const { spawn } = require('child_process');
-const {kill} = require("process");
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
 function checkNotEmpty(element) {
@@ -45,6 +43,54 @@ function scanParser(input, regex, captureGroup) {
   } else {
     return null
   }
+}
+
+
+function spawnChild(command, args) {
+  console.debug(command);
+  console.debug(args);
+  const child = spawn(command,args)
+  let stdout = '';
+  let stderr = '';
+
+  if (child.stdout) {
+    child.stdout.on('data', data => {
+      stdout += data.toString();
+      process.stdout.write(data);
+    })
+  }
+
+  if (child.stderr) {
+    child.stderr.on('data', data => {
+      stderr += data.toString();
+      process.stderr.write(data);
+    })
+  }
+
+  const promise = new Promise((resolve, reject) => {
+    child.on('error',(err) => {
+      reject(err);
+    });
+
+    child.on('close', code => {
+      if (code === 0) {
+        resolve(stdout, code);
+      } else {
+        const err = new Error(`child exited with code ${code}`)
+        err.code = code;
+        err.stderr = stderr;
+        err.stdout = stdout;
+        core.debug(err.stderr);
+        resolve(stdout, code);
+      }
+    })
+  })
+
+  promise.child = child
+  core.saveState("SubProcessId", child.pid)
+
+  core.debug(`Starting process ${child.pid}`)
+  return promise
 }
 
 // Gather all conditioned inputs
@@ -122,88 +168,5 @@ module.exports.runCommand = async function runCommand(command) {
         core.error(error);
       });
 
-  // if (subProcess.stdout) {
-  //   subProcess.stdout.on('data', (data) => {
-  //     execOutput += data.toString();
-  //   });
-  // }
-  //
-  // subProcess.on('close', (code) => {
-  //   scanData.exitCode = code;
-  //   scanData.resultsLink = scanParser(execOutput,
-  //       /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-  //   scanData.failureThreshold = scanParser(execOutput,
-  //       /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-  //   scanData.hawkscanVersion = scanParser(execOutput,
-  //       /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-  // });
-  //
-  // subProcess.on('exit', (code) => {
-  //   scanData.exitCode = code;
-  //   scanData.resultsLink = scanParser(execOutput,
-  //       /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-  //   scanData.failureThreshold = scanParser(execOutput,
-  //       /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-  //   scanData.hawkscanVersion = scanParser(execOutput,
-  //       /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-  // });
-  //
-  // subProcess.on('error', (err) => {
-  //    core.error(err)
-  // });
-
-
   return scanData;
-}
-
-module.exports.killProcess = async function killProcess() {
-   let processId = core.getState("SubProcessId");
-
-  core.debug(`Killing process ${process.pid}`)
-   kill(Number(processId), 2)
-}
-
-function spawnChild(command, args) {
-  console.debug(command);
-  console.debug(args);
-  const child = spawn(command,args)
-  let stdout = '';
-  let stderr = '';
-
-  if (child.stdout) {
-    child.stdout.on('data', data => {
-      stdout += data.toString();
-    })
-  }
-
-  if (child.stderr) {
-    child.stderr.on('data', data => {
-      stderr += data.toString();
-    })
-  }
-
-  const promise = new Promise((resolve, reject) => {
-    child.on('error',(err) => {
-      reject(err);
-    });
-
-    child.on('close', code => {
-      if (code === 0) {
-        resolve(stdout, code);
-      } else {
-        const err = new Error(`child exited with code ${code}`)
-        err.code = code;
-        err.stderr = stderr;
-        err.stdout = stdout;
-        core.debug(err.stderr);
-        resolve(stdout, code);
-      }
-    })
-  })
-
-  promise.child = child
-  core.saveState("SubProcessId", child.pid)
-
-  core.debug(`Starting process ${child.pid}`)
-  return promise
 }

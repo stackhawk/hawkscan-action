@@ -16063,13 +16063,38 @@ module.exports ={ setup }
 
 /***/ }),
 
+/***/ 2931:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186);
+const {kill} = __nccwpck_require__(7282);
+
+
+module.exports.killChildProcess = function killChildProcess() {
+    let processId = core.getState("SubProcessId");
+
+    core.debug(`Killing process ${process.pid}`)
+    kill(Number(processId), 2)
+}
+
+module.exports.addSignalHandler = function addSignalHandler(){
+    process.on('SIGINT', () => {
+        core.debug('SIGINT received');
+        if (process.pid !== (Number(core.getState("SubProcessId")))) {
+            this.killChildProcess();
+        }
+        process.exit();
+    });
+}
+
+
+/***/ }),
+
 /***/ 7677:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
-// const exec = require('@actions/exec');
 const { spawn } = __nccwpck_require__(2081);
-const {kill} = __nccwpck_require__(7282);
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
 function checkNotEmpty(element) {
@@ -16113,6 +16138,54 @@ function scanParser(input, regex, captureGroup) {
   } else {
     return null
   }
+}
+
+
+function spawnChild(command, args) {
+  console.debug(command);
+  console.debug(args);
+  const child = spawn(command,args)
+  let stdout = '';
+  let stderr = '';
+
+  if (child.stdout) {
+    child.stdout.on('data', data => {
+      stdout += data.toString();
+      process.stdout.write(data);
+    })
+  }
+
+  if (child.stderr) {
+    child.stderr.on('data', data => {
+      stderr += data.toString();
+      process.stderr.write(data);
+    })
+  }
+
+  const promise = new Promise((resolve, reject) => {
+    child.on('error',(err) => {
+      reject(err);
+    });
+
+    child.on('close', code => {
+      if (code === 0) {
+        resolve(stdout, code);
+      } else {
+        const err = new Error(`child exited with code ${code}`)
+        err.code = code;
+        err.stderr = stderr;
+        err.stdout = stdout;
+        core.debug(err.stderr);
+        resolve(stdout, code);
+      }
+    })
+  })
+
+  promise.child = child
+  core.saveState("SubProcessId", child.pid)
+
+  core.debug(`Starting process ${child.pid}`)
+  return promise
 }
 
 // Gather all conditioned inputs
@@ -16190,90 +16263,7 @@ module.exports.runCommand = async function runCommand(command) {
         core.error(error);
       });
 
-  // if (subProcess.stdout) {
-  //   subProcess.stdout.on('data', (data) => {
-  //     execOutput += data.toString();
-  //   });
-  // }
-  //
-  // subProcess.on('close', (code) => {
-  //   scanData.exitCode = code;
-  //   scanData.resultsLink = scanParser(execOutput,
-  //       /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-  //   scanData.failureThreshold = scanParser(execOutput,
-  //       /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-  //   scanData.hawkscanVersion = scanParser(execOutput,
-  //       /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-  // });
-  //
-  // subProcess.on('exit', (code) => {
-  //   scanData.exitCode = code;
-  //   scanData.resultsLink = scanParser(execOutput,
-  //       /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-  //   scanData.failureThreshold = scanParser(execOutput,
-  //       /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-  //   scanData.hawkscanVersion = scanParser(execOutput,
-  //       /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-  // });
-  //
-  // subProcess.on('error', (err) => {
-  //    core.error(err)
-  // });
-
-
   return scanData;
-}
-
-module.exports.killProcess = async function killProcess() {
-   let processId = core.getState("SubProcessId");
-
-  core.debug(`Killing process ${process.pid}`)
-   kill(Number(processId), 2)
-}
-
-function spawnChild(command, args) {
-  console.debug(command);
-  console.debug(args);
-  const child = spawn(command,args)
-  let stdout = '';
-  let stderr = '';
-
-  if (child.stdout) {
-    child.stdout.on('data', data => {
-      stdout += data.toString();
-    })
-  }
-
-  if (child.stderr) {
-    child.stderr.on('data', data => {
-      stderr += data.toString();
-    })
-  }
-
-  const promise = new Promise((resolve, reject) => {
-    child.on('error',(err) => {
-      reject(err);
-    });
-
-    child.on('close', code => {
-      if (code === 0) {
-        resolve(stdout, code);
-      } else {
-        const err = new Error(`child exited with code ${code}`)
-        err.code = code;
-        err.stderr = stderr;
-        err.stdout = stdout;
-        core.debug(err.stderr);
-        resolve(stdout, code);
-      }
-    })
-  })
-
-  promise.child = child
-  core.saveState("SubProcessId", child.pid)
-
-  core.debug(`Starting process ${child.pid}`)
-  return promise
 }
 
 
@@ -16500,6 +16490,7 @@ const core = __nccwpck_require__(2186);
 const utilities = __nccwpck_require__(7677);
 const sarif = __nccwpck_require__(4348);
 const { setup } = __nccwpck_require__(7521);
+const {addSignalHandler} = __nccwpck_require__(2931);
 
 async function run() {
   core.info('Starting HawkScan Action');
@@ -16513,29 +16504,8 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(cliCommand);
   } else {
-    process.on('SIGTERM', () => {
-      core.debug('Recieved Sigterm')
-      if (process.pid !== (Number(core.getState("SubProcessId")))) {
-        utilities.killProcess();
-      }
-      process.exit();
-    });
-    process.on('SIGINT', () => {
-      core.debug('Recieved sigint');
-      if (process.pid !== (Number(core.getState("SubProcessId")))) {
-        utilities.killProcess();
-      }
-      process.exit();
-    });
-    process.on('SIGHUP', () => {
-      core.debug('Recieved SIGHUP');
-      if (process.pid !== (Number(core.getState("SubProcessId")))) {
-        utilities.killProcess();
-      }
-      process.exit();
-    });
-
-    await setup()
+    addSignalHandler();
+    await setup();
     scanData = await utilities.runCommand(cliCommand);
     exitCode = scanData.exitCode;
     core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
