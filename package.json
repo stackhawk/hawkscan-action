@@ -29,7 +29,8 @@
     "@actions/exec": "^1.1.0",
     "@actions/tool-cache": "^1.7.1",
     "@octokit/core": "^3.6.0",
-    "process": "^0.11.10"
+    "process": "^0.11.10",
+    "ps-node": "^0.1.6"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.33.3",
