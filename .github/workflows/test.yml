@@ -27,6 +27,7 @@ jobs:
       - name: Get the tools
         uses: ./
       - name: Run the scan
+        shell: bash
         run: hawk --api-key=${{ secrets.SHAWK_API_KEY }} scan __tests__/stackhawk.yml
 #        with:
 #          apiKey: ${{ secrets.SHAWK_API_KEY }}
