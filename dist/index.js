@@ -16069,34 +16069,28 @@ module.exports ={ setup }
 const core = __nccwpck_require__(2186);
 const {kill} = __nccwpck_require__(7282);
 
-function killChildProcess() {
-    let processId = process.env.STATE_SubProcessId;
+let childProcessId = -1;
 
-    core.debug(`Killing process ${processId}`)
-    kill(Number(processId), 2);
+function killChildProcess() {
+    core.debug(`Killing process ${childProcessId}`)
+    if (childProcessId > 0)
+        kill(Number(childProcessId), 2);
 }
 
 module.exports.addSignalHandler = function addSignalHandler(){
     process.on('SIGINT', () => {
         core.debug('SIGINT received');
-        if (process.pid !== Number(process.env.STATE_SubProcessId)){
+        if (process.pid !== childProcessId){
             killChildProcess();
         } else {
             process.exit();
         }
     });
+}
 
-    // process.on('SIGHUP', () => {
-    //     core.debug('SIGHUP received');
-    //     killChildProcess();
-    //     process.exit();
-    // });
-    //
-    // process.on('SIGTERM', () => {
-    //     core.debug('SIGTERM received');
-    //     killChildProcess();
-    //     process.exit();
-    // });
+module.exports.addChildProcessId = function addChildProcessId(id){
+    core.debug(`Starting process ${id}`)
+    childProcessId = id;
 }
 
 
@@ -16107,6 +16101,7 @@ module.exports.addSignalHandler = function addSignalHandler(){
 
 const core = __nccwpck_require__(2186);
 const { spawn } = __nccwpck_require__(2081);
+const { addChildProcessId } = __nccwpck_require__(2931)
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
 function checkNotEmpty(element) {
@@ -16196,9 +16191,8 @@ function spawnChild(command, args) {
   })
 
   promise.child = child
-  core.saveState("SubProcessId", child.pid)
 
-  core.debug(`Starting process ${child.pid}`)
+  addChildProcessId(child.pid);
   return promise
 }
 

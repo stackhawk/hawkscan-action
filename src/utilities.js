@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const { spawn } = require('child_process');
+const { addChildProcessId } = require('./signal_handler')
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
 function checkNotEmpty(element) {
@@ -89,9 +90,8 @@ function spawnChild(command, args) {
   })
 
   promise.child = child
-  core.saveState("SubProcessId", child.pid)
 
-  core.debug(`Starting process ${child.pid}`)
+  addChildProcessId(child.pid);
   return promise
 }
 
