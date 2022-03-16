@@ -16142,11 +16142,10 @@ function scanParser(input, regex, captureGroup) {
 
 
 function spawnChild(command, args) {
-  console.debug(command);
-  console.debug(args);
   const child = spawn(command,args)
   let stdout = '';
   let stderr = '';
+  let response = {};
 
   if (child.stdout) {
     child.stdout.on('data', data => {
@@ -16169,14 +16168,18 @@ function spawnChild(command, args) {
 
     child.on('close', code => {
       if (code === 0) {
-        resolve(stdout, code);
+        response.stdout = stdout;
+        response.code = code;
+        resolve(response);
       } else {
-        const err = new Error(`child exited with code ${code}`)
+        const err = new Error(`child exited with code ${code}`);
+        response.stdout = stdout;
+        response.code = code;
         err.code = code;
         err.stderr = stderr;
         err.stdout = stdout;
         core.debug(err.stderr);
-        resolve(stdout, code);
+        resolve(response);
       }
     })
   })
@@ -16250,13 +16253,13 @@ module.exports.runCommand = async function runCommand(command) {
   const commandArray = command.split(" ");
 
   await spawnChild(commandArray[0], commandArray.slice(1))
-      .then((data, code) => {
-        scanData.exitCode = code;
-        scanData.resultsLink = scanParser(data,
+      .then(data  => {
+        scanData.exitCode = data.code;
+        scanData.resultsLink = scanParser(data.stdout,
             /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-        scanData.failureThreshold = scanParser(data,
+        scanData.failureThreshold = scanParser(data.stdout,
             /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-        scanData.hawkscanVersion = scanParser(data,
+        scanData.hawkscanVersion = scanParser(data.stdout,
             /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
       })
       .catch(error => {
