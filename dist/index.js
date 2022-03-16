@@ -16184,7 +16184,7 @@ module.exports.runCommand = async function runCommand(command) {
     }
   };
 
-  let subProcess =  await spawnChild(commandArray[0], commandArray.slice(1))
+  await spawnChild(commandArray[0], commandArray.slice(1))
       .then(data => {
         scanData.exitCode = data;
         scanData.resultsLink = scanParser(execOutput,
@@ -16228,9 +16228,7 @@ module.exports.runCommand = async function runCommand(command) {
   //    core.error(err)
   // });
 
-  core.saveState("SubProcessId", subProcess.pid)
 
-  core.debug(`Starting process ${process.pid}`)
   return scanData;
 }
 
@@ -16275,7 +16273,9 @@ function spawnChild(...args) {
   })
 
   promise.child = child
+  core.saveState("SubProcessId", child.pid)
 
+  core.debug(`Starting process ${child.pid}`)
   return promise
 }
 
