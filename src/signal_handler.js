@@ -1,26 +1,16 @@
 const core = require("@actions/core");
-const ps = require("ps-node");
 const {exec} = require("child_process");
 
 
 let childProcess = '';
 
 function killChildProcess() {
-    ps.lookup({
-        command: 'node',
-        arguments: '--debug',
-    }, function(err, resultList ) {
-        if (err) {
-            throw new Error( err );
-        }
-
-        resultList.forEach(function( process ){
-            if( process ){
-                core.debug(`PID: ${process.pid} command: ${process.command}, argss: ${process.arguments}` );
-            }
-        });
-    });
     exec('ps', function(err, stdout, stderr) {
+        core.debug(stdout);
+        core.debug(stderr);
+    });
+
+    exec('pgrep java', function(err, stdout, stderr) {
         core.debug(stdout);
         core.debug(stderr);
     });
