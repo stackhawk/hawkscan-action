@@ -116,7 +116,7 @@ module.exports.runCommand = async function runCommand(command) {
     }
   };
 
-  let subProcess =  spawn(command, execOptions);
+  let subProcess =  await spawn(command, execOptions);
       // .then(data => {
       //   scanData.exitCode = data;
       //   scanData.resultsLink = scanParser(execOutput,
