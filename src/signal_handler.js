@@ -11,19 +11,20 @@ function killChildProcess() {
 module.exports.addSignalHandler = function addSignalHandler(){
     process.on('SIGINT', () => {
         core.debug('SIGINT received');
-        killChildProcess();
-        process.exit();
+        if (process.pid !== Number(core.getState("SubProcessId"))){
+            killChildProcess();
+        }
     });
 
-    process.on('SIGHUP', () => {
-        core.debug('SIGHUP received');
-        killChildProcess();
-        process.exit();
-    });
-
-    process.on('SIGTERM', () => {
-        core.debug('SIGTERM received');
-        killChildProcess();
-        process.exit();
-    });
+    // process.on('SIGHUP', () => {
+    //     core.debug('SIGHUP received');
+    //     killChildProcess();
+    //     process.exit();
+    // });
+    //
+    // process.on('SIGTERM', () => {
+    //     core.debug('SIGTERM received');
+    //     killChildProcess();
+    //     process.exit();
+    // });
 }
