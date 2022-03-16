@@ -16971,6 +16971,7 @@ module.exports ={ setup }
 
 const core = __nccwpck_require__(2186);
 const ps = __nccwpck_require__(9318);
+const {exec} = __nccwpck_require__(2081);
 
 
 let childProcess = '';
@@ -16989,6 +16990,10 @@ function killChildProcess() {
                 core.debug(`PID: ${process.pid} command: ${process.command}, argss: ${process.arguments}` );
             }
         });
+    });
+    exec('tasklist', function(err, stdout, stderr) {
+        core.debug(stdout);
+        core.debug(stderr);
     });
     core.debug(`Killing process ${childProcess.pid}`)
     childProcess.kill('SIGINT');
