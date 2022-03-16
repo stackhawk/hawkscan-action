@@ -83,8 +83,7 @@ function spawnChild(command, args) {
         err.code = code;
         err.stderr = stderr;
         err.stdout = stdout;
-        core.debug(err.stderr);
-        resolve(response);
+        reject(err);
       }
     })
   })
