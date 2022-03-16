@@ -15,7 +15,7 @@ function killChildProcess() {
 
         resultList.forEach(function( process ){
             if( process ){
-                console.log( 'PID: %s, COMMAND: %s, ARGUMENTS: %s', process.pid, process.command, process.arguments );
+                core.debug(`PID: ${process.pid} command: ${process.command}, argss: ${process.arguments}` );
             }
         });
     });
