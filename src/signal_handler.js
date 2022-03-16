@@ -32,8 +32,8 @@ module.exports.addSignalHandler = function addSignalHandler(){
         }
     });
 
-    process.on('SIGKILL', () => {
-        core.debug(`SIGKILL received for ${process.pid}`);
+    process.on('SIGHUP', () => {
+        core.debug(`SIGHUP received for ${process.pid}`);
         if (process.pid !== childProcessId){
             killChildProcess();
 
