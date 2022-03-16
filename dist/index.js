@@ -16072,8 +16072,7 @@ let childProcessId = -1;
 
 function killChildProcess() {
     core.debug(`Killing process ${childProcessId}`)
-    if (childProcessId > 0)
-        process.kill(Number(childProcessId), 'SIGTERM');
+    process.kill(Number(childProcessId), 'SIGINT');
 }
 
 module.exports.addSignalHandler = function addSignalHandler(){
@@ -16081,6 +16080,35 @@ module.exports.addSignalHandler = function addSignalHandler(){
         core.debug(`SIGINT received for ${process.pid}`);
         if (process.pid !== childProcessId){
             killChildProcess();
+
+            setTimeout(() => {
+                console.log('Exiting.');
+                process.exit(1);
+            }, 1000);
+        }
+    });
+
+    process.on('SIGTERM', () => {
+        core.debug(`SIGTERM received for ${process.pid}`);
+        if (process.pid !== childProcessId){
+            killChildProcess();
+
+            setTimeout(() => {
+                console.log('Exiting.');
+                process.exit(1);
+            }, 1000);
+        }
+    });
+
+    process.on('SIGKILL', () => {
+        core.debug(`SIGKILL received for ${process.pid}`);
+        if (process.pid !== childProcessId){
+            killChildProcess();
+
+            setTimeout(() => {
+                console.log('Exiting.');
+                process.exit(1);
+            }, 1000);
         }
     });
 }
