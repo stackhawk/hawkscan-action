@@ -16239,8 +16239,10 @@ module.exports.killProcess = async function killProcess() {
    kill(Number(processId), 2)
 }
 
-function spawnChild(...args) {
-  const child = spawn(...args)
+function spawnChild(command, args) {
+  console.debug(command);
+  console.debug(args);
+  const child = spawn(command,args)
   let stdout = '';
   let stderr = '';
 
@@ -16257,7 +16259,9 @@ function spawnChild(...args) {
   }
 
   const promise = new Promise((resolve, reject) => {
-    child.on('error', reject);
+    child.on('error',(err) => {
+      reject(err);
+    });
 
     child.on('close', code => {
       if (code === 0) {
