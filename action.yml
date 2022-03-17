@@ -25,6 +25,10 @@ inputs:
     description: GitHub Token for uploading Code Scanning Alert info - required if `codeScanningAlerts` is enabled
     required: false
     default: ${{ github.token }}}
+  installCLIOnly:
+    description: If `true` the action will only install the CLI and not run a scan
+    required: false
+    default: false
   version:
     description: HawkScan CLI version to use
     required: false

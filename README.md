@@ -155,7 +155,6 @@ jobs:
         configurationFiles: |
           stackhawk.yml
           stackhawk-extras.yml
-        network: host
 ```
 
 The configuration above will perform a dry run, meaning it will only print out the Docker command that it would run if `dryRun` were set to `false`, which is the default.  Finally, it tells HawkScan to use the `stackhawk.yml` configuration file and overlay the `stackhawk-extra.yml` configuration file on top of it.
