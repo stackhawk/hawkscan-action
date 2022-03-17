@@ -177,6 +177,10 @@ jobs:
 
 The configuration above will perform a dry run, meaning it will only print out the Docker command that it would run if `dryRun` were set to `false`, which is the default. It will pass the environment variables `APP_HOST`, `APP_ID`, and `APP_ENV` to HawkScan so that they can be used in the `stackhawk.yml` and `stackhawk-extra.yml` configuration files. Finally, it tells HawkScan to use the `stackhawk.yml` configuration file and overlay the `stackhawk-extra.yml` configuration file on top of it.
 
+## Example workflows
+
+Follow the [Example Workflows](example_workflows/) to get started with your application  
+
 ## Need Help?
 
 If you have questions or need some help, please email us at support@stackhawk.com.

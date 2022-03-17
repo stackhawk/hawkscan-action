@@ -1,0 +1,18 @@
+name: "HawkScan Scan"
+on:
+  push:
+
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    name: Run my app and scan it
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Scan my app
+        env:
+          APP_ENV: Development
+        uses: stackhawk/hawkscan-action@v1.3.4
+        with:
+          apiKey: ${{ secrets.HAWK_API_KEY }}
+          configurationFiles: ../../stackhawk_custom.yml
