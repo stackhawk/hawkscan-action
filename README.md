@@ -58,14 +58,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: stackhawk/hawkscan-action@v1.3.4
-    with:
-      installCLIOnly: true
-    - name: Run CLI Scan
-      run: hawk --api-key=${{ secrets.SHAWK_API_KEY }} scan
+      with:
+        apiKey: ${{ secrets.HAWK_API_KEY }}
+        configurationFiles: stackhawk.yml stackhawk-extra.yml
 ```
+
 ### `installCLIOnly`
 
-**Optional** Flag to signal to only install the CLI and then you can optionally run hawk CLI from the job
+**Optional** Flag to signal to only install the CLI and not run a scan if set to true. Then you can optionally run hawk CLI from the job
 
 For example:
 ```yaml
@@ -75,9 +75,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: stackhawk/hawkscan-action@v1.3.4
-      with:
-        apiKey: ${{ secrets.HAWK_API_KEY }}
-        configurationFiles: stackhawk.yml stackhawk-extra.yml
+    with:
+      installCLIOnly: true
+    - name: Run CLI Scan
+      run: hawk --api-key=${{ secrets.SHAWK_API_KEY }} scan
 ```
 
 ### `codeScanningAlerts`

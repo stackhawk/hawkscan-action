@@ -23,6 +23,7 @@ beforeEach(() => {
   delete process.env.INPUT_VERSION;
   delete process.env.INPUT_CODESCANNINGALERTS;
   delete process.env.INPUT_GITHUBTOKEN;
+  delete process.env.INPUT_INSTALLCLIONLY;
 });
 
 test('gather minimal inputs', () => {

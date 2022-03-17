@@ -9,13 +9,14 @@ function killHawkProcess() {
 function interruptProcess(name){
     core.debug(`Killing process ${name}`)
     exec(`pgrep ${name}`, function(err, stdout) {
-        core.debug(stdout);
         let result = stdout.toString().split('\n');
         result.forEach(element => {
-            core.debug(`Killing process id ${element}`)
             let pid = parseInt(element);
-            if (!isNaN(pid) && pid > -1)
+            if (!isNaN(pid) && pid > -1) {
+                core.debug(`Killing process id ${element}`);
                 process.kill(pid, 'SIGINT');
+            }
+
         });
     });
 }
