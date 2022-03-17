@@ -35,7 +35,7 @@ jobs:
 
   # Run a HawkScan with this Action
   command-line-test:
-    name: Ajax Live Test
+    name: Command Line Test
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
@@ -48,7 +48,7 @@ jobs:
 
   # Run a HawkScan with this Action
   ajax-test:
-      name: Command Line Test
+      name: Ajax Test
       runs-on: ubuntu-20.04
       steps:
         - name: Check it out
