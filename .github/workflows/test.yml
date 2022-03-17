@@ -29,7 +29,6 @@ jobs:
         with:
           apiKey: ${{ secrets.SHAWK_API_KEY }}
           githubToken: ${{ github.token }}
-          environmentVariables: SHAWK_RESULTS_ENDPOINT, SHAWK_AUTH_ENDPOINT
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
 
@@ -58,7 +57,6 @@ jobs:
           with:
             apiKey: ${{ secrets.SHAWK_API_KEY }}
             githubToken: ${{ github.token }}
-            environmentVariables: SHAWK_RESULTS_ENDPOINT, SHAWK_AUTH_ENDPOINT
             configurationFiles: __tests__/stackhawk.yml
             codeScanningAlerts: true
 

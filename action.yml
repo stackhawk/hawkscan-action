@@ -10,9 +10,6 @@ inputs:
     description: If set to `true`, show HawkScan commands, but don't run them
     required: false
     default: false
-  environmentVariables:
-    description: Space-separated list of environment variables to pass to HawkScan
-    required: false
   configurationFiles:
     description: Space-separated list of HawkScan configuration files to use
     required: false

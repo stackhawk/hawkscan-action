@@ -15,7 +15,6 @@ function run() {
   buildInput({
     dryRun: 'true',
     apiKey: 'hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX',
-    environmentVariables: 'HOST APP_ENV SHAWK_RESULTS_ENDPOINT SHAWK_AUTH_ENDPOINT',
     configurationFiles: "__tests__/stackhawk.yml",
     version: 'latest',
     codeScanningAlerts: 'true',

@@ -18,7 +18,6 @@ beforeEach(() => {
   jest.resetModules();
   delete process.env.INPUT_DRYRUN;
   delete process.env.INPUT_APIKEY;
-  delete process.env.INPUT_ENVIRONMENTVARIABLES;
   delete process.env.INPUT_CONFIGURATIONFILES;
   delete process.env.INPUT_VERSION;
   delete process.env.INPUT_CODESCANNINGALERTS;
