@@ -15901,6 +15901,58 @@ module.exports = { getDownloadObject, getLatestVersion }
 
 /***/ }),
 
+/***/ 9420:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const {spawn} = __nccwpck_require__(2081);
+
+module.exports.spawnHawk = function spawnHawk(command, args) {
+    const child = spawn(command,args)
+    let stdout = '';
+    let stderr = '';
+    let response = {};
+
+    if (child.stdout) {
+        child.stdout.on('data', data => {
+            stdout += data.toString();
+            process.stdout.write(data);
+        })
+    }
+
+    if (child.stderr) {
+        child.stderr.on('data', data => {
+            stderr += data.toString();
+            process.stderr.write(data);
+        })
+    }
+
+    const promise = new Promise((resolve, reject) => {
+        child.on('error',(err) => {
+            reject(err);
+        });
+
+        child.on('close', code => {
+            if (code === 0) {
+                response.stdout = stdout;
+                response.code = code;
+                resolve(response);
+            } else {
+                const err = new Error(`child exited with code ${code}`);
+                err.code = code;
+                err.stderr = stderr;
+                err.stdout = stdout;
+                reject(err);
+            }
+        })
+    })
+
+    promise.child = child
+
+    return promise
+}
+
+/***/ }),
+
 /***/ 4348:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -16069,40 +16121,30 @@ module.exports ={ setup }
 const core = __nccwpck_require__(2186);
 const {exec} = __nccwpck_require__(2081);
 
+function killHawkProcess() {
+    interruptProcess('hawk');
+    interruptProcess('java');
+}
 
-let childProcess = '';
-
-function killChildProcess() {
-
-    exec('pgrep java', function(err, stdout) {
+function interruptProcess(name){
+    core.debug(`Killing process ${name}`)
+    exec(`pgrep ${name}`, function(err, stdout) {
         core.debug(stdout);
         let result = stdout.toString().split('\n');
         result.forEach(element => {
-            core.debug(element)
+            core.debug(`Killing process id ${element}`)
             let pid = parseInt(element);
             if (!isNaN(pid) && pid > -1)
-                process.kill(pid, 'SIGINT')
+                process.kill(pid, 'SIGINT');
         });
     });
-    core.debug(`Killing process ${childProcess.pid}`)
-    childProcess.kill('SIGINT');
 }
 
 module.exports.addSignalHandler = function addSignalHandler(){
     process.on('SIGINT', () => {
         core.debug(`SIGINT received for ${process.pid}`);
-        killChildProcess();
+        killHawkProcess();
     });
-
-    process.on('SIGTERM', () => {
-        core.debug(`SIGTERM received for ${process.pid}`);
-        killChildProcess();
-    });
-}
-
-module.exports.addChildProcessId = function addChildProcessId(child){
-    core.debug(`Starting process ${child.pid}`)
-    childProcess = child;
 }
 
 
@@ -16112,8 +16154,7 @@ module.exports.addChildProcessId = function addChildProcessId(child){
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
-const { spawn } = __nccwpck_require__(2081);
-const { addChildProcessId } = __nccwpck_require__(2931)
+const { spawnHawk } = __nccwpck_require__(9420)
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
 function checkNotEmpty(element) {
@@ -16159,55 +16200,6 @@ function scanParser(input, regex, captureGroup) {
   }
 }
 
-
-function spawnChild(command, args) {
-  const child = spawn(command,args)
-  let stdout = '';
-  let stderr = '';
-  let response = {};
-
-  if (child.stdout) {
-    child.stdout.on('data', data => {
-      stdout += data.toString();
-      process.stdout.write(data);
-    })
-  }
-
-  if (child.stderr) {
-    child.stderr.on('data', data => {
-      stderr += data.toString();
-      process.stderr.write(data);
-    })
-  }
-
-  const promise = new Promise((resolve, reject) => {
-    child.on('error',(err) => {
-      reject(err);
-    });
-
-    child.on('close', code => {
-      if (code === 0) {
-        response.stdout = stdout;
-        response.code = code;
-        resolve(response);
-      } else {
-        const err = new Error(`child exited with code ${code}`);
-        response.stdout = stdout;
-        response.code = code;
-        err.code = code;
-        err.stderr = stderr;
-        err.stdout = stdout;
-        reject(err);
-      }
-    })
-  })
-
-  promise.child = child
-
-  addChildProcessId(child);
-  return promise
-}
-
 // Gather all conditioned inputs
 module.exports.gatherInputs = function gatherInputs() {
   return {
@@ -16217,7 +16209,8 @@ module.exports.gatherInputs = function gatherInputs() {
     version: core.getInput('version') || 'latest',
     dryRun: core.getInput('dryRun').toLowerCase() || 'false',
     codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false',
-    githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || ''
+    githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || '',
+    installCLIOnly : core.getInput('installCLIOnly') || 'false'
   }
 }
 
@@ -16231,37 +16224,6 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   return cleanCliClean
 }
 
-// module.exports.runCommand = async function runCommand(command) {
-//   core.debug(`Running command:`);
-//   core.debug(command);
-//
-//   let execOutput = '';
-//   let scanData = {};
-//   let execOptions = {};
-//   const commandArray = command.split(" ");
-//   execOptions.ignoreReturnCode = true;
-//   execOptions.listeners = {
-//     stdout: (data) => {
-//       execOutput += data.toString();
-//     }
-//   };
-//
-//   await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
-//     .then(data => {
-//       scanData.exitCode = data;
-//       scanData.resultsLink = scanParser(execOutput,
-//         /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-//       scanData.failureThreshold = scanParser(execOutput,
-//         /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-//       scanData.hawkscanVersion = scanParser(execOutput,
-//         /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-//     })
-//     .catch(error => {
-//       core.error(error)
-//     });
-//   return scanData;
-// }
-
 module.exports.runCommand = async function runCommand(command) {
   core.debug(`Running command:`);
   core.debug(command);
@@ -16269,7 +16231,7 @@ module.exports.runCommand = async function runCommand(command) {
   let scanData = {};
   const commandArray = command.split(" ");
 
-  await spawnChild(commandArray[0], commandArray.slice(1))
+  await spawnHawk(commandArray[0], commandArray.slice(1))
       .then(data  => {
         scanData.exitCode = data.code;
         scanData.resultsLink = scanParser(data.stdout,
@@ -16516,12 +16478,17 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(cliCommand);
   } else {
+    // Install the CLI and set up signal handling
     addSignalHandler();
     await setup();
-    scanData = await utilities.runCommand(cliCommand);
-    exitCode = scanData.exitCode;
-    core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
-    core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
+    // Run hawk command if installCLIOnly is false
+    if (inputs.installCLIOnly !== 'true') {
+      scanData = await utilities.runCommand(cliCommand);
+      exitCode = scanData.exitCode;
+      core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
+      core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
+    }
+
   }
 
   // Upload SARIF data

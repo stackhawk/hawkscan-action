@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Check it out
         uses: actions/checkout@v2
-      - name: Get the tools
+      - name: Run Scan
         uses: ./
         with:
           apiKey: ${{ secrets.SHAWK_API_KEY }}
@@ -32,15 +32,6 @@ jobs:
           environmentVariables: SHAWK_RESULTS_ENDPOINT, SHAWK_AUTH_ENDPOINT
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
-#      - name: Run the scan
-#        shell: bash
-#        run: hawk --api-key=${{ secrets.SHAWK_API_KEY }} scan __tests__/stackhawk.yml
-#        with:
-#          apiKey: ${{ secrets.SHAWK_API_KEY }}
-#          githubToken: ${{ github.token }}
-#          environmentVariables: SHAWK_RESULTS_ENDPOINT, SHAWK_AUTH_ENDPOINT
-#          configurationFiles: __tests__/stackhawk.yml
-#          codeScanningAlerts: true
 
     # Run a HawkScan with this Action
   ajax-test:
@@ -48,13 +39,28 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - uses: ./
+      - name: Install CLI
+        uses: ./
         with:
-          apiKey: ${{ secrets.SHAWK_API_KEY }}
-          githubToken: ${{ github.token }}
-          environmentVariables: SHAWK_RESULTS_ENDPOINT, SHAWK_AUTH_ENDPOINT
-          configurationFiles: __tests__/stackhawk_spider.yml
-          codeScanningAlerts: true
+          installCLIOnly: true
+      - name: Run the scan
+        run: hawk --api-key=${{ secrets.SHAWK_API_KEY }} scan __tests__/stackhawk.yml
+
+  # Run a HawkScan with this Action
+  command-line-test:
+      name: Command Line Test
+      runs-on: ubuntu-20.04
+      steps:
+        - name: Check it out
+          uses: actions/checkout@v2
+        - name: Get the tools
+          uses: ./
+          with:
+            apiKey: ${{ secrets.SHAWK_API_KEY }}
+            githubToken: ${{ github.token }}
+            environmentVariables: SHAWK_RESULTS_ENDPOINT, SHAWK_AUTH_ENDPOINT
+            configurationFiles: __tests__/stackhawk.yml
+             codeScanningAlerts: true
 
   # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
   release-new-version:
@@ -64,6 +70,8 @@ jobs:
     needs:
       - unit-tests
       - live-test
+      - ajax-test
+      - command-line-test
     steps:
       - uses: actions/checkout@v2
         with:

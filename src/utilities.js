@@ -1,6 +1,5 @@
 const core = require('@actions/core');
-const { spawn } = require('child_process');
-const { addChildProcessId } = require('./signal_handler')
+const { spawnHawk } = require('./hawk_process')
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
 function checkNotEmpty(element) {
@@ -46,55 +45,6 @@ function scanParser(input, regex, captureGroup) {
   }
 }
 
-
-function spawnChild(command, args) {
-  const child = spawn(command,args)
-  let stdout = '';
-  let stderr = '';
-  let response = {};
-
-  if (child.stdout) {
-    child.stdout.on('data', data => {
-      stdout += data.toString();
-      process.stdout.write(data);
-    })
-  }
-
-  if (child.stderr) {
-    child.stderr.on('data', data => {
-      stderr += data.toString();
-      process.stderr.write(data);
-    })
-  }
-
-  const promise = new Promise((resolve, reject) => {
-    child.on('error',(err) => {
-      reject(err);
-    });
-
-    child.on('close', code => {
-      if (code === 0) {
-        response.stdout = stdout;
-        response.code = code;
-        resolve(response);
-      } else {
-        const err = new Error(`child exited with code ${code}`);
-        response.stdout = stdout;
-        response.code = code;
-        err.code = code;
-        err.stderr = stderr;
-        err.stdout = stdout;
-        reject(err);
-      }
-    })
-  })
-
-  promise.child = child
-
-  addChildProcessId(child);
-  return promise
-}
-
 // Gather all conditioned inputs
 module.exports.gatherInputs = function gatherInputs() {
   return {
@@ -104,7 +54,8 @@ module.exports.gatherInputs = function gatherInputs() {
     version: core.getInput('version') || 'latest',
     dryRun: core.getInput('dryRun').toLowerCase() || 'false',
     codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false',
-    githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || ''
+    githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || '',
+    installCLIOnly : core.getInput('installCLIOnly') || 'false'
   }
 }
 
@@ -118,37 +69,6 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   return cleanCliClean
 }
 
-// module.exports.runCommand = async function runCommand(command) {
-//   core.debug(`Running command:`);
-//   core.debug(command);
-//
-//   let execOutput = '';
-//   let scanData = {};
-//   let execOptions = {};
-//   const commandArray = command.split(" ");
-//   execOptions.ignoreReturnCode = true;
-//   execOptions.listeners = {
-//     stdout: (data) => {
-//       execOutput += data.toString();
-//     }
-//   };
-//
-//   await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
-//     .then(data => {
-//       scanData.exitCode = data;
-//       scanData.resultsLink = scanParser(execOutput,
-//         /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-//       scanData.failureThreshold = scanParser(execOutput,
-//         /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-//       scanData.hawkscanVersion = scanParser(execOutput,
-//         /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-//     })
-//     .catch(error => {
-//       core.error(error)
-//     });
-//   return scanData;
-// }
-
 module.exports.runCommand = async function runCommand(command) {
   core.debug(`Running command:`);
   core.debug(command);
@@ -156,7 +76,7 @@ module.exports.runCommand = async function runCommand(command) {
   let scanData = {};
   const commandArray = command.split(" ");
 
-  await spawnChild(commandArray[0], commandArray.slice(1))
+  await spawnHawk(commandArray[0], commandArray.slice(1))
       .then(data  => {
         scanData.exitCode = data.code;
         scanData.resultsLink = scanParser(data.stdout,

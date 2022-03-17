@@ -16,12 +16,17 @@ async function run() {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
     core.info(cliCommand);
   } else {
+    // Install the CLI and set up signal handling
     addSignalHandler();
     await setup();
-    scanData = await utilities.runCommand(cliCommand);
-    exitCode = scanData.exitCode;
-    core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
-    core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
+    // Run hawk command if installCLIOnly is false
+    if (inputs.installCLIOnly !== 'true') {
+      scanData = await utilities.runCommand(cliCommand);
+      exitCode = scanData.exitCode;
+      core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
+      core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
+    }
+
   }
 
   // Upload SARIF data

@@ -3,7 +3,7 @@ const process = require('process');
 const { getDownloadObject } = require('../src/cli_utils');
 
 // Our workspace should be GITHUB_WORSPACE if it exists, or the current working directory otherwise
-// const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
+const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
 
 // Take an object of key/value pairs and convert it to input environment variables
 function buildInput(inputs) {
@@ -25,41 +25,41 @@ beforeEach(() => {
   delete process.env.INPUT_GITHUBTOKEN;
 });
 
-// test('gather minimal inputs', () => {
-//   expect(utilities.gatherInputs()).toEqual({
-//     workspace: workspace,
-//     apiKey: '',
-//     environmentVariables: [],
-//     githubToken: "",
-//     configurationFiles: ['stackhawk.yml'],
-//     version: 'latest',
-//     dryRun: 'false',
-//     codeScanningAlerts: 'false'
-//   });
-// });
-//
-// test('gather max inputs', () => {
-//   buildInput({
-//     apiKey: 'testkey',
-//     environmentVariables: 'one, two\nthree four  five,,six,\n\n seven, ',
-//     githubToken: "gh.xXx.XxX",
-//     configurationFiles: "one.yml two.yml, three.yml\nfour.yml  five.yaml,,six.yml,\n\n seven.yml, ",
-//     version: 'latest',
-//     dryRun: 'true',
-//     codeScanningAlerts: 'true'
-//   });
-//
-//   expect(utilities.gatherInputs()).toEqual({
-//     workspace: workspace,
-//     apiKey: 'testkey',
-//     environmentVariables: ['one', 'two', 'three', 'four', 'five', 'six', 'seven'],
-//     githubToken: "gh.xXx.XxX",
-//     configurationFiles: ['one.yml', 'two.yml', 'three.yml', 'four.yml', 'five.yaml', 'six.yml', 'seven.yml'],
-//     version: 'latest',
-//     dryRun: 'true',
-//     codeScanningAlerts: 'true'
-//   });
-// });
+test('gather minimal inputs', () => {
+  expect(utilities.gatherInputs()).toEqual({
+    apiKey: '',
+    githubToken: "",
+    configurationFiles: ['stackhawk.yml'],
+    version: 'latest',
+    dryRun: 'false',
+    installCLIOnly : 'false',
+    codeScanningAlerts: 'false',
+    workspace : workspace
+  });
+});
+
+test('gather max inputs', () => {
+  buildInput({
+    apiKey: 'testkey',
+    githubToken: "gh.xXx.XxX",
+    configurationFiles: "one.yml two.yml, three.yml\nfour.yml  five.yaml,,six.yml,\n\n seven.yml, ",
+    version: 'latest',
+    dryRun: 'true',
+    codeScanningAlerts: 'true',
+    installCLIOnly : 'true'
+  });
+
+  expect(utilities.gatherInputs()).toEqual({
+    workspace: workspace,
+    apiKey: 'testkey',
+    githubToken: "gh.xXx.XxX",
+    configurationFiles: ['one.yml', 'two.yml', 'three.yml', 'four.yml', 'five.yaml', 'six.yml', 'seven.yml'],
+    version: 'latest',
+    dryRun: 'true',
+    codeScanningAlerts: 'true',
+    installCLIOnly : 'true'
+  });
+});
 
 test('cli dry-run', () => {
   buildInput({
