@@ -35,7 +35,7 @@ jobs:
 
 ### `dryRun`
 
-**Optional** If set to `true`, show HawkScan commands, but don't run them.
+**Optional** If set to `true`, shows HawkScan commands, but don't run them. 
 
 For example:
 ```yaml

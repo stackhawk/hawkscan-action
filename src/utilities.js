@@ -1,5 +1,5 @@
 const core = require('@actions/core');
-const exec = require('@actions/exec');
+const { spawnHawk } = require('./hawk_process')
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
 function checkNotEmpty(element) {
@@ -50,55 +50,46 @@ module.exports.gatherInputs = function gatherInputs() {
   return {
     workspace: process.env.GITHUB_WORKSPACE || process.cwd(),
     apiKey: core.getInput('apiKey') || '',
-    environmentVariables: stringToList(core.getInput('environmentVariables')),
     configurationFiles: stringToList(core.getInput('configurationFiles') || 'stackhawk.yml'),
-    network: core.getInput('network') || 'host',
-    image: core.getInput('image') || 'stackhawk/hawkscan',
     version: core.getInput('version') || 'latest',
     dryRun: core.getInput('dryRun').toLowerCase() || 'false',
     codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false',
-    githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || ''
+    githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || '',
+    installCLIOnly : core.getInput('installCLIOnly') || 'false',
+    sourceURL : core.getInput('sourceURL') || 'https://download.stackhawk.com/hawk/cli'
   }
 }
 
-module.exports.buildDockerCommand = function buildDockerCommand(inputs) {
-  const dockerEnvironmentVariables = stringifyArguments(inputs.environmentVariables, '--env');
-  const dockerConfigurationFiles = stringifyArguments(inputs.configurationFiles);
-  const dockerCommand = (`docker run --tty --rm --volume ${inputs.workspace}:/hawk ${dockerEnvironmentVariables} ` +
-    `--env API_KEY=${inputs.apiKey} --network ${inputs.network} ${inputs.image}:${inputs.version} ` +
-    `${dockerConfigurationFiles}`);
-  const dockerCommandClean = dockerCommand.replace(/  +/g, ' ')
-  core.debug(`Docker command: ${dockerCommandClean}`);
-  return dockerCommandClean
+module.exports.buildCLICommand = function buildCLICommand(inputs) {
+  const configurationFiles = stringifyArguments(inputs.configurationFiles);
+  const cliCommand = (`hawk ` +
+      `--api-key=${inputs.apiKey} ` +
+      `scan ${configurationFiles}`);
+  const cleanCliClean = cliCommand.replace(/  +/g, ' ')
+  core.debug(`CLI command: ${cleanCliClean}`);
+  return cleanCliClean
 }
 
 module.exports.runCommand = async function runCommand(command) {
   core.debug(`Running command:`);
   core.debug(command);
 
-  let execOutput = '';
   let scanData = {};
-  let execOptions = {};
   const commandArray = command.split(" ");
-  execOptions.ignoreReturnCode = true;
-  execOptions.listeners = {
-    stdout: (data) => {
-      execOutput += data.toString();
-    }
-  };
 
-  await exec.exec(commandArray[0], commandArray.slice(1), execOptions)
-    .then(data => {
-      scanData.exitCode = data;
-      scanData.resultsLink = scanParser(execOutput,
-        /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
-      scanData.failureThreshold = scanParser(execOutput,
-        /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
-      scanData.hawkscanVersion = scanParser(execOutput,
-        /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
-    })
-    .catch(error => {
-      core.error(error)
-    });
+  await spawnHawk(commandArray[0], commandArray.slice(1))
+      .then(data  => {
+        scanData.exitCode = data.code;
+        scanData.resultsLink = scanParser(data.stdout,
+            /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
+        scanData.failureThreshold = scanParser(data.stdout,
+            /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
+        scanData.hawkscanVersion = scanParser(data.stdout,
+            /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
+      })
+      .catch(error => {
+        core.error(error);
+      });
+
   return scanData;
 }
