@@ -13,7 +13,7 @@ Here's the rundown:
 
 ## Getting Started
 * Follow directions in our [quickstart guide](QUICKSTART.md)
-* 
+* To see more examples see [example workflows](example_workflows/README.md)
 
 ## Inputs
 
