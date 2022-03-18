@@ -55,7 +55,8 @@ module.exports.gatherInputs = function gatherInputs() {
     dryRun: core.getInput('dryRun').toLowerCase() || 'false',
     codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false',
     githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || '',
-    installCLIOnly : core.getInput('installCLIOnly') || 'false'
+    installCLIOnly : core.getInput('installCLIOnly') || 'false',
+    sourceURL : core.getInput('sourceURL') || 'https://download.stackhawk.com/hawk/cli'
   }
 }
 

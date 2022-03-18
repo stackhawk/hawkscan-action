@@ -1,8 +1,8 @@
 const https = require("https");
 
-function getDownloadObject(version) {
+function getDownloadObject(version, urlPath) {
     const binPath = `/hawk-${ version }`;
-    const url = `https://download.stackhawk.com/hawk/cli/hawk-${ version }.zip`;
+    const url = `${urlPath}/hawk-${ version }.zip`;
     return {
         url,
         binPath

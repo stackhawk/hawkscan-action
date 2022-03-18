@@ -15869,9 +15869,9 @@ function wrappy (fn, cb) {
 
 const https = __nccwpck_require__(5687);
 
-function getDownloadObject(version) {
+function getDownloadObject(version, urlPath) {
     const binPath = `/hawk-${ version }`;
-    const url = `https://download.stackhawk.com/hawk/cli/hawk-${ version }.zip`;
+    const url = `${urlPath}/hawk-${ version }.zip`;
     return {
         url,
         binPath
@@ -16086,15 +16086,18 @@ const path = __nccwpck_require__(1017);
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
 const { getDownloadObject, getLatestVersion } = __nccwpck_require__(7254);
+const {gatherInputs} = __nccwpck_require__(7677)
 
 async function setup() {
     try {
+        const inputs = gatherInputs();
         // Get version of tool to be installed
-        const version = core.getInput('version');
+        const version = inputs.version;
+        const sourceUrl = inputs.sourceURL;
 
         // Download the specific version of the tool, e.g. as a tarball/zipball
         const cliVersion = version === 'latest' ? await getLatestVersion() : version;
-        const download = getDownloadObject(cliVersion);
+        const download = getDownloadObject(cliVersion, sourceUrl);
 
         const pathToTarball = await tc.downloadTool(download.url);
 
@@ -16211,7 +16214,8 @@ module.exports.gatherInputs = function gatherInputs() {
     dryRun: core.getInput('dryRun').toLowerCase() || 'false',
     codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false',
     githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || '',
-    installCLIOnly : core.getInput('installCLIOnly') || 'false'
+    installCLIOnly : core.getInput('installCLIOnly') || 'false',
+    sourceURL : core.getInput('sourceURL') || 'https://download.stackhawk.com/hawk/cli'
   }
 }
 

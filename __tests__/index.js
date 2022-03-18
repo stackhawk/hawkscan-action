@@ -23,6 +23,7 @@ beforeEach(() => {
   delete process.env.INPUT_CODESCANNINGALERTS;
   delete process.env.INPUT_GITHUBTOKEN;
   delete process.env.INPUT_INSTALLCLIONLY;
+  delete process.env.INPUT_SOURCEURL;
 });
 
 test('gather minimal inputs', () => {
@@ -34,7 +35,8 @@ test('gather minimal inputs', () => {
     dryRun: 'false',
     installCLIOnly : 'false',
     codeScanningAlerts: 'false',
-    workspace : workspace
+    workspace : workspace,
+    sourceURL : 'https://download.stackhawk.com/hawk/cli'
   });
 });
 
@@ -46,7 +48,8 @@ test('gather max inputs', () => {
     version: 'latest',
     dryRun: 'true',
     codeScanningAlerts: 'true',
-    installCLIOnly : 'true'
+    installCLIOnly : 'true',
+    sourceURL : 'https://test.download.stackhawk.com/hawk/cli'
   });
 
   expect(utilities.gatherInputs()).toEqual({
@@ -57,7 +60,8 @@ test('gather max inputs', () => {
     version: 'latest',
     dryRun: 'true',
     codeScanningAlerts: 'true',
-    installCLIOnly : 'true'
+    installCLIOnly : 'true',
+    sourceURL : 'https://test.download.stackhawk.com/hawk/cli'
   });
 });
 
@@ -74,7 +78,13 @@ test('cli dry-run', () => {
 });
 
 test('get download object', () => {
-  const downloadObject = getDownloadObject('2.1.0');
+  const downloadObject = getDownloadObject('2.1.0', 'https://download.stackhawk.com/hawk/cli');
   expect(downloadObject.url).toEqual('https://download.stackhawk.com/hawk/cli/hawk-2.1.0.zip');
   expect(downloadObject.binPath).toEqual('/hawk-2.1.0');
 });
+
+test('get custom url download object', () => {
+  const downloadObject = getDownloadObject('2.1.0', 'https://download.test.stackhawk.com/hawk/cli');
+  expect(downloadObject.url).toEqual('https://download.test.stackhawk.com/hawk/cli/hawk-2.1.0.zip');
+  expect(downloadObject.binPath).toEqual('/hawk-2.1.0');
+})
