@@ -25,7 +25,11 @@ inputs:
   installCLIOnly:
     description: If `true` the action will only install the CLI and not run a scan
     required: false
-    default: false
+  default: false
+  sourceURL:
+    description: Source for ZIP file
+    required: false
+    default: https://download.stackhawk.com/hawk/cli
   version:
     description: HawkScan CLI version to use
     required: false
