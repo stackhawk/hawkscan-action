@@ -111,6 +111,24 @@ jobs:
 
 **Optional** If set to `${{ github.token }}`, gives HawkScan Action a temporary GitHub API token to enable uploading SARIF data. This input is required if `codeScanningAlerts` is set to `true`.
 
+### `Debugging` 
+
+**Optional** If you need additional information on your scans enable the debug and verbose environment variables to see detailed logs in the workflow output
+
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: stackhawk/hawkscan-action@v1.4.0
+        with:
+          apiKey: ${{ secrets.HAWK_API_KEY }}
+        env:
+          DEBUG: true
+          VERBOSE: true
+```
+
 ## Examples
 
 The following example shows how to run HawkScan with a StackHawk platform API key stored as a GitHub Actions secret environment variable, `HAWK_API_KEY`. In this workflow, GitHub Actions will checkout your repository, build your Python app, and run it. It then uses the HawkScan Action to run HawkScan with the given API key. HawkScan automatically finds the `stackhawk.yml` configuration file at the root of your repository and runs a scan based on that configuration.

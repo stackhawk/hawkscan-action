@@ -92,4 +92,5 @@ jobs:
     ```
 
 3. View the GitHub Actions Workflow by selecting the `Actions` tab at the top
-   of your repository on GitHub.
+   of your repository on GitHub. Then click on the `HawkScan Scan`
+   element to see the details.
