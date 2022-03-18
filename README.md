@@ -23,15 +23,15 @@ jobs:
   stackhawk-hawkscan:
     runs-on: ubuntu-latest
     steps:
-     - uses: actions/checkout@v2
-     - uses: stackhawk/hawkscan-action@v1.3.4
-        with:
-         apiKey: ${{ secrets.HAWK_API_KEY }}
+    - uses: actions/checkout@v2
+    - uses: stackhawk/hawkscan-action@v1.3.4
+      with:
+        apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
 
 ### `dryRun`
 
-**Optional** If set to `true`, shows HawkScan commands, but don't run them.
+**Optional** If set to `true`, shows HawkScan commands, but don't run them. 
 
 For example:
 ```yaml
