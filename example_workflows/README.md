@@ -7,10 +7,10 @@ update values to match your setup.
 
 ## Workflows
 
-| Workflow                         | Description                                  |
-|----------------------------------|----------------------------------------------|
-| [Automatic HawkScan Scan](scan/) | Automatically scan your application on push  |
-| [HawkScan CLI](cli/)             | Install and run HawkScan CLI on pull-request |
+| Workflow                                  | Description                                  |
+|-------------------------------------------|----------------------------------------------|
+| [Automatic HawkScan Scan](scan/README.md) | Automatically scan your application on push  |
+| [HawkScan CLI](cli/README.md)             | Install and run HawkScan CLI on pull-request |
 
 ## Github Actions resources
 

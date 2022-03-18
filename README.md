@@ -11,6 +11,10 @@ Here's the rundown:
 * 💻 Built for Developers: The engineers building software are the best equipped to fix bugs, including security bugs. StackHawk does security, but is built for engineers like you.
 * 🤖 Simple to Automate in CI: Application security tests belong in CI, running tests on every PR. Adding StackHawk tests to a DevOps pipeline is easy.
 
+## Getting Started
+* Follow directions in our [quickstart guide](QUICKSTART.md)
+* 
+
 ## Inputs
 
 ### `apiKey`

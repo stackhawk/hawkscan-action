@@ -1,4 +1,4 @@
-# -- stackhawk configuration for Fake Vulny --
+# -- stackhawk configuration for Your App --
 app:
   # -- An applicationId obtained from the StackHawk platform. --
   applicationId: <APPLICATION_ID> # (required)
