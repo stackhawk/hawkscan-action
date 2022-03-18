@@ -26,7 +26,7 @@
   "homepage": "https://github.com/actions/javascript-action#readme",
   "dependencies": {
     "@actions/core": "^1.6.0",
-    "@actions/exec": "^1.1.0",
+    "@actions/exec": "^1.1.1",
     "@octokit/core": "^3.6.0",
     "process": "^0.11.10"
   },
