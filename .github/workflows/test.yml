@@ -32,6 +32,24 @@ jobs:
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
 
+  # Run a HawkScan with verbose logging
+  verbose-test:
+    name: Verbose Test
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check it out
+        uses: actions/checkout@v2
+      - name: Run Scan
+        uses: ./
+        with:
+          apiKey: ${{ secrets.SHAWK_API_KEY }}
+          githubToken: ${{ github.token }}
+          configurationFiles: __tests__/stackhawk.yml
+          codeScanningAlerts: true
+          sourceURL: ${{ secrets.TEST_HAWK_CLI_SOURCE_URL }}
+          version: 2.2.0-beta
+          verbose: true
+
   # Run a HawkScan with this Action
   command-line-test:
     name: Command Line Test
@@ -42,7 +60,7 @@ jobs:
         uses: ./
         with:
           installCLIOnly: true
-          sourceURL: 'https://download.test.stackhawk.com/hawk/cli'
+          sourceURL: ${{ secrets.TEST_HAWK_CLI_SOURCE_URL }}
       - name: Run the scan
         run: hawk --api-key=${{ secrets.SHAWK_API_KEY }} scan __tests__/stackhawk.yml
 
@@ -70,6 +88,7 @@ jobs:
       - unit-tests
       - live-test
       - ajax-test
+      - verbose-test
       - command-line-test
     steps:
       - uses: actions/checkout@v2
