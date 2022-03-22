@@ -36,7 +36,8 @@ test('gather minimal inputs', () => {
     installCLIOnly : 'false',
     codeScanningAlerts: 'false',
     workspace : workspace,
-    sourceURL : 'https://download.stackhawk.com/hawk/cli'
+    sourceURL : 'https://download.stackhawk.com/hawk/cli',
+    debug: 'false'
   });
 });
 
@@ -49,7 +50,8 @@ test('gather max inputs', () => {
     dryRun: 'true',
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
-    sourceURL : 'https://test.download.stackhawk.com/hawk/cli'
+    sourceURL : 'https://test.download.stackhawk.com/hawk/cli',
+    debug: 'false'
   });
 
   expect(utilities.gatherInputs()).toEqual({
@@ -61,7 +63,8 @@ test('gather max inputs', () => {
     dryRun: 'true',
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
-    sourceURL : 'https://test.download.stackhawk.com/hawk/cli'
+    sourceURL : 'https://test.download.stackhawk.com/hawk/cli',
+    debug: 'false'
   });
 });
 

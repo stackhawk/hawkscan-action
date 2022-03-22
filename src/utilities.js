@@ -56,7 +56,8 @@ module.exports.gatherInputs = function gatherInputs() {
     codeScanningAlerts: core.getInput('codeScanningAlerts').toLowerCase() || 'false',
     githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || '',
     installCLIOnly : core.getInput('installCLIOnly') || 'false',
-    sourceURL : core.getInput('sourceURL') || 'https://download.stackhawk.com/hawk/cli'
+    sourceURL : core.getInput('sourceURL') || 'https://download.stackhawk.com/hawk/cli',
+    debug: core.getInput('debug').toLowerCase() || 'false',
   }
 }
 
@@ -64,6 +65,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
   const cliCommand = (`hawk ` +
       `--api-key=${inputs.apiKey} ` +
+      `${(inputs.debug === 'true') ? "--debug " : ""}` +
       `scan ${configurationFiles}`);
   const cleanCliClean = cliCommand.replace(/  +/g, ' ')
   core.debug(`CLI command: ${cleanCliClean}`);
