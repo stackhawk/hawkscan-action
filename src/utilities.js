@@ -68,7 +68,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
       `scan ${(inputs.verbose === 'true') ? "--verbose " : ""}` +
       `${configurationFiles}`);
   const cleanCliClean = cliCommand.replace(/  +/g, ' ')
-  core.debug(`CLI command: ${cleanCliClean}`);
+  core.info(`CLI command: ${cleanCliClean}`);
   return cleanCliClean
 }
 
