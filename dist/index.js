@@ -16224,8 +16224,8 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
   const cliCommand = (`hawk ` +
       `--api-key=${inputs.apiKey} ` +
-      `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
-      `scan ${configurationFiles}`);
+      `scan ${(inputs.verbose === 'true') ? "--verbose " : ""}` +
+      `${configurationFiles}`);
   const cleanCliClean = cliCommand.replace(/  +/g, ' ')
   core.debug(`CLI command: ${cleanCliClean}`);
   return cleanCliClean
