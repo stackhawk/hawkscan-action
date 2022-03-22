@@ -12,7 +12,7 @@ async function run() {
   let scanData;
 
   // Run the scanner
-  core.info("Scanner Command: " + cliCommand);
+  console.log("Scanner Command: " + cliCommand);
   if ( inputs.dryRun === 'true' ) {
     core.info(`DRY-RUN MODE - The command will not be run:`);
   } else {
