@@ -51,7 +51,7 @@ test('gather max inputs', () => {
     dryRun: 'true',
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
-    sourceURL : 'https://test.download.stackhawk.com/hawk/cli',
+    sourceURL : 'https://download.stackhawk.com/hawk/cli',
     verbose: 'false'
   });
 
@@ -64,7 +64,7 @@ test('gather max inputs', () => {
     dryRun: 'true',
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
-    sourceURL : 'https://test.download.stackhawk.com/hawk/cli',
+    sourceURL : 'https://download.stackhawk.com/hawk/cli',
     verbose: 'false'
   });
 });
@@ -88,7 +88,7 @@ test('get download object', () => {
 });
 
 test('get custom url download object', () => {
-  const downloadObject = getDownloadObject('2.1.0', 'https://download.test.stackhawk.com/hawk/cli');
-  expect(downloadObject.url).toEqual('https://download.test.stackhawk.com/hawk/cli/hawk-2.1.0.zip');
+  const downloadObject = getDownloadObject('2.1.0', 'https://download.stackhawk.com/hawk/cli');
+  expect(downloadObject.url).toEqual('https://download.stackhawk.com/hawk/cli/hawk-2.1.0.zip');
   expect(downloadObject.binPath).toEqual('/hawk-2.1.0');
 })
