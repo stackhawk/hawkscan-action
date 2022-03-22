@@ -24,6 +24,7 @@ beforeEach(() => {
   delete process.env.INPUT_GITHUBTOKEN;
   delete process.env.INPUT_INSTALLCLIONLY;
   delete process.env.INPUT_SOURCEURL;
+  delete process.env.INPUT_VERBOSE;
 });
 
 test('gather minimal inputs', () => {
@@ -37,7 +38,7 @@ test('gather minimal inputs', () => {
     codeScanningAlerts: 'false',
     workspace : workspace,
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
-    debug: 'false'
+    verbose: 'false'
   });
 });
 
@@ -51,7 +52,7 @@ test('gather max inputs', () => {
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
     sourceURL : 'https://test.download.stackhawk.com/hawk/cli',
-    debug: 'false'
+    verbose: 'false'
   });
 
   expect(utilities.gatherInputs()).toEqual({
@@ -64,7 +65,7 @@ test('gather max inputs', () => {
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
     sourceURL : 'https://test.download.stackhawk.com/hawk/cli',
-    debug: 'false'
+    verbose: 'false'
   });
 });
 

@@ -32,6 +32,23 @@ jobs:
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
 
+  # Run a HawkScan with verbose logging
+  verbose-test:
+    name: Verbose Test
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check it out
+        uses: actions/checkout@v2
+      - name: Run Scan
+        uses: ./
+        with:
+          apiKey: ${{ secrets.SHAWK_API_KEY }}
+          githubToken: ${{ github.token }}
+          configurationFiles: __tests__/stackhawk.yml
+          codeScanningAlerts: true
+          version: 2.2.0-beta
+          verbose: true
+
   # Run a HawkScan with this Action
   command-line-test:
     name: Command Line Test
