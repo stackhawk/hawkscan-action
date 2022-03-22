@@ -87,6 +87,7 @@ jobs:
       - unit-tests
       - live-test
       - ajax-test
+      - verbose-test
       - command-line-test
     steps:
       - uses: actions/checkout@v2
