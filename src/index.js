@@ -12,9 +12,9 @@ async function run() {
   let scanData;
 
   // Run the scanner
+  core.info("Scanner Command: " + cliCommand);
   if ( inputs.dryRun === 'true' ) {
-    core.info(`DRY-RUN MODE - The following command will not be run:`);
-    core.info(cliCommand);
+    core.info(`DRY-RUN MODE - The command will not be run:`);
   } else {
     // Install the CLI and set up signal handling
     addSignalHandler();
