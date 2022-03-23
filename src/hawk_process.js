@@ -32,6 +32,7 @@ module.exports.spawnHawk = function spawnHawk(command, args) {
                 resolve(response);
             } else {
                 const err = new Error(`child exited with code ${code}`);
+                response.code = code;
                 err.code = code;
                 err.stderr = stderr;
                 err.stdout = stdout;
