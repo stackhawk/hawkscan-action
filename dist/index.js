@@ -16217,6 +16217,7 @@ module.exports.gatherInputs = function gatherInputs() {
     installCLIOnly : core.getInput('installCLIOnly') || 'false',
     sourceURL : core.getInput('sourceURL') || 'https://download.stackhawk.com/hawk/cli',
     verbose: core.getInput('verbose').toLowerCase() || 'false',
+    debug: core.getInput('debug').toLowerCase() || 'false'
   }
 }
 
@@ -16224,7 +16225,9 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
   const cliCommand = (`hawk ` +
       `--api-key=${inputs.apiKey} ` +
-      `scan ${(inputs.verbose === 'true') ? "--verbose " : ""}` +
+      `scan ` +
+      `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
+      `${(inputs.debug === 'true') ? "--debug " : ""}` +
       `${configurationFiles}`);
   const cleanCliClean = cliCommand.replace(/  +/g, ' ')
   core.debug(`CLI command: ${cleanCliClean}`);
