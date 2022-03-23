@@ -25,6 +25,7 @@ beforeEach(() => {
   delete process.env.INPUT_INSTALLCLIONLY;
   delete process.env.INPUT_SOURCEURL;
   delete process.env.INPUT_VERBOSE;
+  delete process.env.INPUT_DEBUG;
 });
 
 test('gather minimal inputs', () => {
@@ -38,7 +39,8 @@ test('gather minimal inputs', () => {
     codeScanningAlerts: 'false',
     workspace : workspace,
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
-    verbose: 'false'
+    verbose: 'false',
+    debug: 'false'
   });
 });
 
@@ -52,7 +54,8 @@ test('gather max inputs', () => {
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
-    verbose: 'false'
+    verbose: 'false',
+    debug: 'false'
   });
 
   expect(utilities.gatherInputs()).toEqual({
@@ -65,7 +68,8 @@ test('gather max inputs', () => {
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
-    verbose: 'false'
+    verbose: 'false',
+    debug: 'false'
   });
 });
 

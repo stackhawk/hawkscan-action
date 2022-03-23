@@ -32,9 +32,9 @@ jobs:
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
 
-  # Run a HawkScan with verbose logging
-  verbose-test:
-    name: Verbose Test
+  # Run a HawkScan with verbose and debug logging
+  verbose-debug-test:
+    name: Verbose and Debug Logging Test
     runs-on: ubuntu-20.04
     steps:
       - name: Check it out
@@ -49,6 +49,7 @@ jobs:
           sourceURL: ${{ secrets.TEST_HAWK_CLI_SOURCE_URL }}
           version: 2.2.0-beta
           verbose: true
+          debug: true
 
   # Run a HawkScan with this Action
   command-line-test:
@@ -88,7 +89,7 @@ jobs:
       - unit-tests
       - live-test
       - ajax-test
-      - verbose-test
+      - verbose-debug-test
       - command-line-test
     steps:
       - uses: actions/checkout@v2

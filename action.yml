@@ -38,6 +38,10 @@ inputs:
     description: HawkScan CLI verbose log output flag
     required: false
     default: false
+  debug:
+    description: HawkScan CLI debug log output flag
+    required: false
+    default: false
 
 runs:
   using: node12
