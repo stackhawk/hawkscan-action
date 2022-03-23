@@ -62,8 +62,9 @@ jobs:
         with:
           installCLIOnly: true
           sourceURL: ${{ secrets.TEST_HAWK_CLI_SOURCE_URL }}
+          debug: true
       - name: Run the scan
-        run: hawk --api-key=${{ secrets.SHAWK_API_KEY }} scan __tests__/stackhawk.yml
+        run: hawk --api-key=${{ secrets.SHAWK_API_KEY }} scan __tests__/stackhawkk.yml
 
   # Run a HawkScan with this Action
   ajax-test:
