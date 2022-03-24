@@ -26,9 +26,9 @@ module.exports.spawnHawk = function spawnHawk(command, args) {
         });
 
         child.on('close', code => {
-            response.stdout = stdout;
-            response.code = code;
             if (code === 0) {
+                response.stdout = stdout;
+                response.code = code;
                 resolve(response);
             } else {
                 const err = new Error(`child exited with code ${code}`);

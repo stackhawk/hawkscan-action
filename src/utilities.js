@@ -84,9 +84,7 @@ module.exports.runCommand = async function runCommand(command) {
 
   await spawnHawk(commandArray[0], commandArray.slice(1))
       .then(data  => {
-        // scanData.exitCode = data.code;
         scanData.exitCode = data.code;
-        core.debug("MY EXIT CODE: " + data.code)
         scanData.resultsLink = scanParser(data.stdout,
             /(?<=View on StackHawk platform: )(?<group>.*)/m, 'group') || 'https://app.stackhawk.com';
         scanData.failureThreshold = scanParser(data.stdout,
@@ -95,6 +93,7 @@ module.exports.runCommand = async function runCommand(command) {
             /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
       })
       .catch(error => {
+        scanData.exitCode = error.code;
         core.error(error);
       });
 
