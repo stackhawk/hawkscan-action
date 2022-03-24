@@ -94,10 +94,10 @@ module.exports.runCommand = async function runCommand(command) {
       })
       .catch(error => {
         scanData.exitCode = error.code;
-        console.log("hitting error block")
+        core.debug("hitting error block")
         core.error(error);
       });
-  console.log(scanData)
-  console.log(scanData.exitCode)
+  core.debug(scanData)
+  core.debug(scanData.exitCode)
   return scanData;
 }
