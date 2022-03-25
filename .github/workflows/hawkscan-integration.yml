@@ -16,6 +16,10 @@ jobs:
         run: git clone https://github.com/${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}.git
       - name: Navigate to app directory to clone ${{ github.event.client_payload.repoName }}
         run: cd ${{ github.event.client_payload.repoName }}
+      - name: Debugging 1
+        run: pwd
+      - name: Debugging 1
+        run: ls -lah
       - name: Run ${{ github.event.client_payload.repoName }}
         run: docker-compose up -d
       - name: Navigate to scan config directory
