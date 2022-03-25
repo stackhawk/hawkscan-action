@@ -1,0 +1,32 @@
+hawk:
+  spider:
+    maxDurationMinutes: 2
+app:
+  applicationId: ${APPLICATION_ID:test-app-id}
+  env: ${ENV:dev}
+  contactEmail: hawkdeploy@stackhawk.com
+  host: ${APP_HOST:https://localhost:9000}
+  openApiConf:
+    filePath: openapi.yaml
+  authentication:
+    loggedInIndicator: "\\QSign Out\\E"
+    loggedOutIndicator: ".*Location:.*/login.*"
+    usernamePassword:
+      type: JSON
+      loginPath: /api/jwt/auth/signin
+      usernameField: username
+      passwordField: password
+      scanUsername: "user"
+      scanPassword: "password"
+    tokenAuthorization:
+      type: HEADER
+      value: Authorization
+      tokenType: Bearer
+    tokenExtraction:
+      type: TOKEN_PATH
+      value: "token"
+    testPath:
+      path: /api/jwt/items/search/i
+      success: ".*200.*"
+  autoPolicy: true
+  autoInputVectors: true
