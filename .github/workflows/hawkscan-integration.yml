@@ -5,7 +5,6 @@ on:
   repository_dispatch:
     types: [integration-test]
 env:
-  # CONFIG_DIRECTORY: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/${{ github.event.client_payload.repoName }}
   CONFIG_DIRECTORY: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/javaspringvulny
 jobs:
   hawkscan:
@@ -13,19 +12,14 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      #- name: Create app directory for ${{ github.event.client_payload.repoName }}
       - name: Create app directory for javaspringvulny
         run: mkdir -p __tests__/integration-tests/apps
-      #- name: Checkout ${{ github.event.client_payload.repoName }} repository
       - name: Checkout javaspringvulny repository
         run: |
           cd __tests__/integration-tests/apps/
-        #  git clone https://github.com/${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}.git
           git clone https://github.com/kaakaww/javaspringvulny.git
-      #- name: Run ${{ github.event.client_payload.repoName }}
       - name: Run javaspringvulny
         run: |
-        #  cd ${{ github.event.client_payload.repoName }}
           cd javaspringvulny
           docker-compose up -d
       - name: Run HawkScan
