@@ -4,8 +4,6 @@ on:
   pull_request:
   repository_dispatch:
     types: [integration-test]
-env:
-  CONFIG_DIRECTORY: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/javaspringvulny
 jobs:
   hawkscan:
     name: HawkScan Action Integration Test
@@ -27,7 +25,7 @@ jobs:
         uses: stackhawk/hawkscan-action@main
         with:
           apiKey: ${{ secrets.HAWK_API_KEY }}
-          configurationFiles: ${{ env.CONFIG_DIRECTORY }}/${{ github.event.client_payload.configFile }}
+          configurationFiles: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/javaspringvulny/${{ github.event.client_payload.configFile }}
           sourceURL: ${{ github.event.client_payload.hawkscanSourceUrl }}
           version: ${{ github.event.client_payload.hawkscanVersion }}
           verbose: ${{ github.event.client_payload.verbose }}
