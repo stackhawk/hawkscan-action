@@ -1,7 +1,5 @@
 name: HawkScan Integration Tests
 on:
-  push:
-  pull_request:
   repository_dispatch:
     types: [integration-test]
 jobs:
@@ -14,31 +12,10 @@ jobs:
         run: mkdir -p __tests__/integration-tests/apps
       - name: Navigate to app directory to clone ${{ github.event.client_payload.repoName }}
         run: cd __tests__/integration-tests/apps/
-      # - name: Checkout ${{ github.event.client_payload.repoName }} repository
-      #   run: git clone https://github.com/${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}.git
-      - name: Checkout javaspringvulny repository
-        run: |
-          mkdir -p __tests__/integration-tests/apps
-          pwd
-          ls -lah
-          cd __tests__/integration-tests/apps/
-          pwd
-          ls -lah
-          git clone https://github.com/kaakaww/javaspringvulny.git
-          pwd
-          ls -lah
-          cd javaspringvulny
-          pwd
-          ls -lah
-          docker-compose up -d
-          pwd
-          ls -lah
-      - name: Navigate to app directory to clone javaspringvulny
-        run: cd javaspringvulny
-      - name: Debugging 1
-        run: pwd
-      - name: Debugging 1
-        run: ls -lah
+      - name: Checkout ${{ github.event.client_payload.repoName }} repository
+        run: git clone https://github.com/${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}.git
+      - name: Navigate to app directory to clone ${{ github.event.client_payload.repoName }}
+        run: cd ${{ github.event.client_payload.repoName }}
       - name: Run ${{ github.event.client_payload.repoName }}
         run: docker-compose up -d
       - name: Navigate to scan config directory
