@@ -1,5 +1,6 @@
 name: HawkScan Integration Tests
 on:
+  pull_request:
   repository_dispatch:
     types: [integration-test]
 jobs:
