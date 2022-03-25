@@ -2,8 +2,6 @@ name: HawkScan Integration Tests
 on:
   repository_dispatch:
     types: [integration-test]
-env:
-  CONFIG_DIRECTORY: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/javaspringvulny
 jobs:
   hawkscan:
     name: HawkScan Action Integration Test
