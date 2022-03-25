@@ -18,7 +18,7 @@ jobs:
           git clone https://github.com/kaakaww/javaspringvulny.git
       - name: Run javaspringvulny
         run: |
-          cd javaspringvulny
+          cd __tests__/integration-tests/apps/javaspringvulny
           docker-compose up -d
       - name: Run HawkScan
         id: run-hawkscan
