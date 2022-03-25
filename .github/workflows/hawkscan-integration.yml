@@ -17,7 +17,7 @@ jobs:
       - name: Run ${{ github.event.client_payload.repoName }}
         run: docker-compose up -d
       - name: Navigate to scan config directory
-        run: cd /home/runner/work/hawkscan-action/hawkscan-action/__tests__/integration-tests/${{ github.event.client_payload.repoName }}
+        run: cd /home/runner/work/hawkscan-action/__tests__/integration-tests/${{ github.event.client_payload.repoName }}
       - name: Run HawkScan
         id: run-hawkscan
         uses: stackhawk/hawkscan-action@main
