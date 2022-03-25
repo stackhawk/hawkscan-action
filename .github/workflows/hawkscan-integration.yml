@@ -4,28 +4,31 @@ on:
   pull_request:
   repository_dispatch:
     types: [integration-test]
+env:
+  # CONFIG_DIRECTORY: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/${{ github.event.client_payload.repoName }}
+  CONFIG_DIRECTORY: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/javaspringvulny
 jobs:
   hawkscan:
     name: HawkScan Action Integration Test
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-      - name: Create app directory for javaspringvulny
+      - name: Create app directory for ${{ github.event.client_payload.repoName }}
         run: mkdir -p __tests__/integration-tests/apps
-      - name: Checkout javaspringvulny repository
+      - name: Checkout ${{ github.event.client_payload.repoName }} repository
         run: |
           cd __tests__/integration-tests/apps/
-          git clone https://github.com/kaakaww/javaspringvulny.git
-      - name: Run javaspringvulny
+          git clone https://github.com/${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}.git
+      - name: Run ${{ github.event.client_payload.repoName }}
         run: |
-          cd __tests__/integration-tests/apps/javaspringvulny
+          cd __tests__/integration-tests/apps/${{ github.event.client_payload.repoName }}
           docker-compose up -d
       - name: Run HawkScan
         id: run-hawkscan
         uses: stackhawk/hawkscan-action@main
         with:
           apiKey: ${{ secrets.HAWK_API_KEY }}
-          configurationFiles: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/javaspringvulny/${{ github.event.client_payload.configFile }}
+          configurationFiles: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/${{ github.event.client_payload.repoName }}/${{ github.event.client_payload.configFile }}
           sourceURL: ${{ github.event.client_payload.hawkscanSourceUrl }}
           version: ${{ github.event.client_payload.hawkscanVersion }}
           verbose: ${{ github.event.client_payload.verbose }}
