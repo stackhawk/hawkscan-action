@@ -7,7 +7,7 @@ app:
   contactEmail: hawkdeploy@stackhawk.com
   host: ${APP_HOST:https://localhost:9000}
   openApiConf:
-    filePath: zopenapi.yaml
+    filePath: openapi.yaml
   authentication:
     loggedInIndicator: "\\QSign Out\\E"
     loggedOutIndicator: ".*Location:.*/login.*"
