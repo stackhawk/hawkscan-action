@@ -18,6 +18,7 @@ beforeEach(() => {
   jest.resetModules();
   delete process.env.INPUT_DRYRUN;
   delete process.env.INPUT_APIKEY;
+  delete process.env.INPUT_WORKSPACE;
   delete process.env.INPUT_CONFIGURATIONFILES;
   delete process.env.INPUT_VERSION;
   delete process.env.INPUT_CODESCANNINGALERTS;
@@ -80,9 +81,9 @@ test('cli dry-run', () => {
     version: '2.1.0'
   });
   const inputs = utilities.gatherInputs();
-  const cliCommand  = utilities.buildCLICommand(inputs);
+  const cliCommand = utilities.buildCLICommand(inputs);
   expect(cliCommand)
-      .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX scan stackhawk.yml`);
+      .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX scan --repo-dir ${workspace} stackhawk.yml`);
 });
 
 test('get download object', () => {

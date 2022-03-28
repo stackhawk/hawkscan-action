@@ -69,6 +69,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
       `scan ` +
       `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
       `${(inputs.debug === 'true') ? "--debug " : ""}` +
+      `--repo-dir ${inputs.workspace} ` +
       `${configurationFiles}`);
   const cleanCliClean = cliCommand.replace(/  +/g, ' ')
   core.debug(`CLI command: ${cleanCliClean}`);

@@ -10,6 +10,10 @@ inputs:
     description: If set to `true`, show HawkScan commands, but don't run them
     required: false
     default: false
+  workspace:
+    description: Working directory accessed by HawkScan including configuration files
+    required: false
+    default: $GITHUB_WORKSPACE
   configurationFiles:
     description: Space-separated list of HawkScan configuration files to use
     required: false
