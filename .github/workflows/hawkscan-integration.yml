@@ -14,12 +14,11 @@ jobs:
         run: mkdir -p __tests__/integration-tests/apps
       - name: Checkout ${{ github.event.client_payload.repoName }} repository
         uses: actions/checkout@v2
-        with:
-          repository: ${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}
-          path: './__tests__/integration-tests/apps/'
-        # run: |
-        #   cd __tests__/integration-tests/apps/
-        #   git clone https://github.com/${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}.git
+        run: |
+          cd __tests__/integration-tests/apps/
+          git clone https://github.com/${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}.git
+      - name: ls -lah
+        run: ls -lah
       - name: Run ${{ github.event.client_payload.repoName }}
         run: |
           cd __tests__/integration-tests/apps/${{ github.event.client_payload.repoName }}
