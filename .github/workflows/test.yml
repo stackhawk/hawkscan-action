@@ -31,7 +31,7 @@ jobs:
           path: __tests__/integration-tests/apps/javaspringvulny
       - name: Run ${{ github.event.client_payload.repoName }}
         run: |
-          cd __tests__/integration-tests/apps/${{ github.event.client_payload.repoName }}
+          cd __tests__/integration-tests/apps/javaspringvulny
           docker-compose up -d
       - name: Run Scan
         uses: ./
