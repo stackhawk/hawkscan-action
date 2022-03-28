@@ -1,7 +1,7 @@
 ## StackHawk Setup
 
-1. If you do not have an existing account or application on StackHawk.
-   [Follow the steps getting set up](https://docs.stackhawk.com/hawkscan/#quickstart). Make sure to save your API key
+1. If you do not have an existing account or application on StackHawk,
+   [follow our platform quickstart guide](https://docs.stackhawk.com/hawkscan/#quickstart). Make sure to save your API key
 
 2. [Save the API Key](https://app.stackhawk.com/settings/apikeys)
 
