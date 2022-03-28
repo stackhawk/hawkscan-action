@@ -38,7 +38,7 @@ For pushes to the `main` branch (or pull requests), this workflow will:
 
 4. Add the following secrets to your repository's secrets [secrets]:
 
-    - `API_KEY`: API Key from your stack hawk platform
+    - `HAWK_API_KEY`: API Key from your stack hawk platform
 
 5. Update `.github/workflows/stackhawk_custom.yml` to match the values corresponding to your application:
 

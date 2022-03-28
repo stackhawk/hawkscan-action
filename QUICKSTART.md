@@ -11,7 +11,7 @@
 
 2. Add the following secrets to your repository's [secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
 
-    - `API_KEY`: API Key from your stack hawk platform
+    - `HAWK_API_KEY`: API Key from your stack hawk platform
 
 3. Create a stackhawk.yml in your repository. Paste in the following values
 ```yaml
