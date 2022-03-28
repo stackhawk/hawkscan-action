@@ -31,7 +31,7 @@ jobs:
           githubToken: ${{ github.token }}
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
-          sourceURL: 'https://download.test.stackhawk.com/hawk/cli'
+          sourceURL: ${{ secrets.TEST_HAWK_CLI_SOURCE_URL }}
           version: '2.2.0-beta'
         env:
           DEBUG: true
