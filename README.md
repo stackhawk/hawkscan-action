@@ -82,7 +82,7 @@ jobs:
     with:
       installCLIOnly: true
     - name: Run CLI Scan
-      run: hawk --api-key=${{ secrets.SHAWK_API_KEY }} scan
+      run: hawk --api-key=${{ secrets.HAWK_API_KEY }} scan
 ```
 
 ### `codeScanningAlerts`
