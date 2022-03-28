@@ -7,13 +7,13 @@ The [StackHawk](https://www.stackhawk.com/) [HawkScan](https://hub.docker.com/r/
 ## About StackHawk
 Here's the rundown:
 
-* 🧪 Modern Application Security Testing: StackHawk is a dynamic application security testing (DAST) tool, helping you catch security bugs before they hit production.
-* 💻 Built for Developers: The engineers building software are the best equipped to fix bugs, including security bugs. StackHawk does security, but is built for engineers like you.
-* 🤖 Simple to Automate in CI: Application security tests belong in CI, running tests on every PR. Adding StackHawk tests to a DevOps pipeline is easy.
+ * 🧪 Modern Application Security Testing: StackHawk is a dynamic application security testing (DAST) tool, helping you catch security bugs before they hit production.
+ * 💻 Built for Developers: The engineers building software are the best equipped to fix bugs, including security bugs. StackHawk does security, but is built for engineers like you.
+ * 🤖 Simple to Automate in CI: Application security tests belong in CI, running tests on every PR. Adding StackHawk tests to a DevOps pipeline is easy.
 
 ## Getting Started
-* Follow directions in our [quickstart guide](QUICKSTART.md)
-* To see more examples see [example workflows](example_workflows/README.md)
+ * Follow directions in our [quickstart guide](QUICKSTART.md)
+ * To see more examples see [example workflows](example_workflows/README.md)
 
 ## Inputs
 
@@ -27,10 +27,10 @@ jobs:
   stackhawk-hawkscan:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v1.4.0
-        with:
-          apiKey: ${{ secrets.HAWK_API_KEY }}
+    - uses: actions/checkout@v2
+    - uses: stackhawk/hawkscan-action@v1.4.0
+      with:
+        apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
 
 ### `dryRun`
