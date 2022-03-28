@@ -16263,7 +16263,7 @@ module.exports.runCommand = async function runCommand(command) {
             /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
       })
       .catch(error => {
-        core.error(error);
+        core.setFailed(error.message);
       });
 
   return scanData;
