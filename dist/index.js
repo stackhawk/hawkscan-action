@@ -5250,7 +5250,7 @@ function setup(env) {
 			namespaces = split[i].replace(/\*/g, '.*?');
 
 			if (namespaces[0] === '-') {
-				createDebug.skips.push(new RegExp('^' + namespaces.slice(1) + '$'));
+				createDebug.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
 			} else {
 				createDebug.names.push(new RegExp('^' + namespaces + '$'));
 			}
@@ -13955,7 +13955,7 @@ var init_StatusSummary = __esm({
       }]
     ]);
     parseStatusSummary = function(text) {
-      const lines = text.trim().split(NULL);
+      const lines = text.trim().split("\n");
       const status = new StatusSummary();
       for (let i = 0, l = lines.length; i < l; i++) {
         splitLine(status, lines[i]);
@@ -13967,27 +13967,17 @@ var init_StatusSummary = __esm({
 
 // src/lib/tasks/status.ts
 function statusTask(customArgs) {
-  const commands = [
-    "status",
-    "--porcelain",
-    "-b",
-    "-u",
-    "--null",
-    ...customArgs.filter((arg) => !ignoredOptions.includes(arg))
-  ];
   return {
     format: "utf-8",
-    commands,
+    commands: ["status", "--porcelain", "-b", "-u", ...customArgs],
     parser(text) {
       return parseStatusSummary(text);
     }
   };
 }
-var ignoredOptions;
 var init_status = __esm({
   "src/lib/tasks/status.ts"() {
     init_StatusSummary();
-    ignoredOptions = ["--null", "-z"];
   }
 });
 
@@ -16217,7 +16207,7 @@ function scanParser(input, regex, captureGroup) {
 // Gather all conditioned inputs
 module.exports.gatherInputs = function gatherInputs() {
   return {
-    workspace: core.getInput('workspace') || process.env.GITHUB_WORKSPACE || process.cwd(),
+    workspace: core.getInput('workspace') || process.cwd(),
     apiKey: core.getInput('apiKey') || '',
     configurationFiles: stringToList(core.getInput('configurationFiles') || 'stackhawk.yml'),
     version: core.getInput('version') || 'latest',
