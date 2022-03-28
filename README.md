@@ -12,7 +12,8 @@ Here's the rundown:
  * 🤖 Simple to Automate in CI: Application security tests belong in CI, running tests on every PR. Adding StackHawk tests to a DevOps pipeline is easy.
 
 ## Getting Started
- * Follow directions in our [quickstart guide](QUICKSTART.md)
+ * Get your application set up in StackHawk with our [quickstart guide](https://docs.stackhawk.com/hawkscan/#quickstart)
+ * Add your HawkScan Action to your GitHub repository. [Continuous Integration with HawkScan GitHub Action](https://docs.stackhawk.com/continuous-integration/github-actions.html)  
  * To see more examples see [example workflows](example_workflows/README.md)
 
 ## Inputs
@@ -124,9 +125,8 @@ jobs:
       - uses: stackhawk/hawkscan-action@v1.4.0
         with:
           apiKey: ${{ secrets.HAWK_API_KEY }}
-        env:
-          DEBUG: true
-          VERBOSE: true
+          verbose: true
+          debug: true
 ```
 
 ## Examples

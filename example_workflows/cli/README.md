@@ -11,7 +11,7 @@ For pushes to the `main` branch (or pull requests), this workflow will:
 
 1. Install the latest HawkScan CLI
 
-2.Validate the stackhawk_custom.yml
+2. Validate the stackhawk_custom.yml
 
 ## Setup
 
