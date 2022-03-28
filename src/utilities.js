@@ -48,7 +48,7 @@ function scanParser(input, regex, captureGroup) {
 // Gather all conditioned inputs
 module.exports.gatherInputs = function gatherInputs() {
   return {
-    workspace: process.env.GITHUB_WORKSPACE || process.cwd(),
+    workspace: core.getInput('workspace') || process.cwd(),
     apiKey: core.getInput('apiKey') || '',
     configurationFiles: stringToList(core.getInput('configurationFiles') || 'stackhawk.yml'),
     version: core.getInput('version') || 'latest',
@@ -69,6 +69,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
       `scan ` +
       `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
       `${(inputs.debug === 'true') ? "--debug " : ""}` +
+      `--repo-dir ${inputs.workspace} ` +
       `${configurationFiles}`);
   const cleanCliClean = cliCommand.replace(/  +/g, ' ')
   core.debug(`CLI command: ${cleanCliClean}`);
@@ -93,7 +94,7 @@ module.exports.runCommand = async function runCommand(command) {
             /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
       })
       .catch(error => {
-        core.error(error);
+        core.setFailed(error.message);
       });
 
   return scanData;
