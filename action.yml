@@ -13,6 +13,7 @@ inputs:
   workspace:
     description: Working directory accessed by HawkScan including configuration files
     required: false
+    default: ${{ github.workspace }}
   configurationFiles:
     description: Space-separated list of HawkScan configuration files to use
     required: false
