@@ -48,7 +48,7 @@ function scanParser(input, regex, captureGroup) {
 // Gather all conditioned inputs
 module.exports.gatherInputs = function gatherInputs() {
   return {
-    workspace: process.env.GITHUB_WORKSPACE || process.cwd(),
+    workspace: core.getInput('workspace') || process.cwd(),
     apiKey: core.getInput('apiKey') || '',
     configurationFiles: stringToList(core.getInput('configurationFiles') || 'stackhawk.yml'),
     version: core.getInput('version') || 'latest',
