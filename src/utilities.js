@@ -94,7 +94,7 @@ module.exports.runCommand = async function runCommand(command) {
       })
       .catch(error => {
         core.error(error);
-        core.setFailed(error);
+        core.setFailed(error.message);
       });
 
   return scanData;
