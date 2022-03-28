@@ -1,5 +1,5 @@
 app:
-  applicationId: 6b7f51fa-f293-401f-8998-9fd826aebd38
+  applicationId: b7f51fa-f293-401f-8998-9fd826aebd38
   env: Action Tests
   host: ${HOST:http://example.com}
 
