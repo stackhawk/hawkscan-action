@@ -23,7 +23,8 @@ jobs:
         uses: stackhawk/hawkscan-action@main
         with:
           apiKey: ${{ secrets.HAWK_API_KEY }}
-          configurationFiles: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/${{ github.event.client_payload.repoName }}/${{ github.event.client_payload.configFile }}
+          workspace: ${{ env.GITHUB_WORKSPACE }}/__tests__/integration-tests/configs/${{ github.event.client_payload.repoName }}/
+          configurationFiles: ${{ github.event.client_payload.configFiles }}
           sourceURL: ${{ github.event.client_payload.hawkscanSourceUrl }}
           version: ${{ github.event.client_payload.hawkscanVersion }}
           verbose: ${{ github.event.client_payload.verbose }}
