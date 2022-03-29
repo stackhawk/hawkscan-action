@@ -15,7 +15,7 @@ jobs:
       - name: Checkout javaspringvulny repository
         uses: actions/checkout@v2
         with:
-          repository: kaakaww/javaspringvulny
+          repository: ${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}
           path: ./__tests__/integration-tests/apps/${{ github.event.client_payload.repoName }}
       - name: Run ${{ github.event.client_payload.repoName }}
         run: |
