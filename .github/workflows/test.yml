@@ -105,7 +105,7 @@ jobs:
           configurationFiles: stackhawk-jsv-json-token.yml
           sourceURL: https://download.stackhawk.com/hawk/cli
           version: latest
-          verbose: true
+          # verbose: true
           debug: true
         env:
           APPLICATION_ID: 6b7f51fa-f293-401f-8998-9fd826aebd38
