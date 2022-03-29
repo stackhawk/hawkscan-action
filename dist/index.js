@@ -16129,37 +16129,37 @@ module.exports ={ setup }
 /***/ }),
 
 /***/ 2931:
-/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+/***/ (() => {
 
-const core = __nccwpck_require__(2186);
-const {exec} = __nccwpck_require__(2081);
-
-function killHawkProcess() {
-    // interruptProcess('hawk');
-    interruptProcess('java');
-}
-
-function interruptProcess(name){
-    core.debug(`Killing process ${name}`)
-    exec(`pgrep ${name}`, function(err, stdout) {
-        let result = stdout.toString().split('\n');
-        result.forEach(element => {
-            let pid = parseInt(element);
-            if (!isNaN(pid) && pid > -1) {
-                core.debug(`Killing process id ${element}`);
-                process.kill(pid, 'SIGINT');
-            }
-
-        });
-    });
-}
-
-module.exports.addSignalHandler = function addSignalHandler(){
-    process.on('SIGINT', () => {
-        core.debug(`SIGINT received for ${process.pid}`);
-        killHawkProcess();
-    });
-}
+// const core = require("@actions/core");
+// const {exec} = require("child_process");
+//
+// function killHawkProcess() {
+//     // interruptProcess('hawk');
+//     interruptProcess('java');
+// }
+//
+// function interruptProcess(name){
+//     core.debug(`Killing process ${name}`)
+//     exec(`pgrep ${name}`, function(err, stdout) {
+//         let result = stdout.toString().split('\n');
+//         result.forEach(element => {
+//             let pid = parseInt(element);
+//             if (!isNaN(pid) && pid > -1) {
+//                 core.debug(`Killing process id ${element}`);
+//                 process.kill(pid, 'SIGINT');
+//             }
+//
+//         });
+//     });
+// }
+//
+// module.exports.addSignalHandler = function addSignalHandler(){
+//     process.on('SIGINT', () => {
+//         core.debug(`SIGINT received for ${process.pid}`);
+//         killHawkProcess();
+//     });
+// }
 
 
 /***/ }),
