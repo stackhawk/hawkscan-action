@@ -196,6 +196,39 @@ jobs:
 
 The configuration above will perform a dry run, meaning it will only print out the Docker command that it would run if `dryRun` were set to `false`, which is the default.  Finally, it tells HawkScan to use the `stackhawk.yml` configuration file and overlay the `stackhawk-extra.yml` configuration file on top of it.
 
+## Deprecated options (version 1)
+
+### `environmentVariables`
+
+**Optional** A list of environment variable to pass to HawkScan. Environment variables can be separated with spaces, commas, or newlines.
+
+For example:
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: stackhawk/hawkscan-action@v1.3.4
+      with:
+        apiKey: ${{ secrets.HAWK_API_KEY }}
+        environmentVariables: APP_HOST APP_ENV
+      env:
+        APP_HOST: http://example.com
+        APP_ENV: Pre-Production
+```
+
+### `network`
+
+**Optional** Docker network settings for running HawkScan.  Defaults to `host`.
+
+The following options for `network` are available:
+- **`host`** (default): Use Docker host networking mode. HawkScan will run with full access to the GitHub virtual environment hosts network stack. This works in most cases if your scan target is a remote URL or a localhost address.
+- **`bridge`**: Use the default Docker bridge network setting for running the HawkScan container. This works in most cases if your scan target is a remote URL or a localhost address.
+- **`NETWORK`**: Use the user-defined Docker bridge network, `NETWORK`. This network may be created with `docker network create`, or `docker-compose`. This is appropriate for scanning other containers running locally on the GitHub virtual environment within a named Docker network.
+
+See the [Docker documentation](https://docs.docker.com/engine/reference/run/#network-settings) for more details on Docker network settings.
+
 ## Need Help?
 
 If you have questions or need some help, please email us at support@stackhawk.com.
