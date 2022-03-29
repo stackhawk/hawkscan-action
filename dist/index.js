@@ -16128,42 +16128,6 @@ module.exports ={ setup }
 
 /***/ }),
 
-/***/ 2931:
-/***/ (() => {
-
-// const core = require("@actions/core");
-// const {exec} = require("child_process");
-//
-// function killHawkProcess() {
-//     // interruptProcess('hawk');
-//     interruptProcess('java');
-// }
-//
-// function interruptProcess(name){
-//     core.debug(`Killing process ${name}`)
-//     exec(`pgrep ${name}`, function(err, stdout) {
-//         let result = stdout.toString().split('\n');
-//         result.forEach(element => {
-//             let pid = parseInt(element);
-//             if (!isNaN(pid) && pid > -1) {
-//                 core.debug(`Killing process id ${element}`);
-//                 process.kill(pid, 'SIGINT');
-//             }
-//
-//         });
-//     });
-// }
-//
-// module.exports.addSignalHandler = function addSignalHandler(){
-//     process.on('SIGINT', () => {
-//         core.debug(`SIGINT received for ${process.pid}`);
-//         killHawkProcess();
-//     });
-// }
-
-
-/***/ }),
-
 /***/ 7677:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -16485,7 +16449,7 @@ const core = __nccwpck_require__(2186);
 const utilities = __nccwpck_require__(7677);
 const sarif = __nccwpck_require__(4348);
 const { setup } = __nccwpck_require__(7521);
-const {addSignalHandler} = __nccwpck_require__(2931);
+// const {addSignalHandler} = require("./signal_handler");
 
 async function run() {
   core.info('Starting HawkScan Action');
@@ -16500,7 +16464,7 @@ async function run() {
     core.info(cliCommand);
   } else {
     // Install the CLI and set up signal handling
-    addSignalHandler();
+    // addSignalHandler();
     await setup();
     // Run hawk command if installCLIOnly is false
     if (inputs.installCLIOnly !== 'true') {
