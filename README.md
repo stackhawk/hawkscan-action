@@ -157,7 +157,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v1.3.4
+    - uses: stackhawk/hawkscan-action@v2.0.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         environmentVariables: APP_HOST APP_ENV
