@@ -16135,7 +16135,7 @@ const core = __nccwpck_require__(2186);
 const {exec} = __nccwpck_require__(2081);
 
 function killHawkProcess() {
-    // interruptProcess('hawk');
+    interruptProcess('hawk');
     interruptProcess('java');
 }
 
@@ -16147,7 +16147,13 @@ function interruptProcess(name){
             let pid = parseInt(element);
             if (!isNaN(pid) && pid > -1) {
                 core.debug(`Killing process id ${element}`);
-                process.kill(pid, 'SIGINT');
+                try {
+                    process.kill(pid, 'SIGINT');
+                } catch (e) {
+                    core.error(e.message);
+                }
+
+
             }
 
         });

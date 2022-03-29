@@ -2,7 +2,7 @@ const core = require("@actions/core");
 const {exec} = require("child_process");
 
 function killHawkProcess() {
-    // interruptProcess('hawk');
+    interruptProcess('hawk');
     interruptProcess('java');
 }
 
@@ -14,7 +14,13 @@ function interruptProcess(name){
             let pid = parseInt(element);
             if (!isNaN(pid) && pid > -1) {
                 core.debug(`Killing process id ${element}`);
-                process.kill(pid, 'SIGINT');
+                try {
+                    process.kill(pid, 'SIGINT');
+                } catch (e) {
+                    core.error(e.message);
+                }
+
+
             }
 
         });
