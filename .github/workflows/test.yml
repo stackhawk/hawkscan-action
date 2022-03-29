@@ -107,3 +107,32 @@ jobs:
         with:
           tag_name: v${{ env.RELEASE_VERSION }}
           release_name: HawkScan Action ${{ env.RELEASE_VERSION }}
+
+  javaspringvulny:
+    name: Java Spring Vulny
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create app directory for javaspringvulny
+        run: mkdir -p __tests__/integration-tests/apps
+      - name: Checkout javaspringvulny repository
+        run: |
+          cd __tests__/integration-tests/apps/
+          git clone https://github.com/kaakaww/javaspringvulny.git
+      - name: Run javaspringvulny
+        run: |
+          cd __tests__/integration-tests/apps/javaspringvulny
+          docker-compose up -d
+      - name: Run HawkScan
+        id: run-hawkscan
+        uses: stackhawk/hawkscan-action@main
+        with:
+          apiKey: ${{ secrets.SHAWK_API_KEY }}
+          workspace: ${{ github.workspace }}/__tests__/integration-tests/configs/javaspringvulny/
+          configurationFiles: stackhawk-jsv-json-token.yml
+          sourceURL: ${{ secrets.TEST_HAWK_CLI_SOURCE_URL }}
+          version: 2.2.0-beta
+          verbose: true
+          debug: true
+        env:
+          APPLICATION_ID: 6b7f51fa-f293-401f-8998-9fd826aebd38

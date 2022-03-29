@@ -30,5 +30,6 @@ jobs:
           sourceURL: ${{ github.event.client_payload.hawkscanSourceUrl }}
           version: ${{ github.event.client_payload.hawkscanVersion }}
           verbose: ${{ github.event.client_payload.verbose }}
+          debug: ${{ github.event.client_payload.debug }}
         env:
           APPLICATION_ID: ${{ github.event.client_payload.appId }}
