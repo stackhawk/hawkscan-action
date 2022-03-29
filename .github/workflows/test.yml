@@ -103,8 +103,6 @@ jobs:
           apiKey: ${{ secrets.SHAWK_API_KEY }}
           workspace: ${{ github.workspace }}/__tests__/integration-tests/configs/javaspringvulny/
           configurationFiles: stackhawk-jsv-json-token.yml
-          sourceURL: https://download.stackhawk.com/hawk/cli
-          version: latest
           # verbose: true
           debug: true
         env:
