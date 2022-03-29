@@ -10,8 +10,6 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.client_payload.ref }}
-      - name: Create app directory for ${{ github.event.client_payload.repoName }}
-        run: mkdir -p __tests__/integration-tests/apps
       - name: Checkout javaspringvulny repository
         uses: actions/checkout@v2
         with:
