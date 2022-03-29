@@ -5250,7 +5250,7 @@ function setup(env) {
 			namespaces = split[i].replace(/\*/g, '.*?');
 
 			if (namespaces[0] === '-') {
-				createDebug.skips.push(new RegExp('^' + namespaces.substr(1) + '$'));
+				createDebug.skips.push(new RegExp('^' + namespaces.slice(1) + '$'));
 			} else {
 				createDebug.names.push(new RegExp('^' + namespaces + '$'));
 			}
@@ -13955,7 +13955,7 @@ var init_StatusSummary = __esm({
       }]
     ]);
     parseStatusSummary = function(text) {
-      const lines = text.trim().split("\n");
+      const lines = text.trim().split(NULL);
       const status = new StatusSummary();
       for (let i = 0, l = lines.length; i < l; i++) {
         splitLine(status, lines[i]);
@@ -13967,17 +13967,27 @@ var init_StatusSummary = __esm({
 
 // src/lib/tasks/status.ts
 function statusTask(customArgs) {
+  const commands = [
+    "status",
+    "--porcelain",
+    "-b",
+    "-u",
+    "--null",
+    ...customArgs.filter((arg) => !ignoredOptions.includes(arg))
+  ];
   return {
     format: "utf-8",
-    commands: ["status", "--porcelain", "-b", "-u", ...customArgs],
+    commands,
     parser(text) {
       return parseStatusSummary(text);
     }
   };
 }
+var ignoredOptions;
 var init_status = __esm({
   "src/lib/tasks/status.ts"() {
     init_StatusSummary();
+    ignoredOptions = ["--null", "-z"];
   }
 });
 
@@ -16137,7 +16147,11 @@ function interruptProcess(name){
             let pid = parseInt(element);
             if (!isNaN(pid) && pid > -1) {
                 core.debug(`Killing process id ${element}`);
-                process.kill(pid, 'SIGINT');
+                try {
+                    process.kill(pid, 'SIGINT');
+                } catch (e) {
+                    core.error(e.message);
+                }
             }
 
         });
