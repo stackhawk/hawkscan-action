@@ -85,6 +85,32 @@ jobs:
             configurationFiles: __tests__/stackhawk.yml
             codeScanningAlerts: true
 
+  javaspringvulny-test:
+    name: Java Spring Vulny Test
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: Checkout javaspringvulny repository
+        uses: actions/checkout@v2
+        with:
+          repository: kaakaww/javaspringvulny
+          path: ./__tests__/integration-tests/apps/javaspringvulny
+      - name: Run javaspringvulny
+        run: |
+          cd __tests__/integration-tests/apps/javaspringvulny
+          docker-compose up -d
+      - name: Run HawkScan
+        id: run-hawkscan
+        uses: stackhawk/hawkscan-action@main
+        with:
+          apiKey: ${{ secrets.SHAWK_API_KEY }}
+          workspace: ${{ github.workspace }}/__tests__/integration-tests/configs/javaspringvulny/
+          configurationFiles: stackhawk-jsv-json-token.yml
+          # verbose: true
+          debug: true
+        env:
+          APPLICATION_ID: 6b7f51fa-f293-401f-8998-9fd826aebd38
+
   # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
   release-new-version:
     name: Release New Version
@@ -96,6 +122,7 @@ jobs:
       - ajax-test
       - verbose-debug-test
       - command-line-test
+      - javaspringvulny-test
     steps:
       - uses: actions/checkout@v2
         with:
