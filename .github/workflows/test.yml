@@ -24,25 +24,15 @@ jobs:
     steps:
       - name: Check it out
         uses: actions/checkout@v2
-      - name: Checkout vulny
-        uses: actions/checkout@v2
-        with:
-          repository: kaakaww/javaspringvulny
-          path: __tests__/integration-tests/apps/javaspringvulny
-      - name: Run ${{ github.event.client_payload.repoName }}
-        run: |
-          cd __tests__/integration-tests/apps/javaspringvulny
-          docker-compose up -d
       - name: Run Scan
         uses: ./
         with:
           apiKey: ${{ secrets.SHAWK_API_KEY }}
           githubToken: ${{ github.token }}
-          configurationFiles: stackhawk-jsv-json-token.yml
+          configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
           sourceURL: ${{ secrets.TEST_HAWK_CLI_SOURCE_URL }}
           version: '2.2.0-beta'
-          workspace: ${{ github.workspace }}/__tests__/integration-tests/configs/javaspringvulny/
         env:
           DEBUG: true
           VERBOSE: true
