@@ -2,7 +2,7 @@ const core = require('@actions/core');
 const utilities = require('./utilities');
 const sarif = require('./sarif');
 const { setup } = require('./setup');
-// const {addSignalHandler} = require("./signal_handler");
+const {addSignalHandler} = require("./signal_handler");
 
 async function run() {
   core.info('Starting HawkScan Action');
@@ -17,7 +17,7 @@ async function run() {
     core.info(cliCommand);
   } else {
     // Install the CLI and set up signal handling
-    // addSignalHandler();
+    addSignalHandler();
     await setup();
     // Run hawk command if installCLIOnly is false
     if (inputs.installCLIOnly !== 'true') {
