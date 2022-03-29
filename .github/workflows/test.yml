@@ -98,7 +98,7 @@ jobs:
           docker-compose up -d
       - name: Run HawkScan
         id: run-hawkscan
-        uses: stackhawk/hawkscan-action@${{ github.ref }}
+        uses: stackhawk/hawkscan-action@main
         with:
           apiKey: ${{ secrets.SHAWK_API_KEY }}
           workspace: ${{ github.workspace }}/__tests__/integration-tests/configs/javaspringvulny/
