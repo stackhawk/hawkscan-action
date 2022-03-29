@@ -13,8 +13,7 @@ Here's the rundown:
 
 ## Getting Started
  * Get your application set up in StackHawk with our [quickstart guide](https://docs.stackhawk.com/hawkscan/#quickstart)
- * Add your HawkScan Action to your GitHub repository. [Continuous Integration with HawkScan GitHub Action](https://docs.stackhawk.com/continuous-integration/github-actions.html)  
- * To see more examples see [example workflows](example_workflows/README.md)
+ * Add your HawkScan Action to your GitHub repository. [Continuous Integration with HawkScan GitHub Action](https://docs.stackhawk.com/continuous-integration/github-actions.html)
 
 ## Inputs
 
