@@ -104,7 +104,7 @@ jobs:
         uses: stackhawk/hawkscan-action@main
         with:
           apiKey: ${{ secrets.SHAWK_API_KEY }}
-          workspace: ${{ github.workspace }}/__tests__/integration-tests/configs/javaspringvulny/
+          workspace: ./__tests__/integration-tests/configs/javaspringvulny/
           configurationFiles: stackhawk-jsv-json-token.yml
           # verbose: true
           debug: true
