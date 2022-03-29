@@ -2,8 +2,8 @@ const core = require("@actions/core");
 const {exec} = require("child_process");
 
 function killHawkProcess() {
-    interruptProcess('hawk');
-    // interruptProcess('java');
+    // interruptProcess('hawk');
+    interruptProcess('java');
 }
 
 function interruptProcess(name){
