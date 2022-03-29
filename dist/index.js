@@ -16136,7 +16136,7 @@ const {exec} = __nccwpck_require__(2081);
 
 function killHawkProcess() {
     interruptProcess('hawk');
-    interruptProcess('java');
+    // interruptProcess('java');
 }
 
 function interruptProcess(name){

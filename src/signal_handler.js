@@ -3,7 +3,7 @@ const {exec} = require("child_process");
 
 function killHawkProcess() {
     interruptProcess('hawk');
-    interruptProcess('java');
+    // interruptProcess('java');
 }
 
 function interruptProcess(name){
