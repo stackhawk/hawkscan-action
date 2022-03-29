@@ -88,7 +88,7 @@ jobs:
       - name: Create app directory for javaspringvulny
         run: mkdir -p __tests__/integration-tests/apps
       ## - name: Checkout javaspringvulny repository
-      #   run: |
+      ##   run: |
       #     cd __tests__/integration-tests/apps/
       #     git clone https://github.com/kaakaww/javaspringvulny.git
       - name: Checkout javaspringvulny repository
