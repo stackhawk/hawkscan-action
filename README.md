@@ -112,7 +112,7 @@ jobs:
 
 **Optional** If set to `${{ github.token }}`, gives HawkScan Action a temporary GitHub API token to enable uploading SARIF data. This input is required if `codeScanningAlerts` is set to `true`.
 
-### `Debugging` 
+### `debug` 
 
 **Optional** If you need additional information on your scans enable the debug and verbose environment variables to see detailed logs in the workflow output
 
@@ -127,6 +127,21 @@ jobs:
           apiKey: ${{ secrets.HAWK_API_KEY }}
           verbose: true
           debug: true
+```
+
+### `workspace`
+
+**Optional** If you need to configure your scan to run in folder outside your .github folder you can set a workspace path relative to your directory
+
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: stackhawk/hawkscan-action@v1.4.0
+        with:
+          workspace: ./app/config/
 ```
 
 ## Examples
