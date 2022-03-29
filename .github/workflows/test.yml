@@ -94,7 +94,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: kaakaww/javaspringvulny
-          path: ./__tests__/integration-tests/apps/javaspringvulny
+          path: .${{ github.workspace }}/apps/javaspringvulny
       - name: Run javaspringvulny
         run: |
           cd __tests__/integration-tests/apps/javaspringvulny
