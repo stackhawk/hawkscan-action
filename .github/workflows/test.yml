@@ -80,45 +80,22 @@ jobs:
             configurationFiles: __tests__/stackhawk.yml
             codeScanningAlerts: true
 
-  # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
-  release-new-version:
-    name: Release New Version
-    runs-on: ubuntu-20.04
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    needs:
-      - unit-tests
-      - live-test
-      - ajax-test
-      - verbose-debug-test
-      - command-line-test
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - name: Check Release Version
-        run: |
-          echo "RELEASE_VERSION=$(./scripts/version-check.sh)" >> $GITHUB_ENV
-      - name: Create Release
-        id: create_release
-        if: env.RELEASE_VERSION != ''
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: v${{ env.RELEASE_VERSION }}
-          release_name: HawkScan Action ${{ env.RELEASE_VERSION }}
-
-  javaspringvulny:
+  javaspringvulny-test:
     name: Java Spring Vulny
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Create app directory for javaspringvulny
         run: mkdir -p __tests__/integration-tests/apps
+      # - name: Checkout javaspringvulny repository
+      #   run: |
+      #     cd __tests__/integration-tests/apps/
+      #     git clone https://github.com/kaakaww/javaspringvulny.git
       - name: Checkout javaspringvulny repository
-        run: |
-          cd __tests__/integration-tests/apps/
-          git clone https://github.com/kaakaww/javaspringvulny.git
+        uses: actions/checkout@v2
+        with:
+          repository: kaakaww/javaspringvulny
+          path: './__tests__/integration-tests/apps/'
       - name: Run javaspringvulny
         run: |
           cd __tests__/integration-tests/apps/javaspringvulny
@@ -136,3 +113,32 @@ jobs:
           debug: true
         env:
           APPLICATION_ID: 6b7f51fa-f293-401f-8998-9fd826aebd38
+
+  # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
+  release-new-version:
+    name: Release New Version
+    runs-on: ubuntu-20.04
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs:
+      - unit-tests
+      - live-test
+      - ajax-test
+      - verbose-debug-test
+      - command-line-test
+      - javaspringvulny-test
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Check Release Version
+        run: |
+          echo "RELEASE_VERSION=$(./scripts/version-check.sh)" >> $GITHUB_ENV
+      - name: Create Release
+        id: create_release
+        if: env.RELEASE_VERSION != ''
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ env.RELEASE_VERSION }}
+          release_name: HawkScan Action ${{ env.RELEASE_VERSION }}
