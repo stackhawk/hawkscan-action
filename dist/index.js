@@ -16152,10 +16152,7 @@ function interruptProcess(name){
                 } catch (e) {
                     core.error(e.message);
                 }
-
-
             }
-
         });
     });
 }
@@ -16247,14 +16244,14 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
       `--repo-dir ${inputs.workspace} ` +
       `${configurationFiles}`);
   const cleanCliClean = cliCommand.replace(/  +/g, ' ')
-  core.debug(`CLI command: ${cleanCliClean}`);
+  if (inputs.dryRun === 'true') {
+    core.info(`DRY-RUN MODE - The following command will not be run:`);
+  }
+  core.info(`CLI Command: ${cleanCliClean}`);
   return cleanCliClean
 }
 
 module.exports.runCommand = async function runCommand(command) {
-  core.debug(`Running command:`);
-  core.debug(command);
-
   let scanData = {};
   const commandArray = command.split(" ");
 
@@ -16501,10 +16498,7 @@ async function run() {
   let scanData;
 
   // Run the scanner
-  if ( inputs.dryRun === 'true' ) {
-    core.info(`DRY-RUN MODE - The following command will not be run:`);
-    core.info(cliCommand);
-  } else {
+  if (inputs.dryRun !== 'true') {
     // Install the CLI and set up signal handling
     addSignalHandler();
     await setup();

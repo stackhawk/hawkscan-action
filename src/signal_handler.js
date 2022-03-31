@@ -19,10 +19,7 @@ function interruptProcess(name){
                 } catch (e) {
                     core.error(e.message);
                 }
-
-
             }
-
         });
     });
 }
