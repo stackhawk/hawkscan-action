@@ -16245,7 +16245,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
       `--repo-dir ${inputs.workspace} ` +
       `${configurationFiles}`);
   const cleanCliClean = cliCommand.replace(/  +/g, ' ')
-  if (inputs.dryRun === true) {
+  if (inputs.dryRun === 'true') {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
   }
   core.info(`CLI Command: ${cleanCliClean}`);
@@ -16499,7 +16499,7 @@ async function run() {
   let scanData;
 
   // Run the scanner
-  if (inputs.dryRun !== true) {
+  if (inputs.dryRun !== 'true') {
     // Install the CLI and set up signal handling
     addSignalHandler();
     await setup();
