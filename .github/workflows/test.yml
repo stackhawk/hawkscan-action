@@ -31,11 +31,6 @@ jobs:
           githubToken: ${{ github.token }}
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
-          sourceURL: ${{ secrets.TEST_HAWK_CLI_SOURCE_URL }}
-          version: '2.2.0'
-        env:
-          DEBUG: true
-          VERBOSE: true
 
   # Run a HawkScan with verbose and debug logging
   verbose-debug-test:
