@@ -12,7 +12,7 @@ async function run() {
   let scanData;
 
   // Run the scanner
-  if (!inputs.dryRun) {
+  if (inputs.dryRun !== true) {
     // Install the CLI and set up signal handling
     addSignalHandler();
     await setup();
