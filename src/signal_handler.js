@@ -20,7 +20,6 @@ function interruptProcess(name){
                     core.error(e.message);
                 }
             }
-
         });
     });
 }
