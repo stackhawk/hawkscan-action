@@ -35,6 +35,6 @@
     "@vercel/ncc": "^0.33.3",
     "eslint": "^8.11.0",
     "jest": "^27.5.1",
-    "simple-git": "^3.3.0"
+    "simple-git": "^3.7.0"
   }
 }
