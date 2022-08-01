@@ -31,7 +31,7 @@
     "process": "^0.11.10"
   },
   "devDependencies": {
-    "simple-git": "^3.7.1",
+    "simple-git": "^3.11.0",
     "@vercel/ncc": "^0.34.0",
     "eslint": "^8.16.0",
     "jest": "^27.5.1"
