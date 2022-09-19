@@ -104,7 +104,7 @@ jobs:
           # verbose: true
           debug: true
         env:
-          APPLICATION_ID: 6b7f51fa-f293-401f-8998-9fd826aebd38
+          APPLICATION_ID: e78b6189-af89-4ae6-b33b-5edecddb9f24
 
   # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
   release-new-version:
