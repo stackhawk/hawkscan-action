@@ -143,6 +143,21 @@ jobs:
           workspace: ./app/config/
 ```
 
+### `version`
+
+**Optional** If you need to configure your scan to run with a specific version of HawkScan you can set the version
+
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: stackhawk/hawkscan-action@v2.0.0
+        with:
+          version: 2.7.0
+```
+
 ## Deprecated options (version 1)
 
 ### `environmentVariables`
