@@ -4,7 +4,6 @@ hawk:
 app:
   applicationId: ${APPLICATION_ID:test-app-id}
   env: ${ENV:dev}
-  contactEmail: hawkdeploy@stackhawk.com
   host: ${APP_HOST:https://localhost:9000}
   openApiConf:
     filePath: openapi.yaml
