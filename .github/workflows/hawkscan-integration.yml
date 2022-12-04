@@ -1,0 +1,34 @@
+name: HawkScan Integration Tests
+on:
+  repository_dispatch:
+    types: [integration-test]
+jobs:
+  hawkscan:
+    name: HawkScan Action Integration Test
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.client_payload.ref }}
+      - name: Checkout javaspringvulny repository
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}
+          path: ./__tests__/integration-tests/apps/${{ github.event.client_payload.repoName }}
+      - name: Run ${{ github.event.client_payload.repoName }}
+        run: |
+          cd __tests__/integration-tests/apps/${{ github.event.client_payload.repoName }}
+          docker-compose up -d
+      - name: Run HawkScan
+        id: run-hawkscan
+        uses: stackhawk/hawkscan-action@main
+        with:
+          apiKey: ${{ secrets.HAWK_API_KEY }}
+          workspace: ${{ github.workspace }}/__tests__/integration-tests/configs/${{ github.event.client_payload.repoName }}/
+          configurationFiles: ${{ github.event.client_payload.configFiles }}
+          sourceURL: ${{ github.event.client_payload.hawkscanSourceUrl }}
+          version: ${{ github.event.client_payload.hawkscanVersion }}
+          verbose: ${{ github.event.client_payload.verbose }}
+          debug: ${{ github.event.client_payload.debug }}
+        env:
+          APPLICATION_ID: ${{ github.event.client_payload.appId }}

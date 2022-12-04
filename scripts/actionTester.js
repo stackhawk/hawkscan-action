@@ -15,18 +15,15 @@ function run() {
   buildInput({
     dryRun: 'true',
     apiKey: 'hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX',
-    environmentVariables: 'HOST APP_ENV SHAWK_RESULTS_ENDPOINT SHAWK_AUTH_ENDPOINT',
     configurationFiles: "__tests__/stackhawk.yml",
-    network: 'host',
-    image: 'stackhawk/hawkscan',
     version: 'latest',
     codeScanningAlerts: 'true',
   });
   process.env['HOST'] = 'http://example.com';
   process.env['APP_ENV'] = 'unit_tests';
   const inputs = utilities.gatherInputs();
-  const dockerCommand = utilities.buildDockerCommand(inputs);
-  const scanCommandList = dockerCommand.split(" ");
+  const cliCommand = utilities.buildCLICommand(inputs);
+  const scanCommandList = cliCommand.split(" ");
   const scanCommand = scanCommandList[0];
   const scanArgs = scanCommandList.slice(1);
   const scanner = spawn(scanCommand, scanArgs);

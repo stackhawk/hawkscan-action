@@ -10,21 +10,14 @@ inputs:
     description: If set to `true`, show HawkScan commands, but don't run them
     required: false
     default: false
-  environmentVariables:
-    description: Space-separated list of environment variables to pass to HawkScan
+  workspace:
+    description: Working directory accessed by HawkScan including configuration files
     required: false
+    default: ${{ github.workspace }}
   configurationFiles:
     description: Space-separated list of HawkScan configuration files to use
     required: false
     default: stackhawk.yml
-  network:
-    description: Docker network type or bridge name to use for scan
-    required: false
-    default: host
-  image:
-    description: HawkScan Docker image to use
-    required: false
-    default: stackhawk/hawkscan
   codeScanningAlerts:
     description: If `true`, Register a Code Scanning Alert in GitHub if scan alerts exceed `hawk.failureThreshold`
     required: false
@@ -33,10 +26,26 @@ inputs:
     description: GitHub Token for uploading Code Scanning Alert info - required if `codeScanningAlerts` is enabled
     required: false
     default: ${{ github.token }}}
+  installCLIOnly:
+    description: If `true` the action will only install the CLI and not run a scan
+    required: false
+    default: false
+  sourceURL:
+    description: Source for ZIP file
+    required: false
+    default: https://download.stackhawk.com/hawk/cli
   version:
-    description: HawkScan Docker image version to use
+    description: HawkScan CLI version to use
     required: false
     default: latest
+  verbose:
+    description: HawkScan CLI verbose log output flag
+    required: false
+    default: false
+  debug:
+    description: HawkScan CLI debug log output flag
+    required: false
+    default: false
 
 runs:
   using: node12

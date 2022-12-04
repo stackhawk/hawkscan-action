@@ -1,0 +1,141 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+- url: https://localhost:9000
+  description: Generated server url
+paths:
+  /api/jwt/items/search/:
+    get:
+      tags:
+      - jwt-item-controller
+      operationId: searchAll
+      responses:
+        200:
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/jwt/items/search/{text}:
+    get:
+      tags:
+      - jwt-item-controller
+      operationId: search
+      parameters:
+      - name: text
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/jwt/auth/signin:
+    post:
+      tags:
+      - jwt-auth-controller
+      operationId: signin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthenticationRequest'
+      responses:
+        200:
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/token/items/search/:
+    get:
+      tags:
+      - token-item-controller
+      operationId: search_1
+      responses:
+        200:
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/token/items/search/{text}:
+    get:
+      tags:
+      - token-item-controller
+      operationId: search_2
+      parameters:
+      - name: text
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/basic/items/search/:
+    get:
+      tags:
+      - basic-auth-item-controller
+      operationId: search_3
+      responses:
+        200:
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/basic/items/search/{text}:
+    get:
+      tags:
+      - basic-auth-item-controller
+      operationId: search_4
+      parameters:
+      - name: text
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: default response
+          content:
+            '*/*':
+              schema:
+                type: string
+  /api/jwt/log4j:
+    get:
+      tags:
+        - jwt-auth-controller
+      operationId: log4j,
+      requestBody:
+        content:
+          '*/*':
+            schema:
+              type: string
+      responses:
+        200:
+          description: default response,
+          content:
+            '*/*':
+              schema:
+                type: string
+components:
+  schemas:
+    AuthenticationRequest:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
