@@ -83,7 +83,7 @@ test('cli dry-run', () => {
   const inputs = utilities.gatherInputs();
   const cliCommand = utilities.buildCLICommand(inputs);
   expect(cliCommand)
-      .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX scan --repo-dir ${workspace} --cicd-platform true stackhawk.yml`);
+      .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX scan --repo-dir ${workspace} stackhawk.yml`);
 });
 
 test('get download object', () => {
