@@ -16242,9 +16242,9 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
       `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
       `${(inputs.debug === 'true') ? "--debug " : ""}` +
       `--repo-dir ${inputs.workspace} ` +
-      `--cicd-platform true ` +
+      `--cicd-platform hawk-CICD ` +
       `${configurationFiles}`);
-  const cleanCliClean = cliCommand.replace(/  +/g, ' ').replace("--cicd-platform true ", "")
+  const cleanCliClean = cliCommand.replace(/  +/g, ' ').replace("--cicd-platform hawk-CICD ", "")
   if (inputs.dryRun === 'true') {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
   }
