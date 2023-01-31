@@ -16244,7 +16244,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
       `--repo-dir ${inputs.workspace} ` +
       `--cicd-platform hawk-CICD ` +
       `${configurationFiles}`);
-  const cleanCliClean = cliCommand.replace(/  +/g, ' ').replace("--cicd-platform hawk-CICD ", "")
+  const cleanCliClean = cliCommand.replace(/  +/g, ' ')
   if (inputs.dryRun === 'true') {
     core.info(`DRY-RUN MODE - The following command will not be run:`);
   }
