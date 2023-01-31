@@ -16242,7 +16242,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
       `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
       `${(inputs.debug === 'true') ? "--debug " : ""}` +
       `--repo-dir ${inputs.workspace} ` +
-      `--cicd-platform hawk-CICD ` +
+      `--cicd-platform github-action ` +
       `${configurationFiles}`);
   const cleanCliClean = cliCommand.replace(/  +/g, ' ')
   if (inputs.dryRun === 'true') {
