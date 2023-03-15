@@ -7,11 +7,11 @@ jobs:
     name: HawkScan Action Integration Test
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{ github.event.client_payload.ref }}
       - name: Checkout javaspringvulny repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: ${{ github.event.client_payload.repoOrg }}/${{ github.event.client_payload.repoName }}
           path: ./__tests__/integration-tests/apps/${{ github.event.client_payload.repoName }}

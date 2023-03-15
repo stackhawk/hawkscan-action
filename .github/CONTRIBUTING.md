@@ -55,7 +55,9 @@ Run `release-pr.sh` with your desired bump level - **major**, **minor**, or **pa
 
 Once the PR is merged, the `.github/workflows/test.yml` workflow handles step 4, tagging and releasing, automatically.
 
-The final *manual* step is to [edit the release](https://github.com/stackhawk/hawkscan-action/releases) and publish it to the GitHub Marketplace.
+The next *manual* step is to [edit the release](https://github.com/stackhawk/hawkscan-action/releases) and publish it to the GitHub Marketplace.
+
+Lastly, you must *manually* run the hawkscan-action job to update the main version. You must provide the same release tag as what was just released. This will update the major version tag (e.g. `v2`) to this specific version.
 
 > ✅ *Publish this Action to the GitHub Marketplace*
 
