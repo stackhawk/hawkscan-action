@@ -25,7 +25,7 @@ inputs:
   githubToken:
     description: GitHub Token for uploading Code Scanning Alert info - required if `codeScanningAlerts` is enabled
     required: false
-    default: ${{ github.token }}}
+    default: ${{ github.token }}
   installCLIOnly:
     description: If `true` the action will only install the CLI and not run a scan
     required: false
