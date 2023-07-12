@@ -93,6 +93,8 @@ module.exports.runCommand = async function runCommand(command) {
             /(?<=Error: [0-9]+ findings with severity greater than or equal to )(?<group>.*)/m, 'group') || '';
         scanData.hawkscanVersion = scanParser(data.stdout,
             /(?<=StackHawk 🦅 HAWKSCAN - )(?<group>.*)/m, 'group') || 'v0';
+        scanData.scanId = scanParser(data.stdout,
+            /(?<=View on StackHawk platform: https:\/app.stackhawk.com\/scans\/)(?<group>.*)/m, 'group') || 'No scan id found';
       })
       .catch(error => {
         core.setFailed(error.message);

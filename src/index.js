@@ -22,6 +22,7 @@ async function run() {
       exitCode = scanData.exitCode;
       core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
       core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
+      core.debug(`This is the scan id: ${scanData.scanId} (${typeof scanData.scanId})`);
     }
 
   }
