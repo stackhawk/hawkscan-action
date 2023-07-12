@@ -25,12 +25,17 @@ jobs:
       - name: Check it out
         uses: actions/checkout@v3
       - name: Run Scan
+        id: run-scan
         uses: ./
         with:
           apiKey: ${{ secrets.SHAWK_API_KEY }}
           githubToken: ${{ github.token }}
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
+      # Use the output from the `hello` step
+      - name: Check Scan Id
+        run: echo "The last scan id was ${{ steps.run-scan.outputs.scanId }}"
+
 
   # Run a HawkScan with verbose and debug logging
   verbose-debug-test:
