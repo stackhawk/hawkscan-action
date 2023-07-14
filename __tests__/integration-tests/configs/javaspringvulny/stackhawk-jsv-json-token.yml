@@ -3,7 +3,7 @@ hawk:
     maxDurationMinutes: 2
 app:
   applicationId: ${APPLICATION_ID:test-app-id}
-  env: ${ENV:dev}
+  env: ${ENV:Action Test}
   host: ${APP_HOST:https://localhost:9000}
   openApiConf:
     filePath: openapi.yaml
