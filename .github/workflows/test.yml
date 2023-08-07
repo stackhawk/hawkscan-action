@@ -114,8 +114,8 @@ jobs:
         uses: ./
         with:
           apiKey: ${{ secrets.HAWK_API_KEY }}
-          githubToken: ${{ github.token }}
-          configurationFiles: __tests__/stackhawk.yml
+          workspace: ${{ github.workspace }}/__tests__/integration-tests/configs/javaspringvulny/
+          configurationFiles: stackhawk-jsv-json-token.yml
           command: rescan
           args: |
             --scan-id ${{ steps.run-hawkscan.outputs.scanId }}
