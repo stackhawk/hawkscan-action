@@ -35,6 +35,16 @@ jobs:
       # Use the output from the `hello` step
       - name: Check Scan Id
         run: echo "The last scan id was ${{ steps.run-scan.outputs.scanId }}"
+      - name: Run ReScan
+        uses: ./
+        with:
+          apiKey: ${{ secrets.HAWK_API_KEY }}
+          githubToken: ${{ github.token }}
+          configurationFiles: __tests__/stackhawk.yml
+          command: rescan
+          args: |
+            --scan-id ${{ steps.run-scan.outputs.scanId }}
+
 
 
   # Run a HawkScan with verbose and debug logging
