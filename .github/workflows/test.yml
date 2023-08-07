@@ -35,15 +35,6 @@ jobs:
       # Use the output from the `hello` step
       - name: Check Scan Id
         run: echo "The last scan id was ${{ steps.run-scan.outputs.scanId }}"
-      - name: Run ReScan
-        uses: ./
-        with:
-          apiKey: ${{ secrets.HAWK_API_KEY }}
-          githubToken: ${{ github.token }}
-          configurationFiles: __tests__/stackhawk.yml
-          command: rescan
-          args: |
-            --scan-id ${{ steps.run-scan.outputs.scanId }}
 
 
 
@@ -119,6 +110,15 @@ jobs:
           debug: true
         env:
           APPLICATION_ID: 4030d674-88b7-4e07-8065-7761f9c63788
+      - name: Run ReScan
+        uses: ./
+        with:
+          apiKey: ${{ secrets.HAWK_API_KEY }}
+          githubToken: ${{ github.token }}
+          configurationFiles: __tests__/stackhawk.yml
+          command: rescan
+          args: |
+            --scan-id ${{ steps.run-hawkscan.outputs.scanId }}
 
   # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
   release-new-version:
