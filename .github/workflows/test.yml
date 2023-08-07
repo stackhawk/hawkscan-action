@@ -119,8 +119,8 @@ jobs:
           command: rescan
           args: |
             --scan-id ${{ steps.run-hawkscan.outputs.scanId }}
-          env:
-            APPLICATION_ID: 4030d674-88b7-4e07-8065-7761f9c63788
+        env:
+          APPLICATION_ID: 4030d674-88b7-4e07-8065-7761f9c63788
 
   # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
   release-new-version:
