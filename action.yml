@@ -6,6 +6,13 @@ inputs:
   apiKey:
     description: StackHawk API key
     required: true
+  args:
+    description: Arguments supplied as a list
+    required: false
+  command:
+    description: Command to be passed to HawkScan
+    default: scan
+    required: false
   dryRun:
     description: If set to `true`, show HawkScan commands, but don't run them
     required: false
