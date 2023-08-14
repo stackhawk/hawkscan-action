@@ -7,7 +7,7 @@ inputs:
     description: StackHawk API key
     required: true
   args:
-    description: Arguments supplied as a list
+    description: Arguments to be passed to the scan as a multi line option
     required: false
   command:
     description: Command to be passed to HawkScan

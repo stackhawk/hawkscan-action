@@ -52,7 +52,7 @@ test('gather minimal inputs', () => {
 test('gather max inputs', () => {
   buildInput({
     apiKey: 'testkey',
-    args: '--scan-id hawk.xxxxx.xxx',
+    args: '--scan-id XXxxXXXX-xXXX-xxXX-XXxX-xXXxxXXXXxXX',
     command: 'rescan',
     githubToken: "gh.xXx.XxX",
     configurationFiles: "one.yml two.yml, three.yml\nfour.yml  five.yaml,,six.yml,\n\n seven.yml, ",
@@ -68,7 +68,7 @@ test('gather max inputs', () => {
   expect(utilities.gatherInputs()).toEqual({
     workspace: workspace,
     apiKey: 'testkey',
-    args: ['--scan-id hawk.xxxxx.xxx'],
+    args: ['--scan-id XXxxXXXX-xXXX-xxXX-XXxX-xXXxxXXXXxXX'],
     command: 'rescan',
     githubToken: "gh.xXx.XxX",
     configurationFiles: ['one.yml', 'two.yml', 'three.yml', 'four.yml', 'five.yaml', 'six.yml', 'seven.yml'],
@@ -100,12 +100,12 @@ test('cli dry-run args', () => {
     apiKey: 'hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX',
     version: '2.1.0',
     command: 'rescan',
-    args: '--scan-id hawk.xxxx\n--debug true'
+    args: '--scan-id XXxxXXXX-xXXX-xxXX-XXxX-xXXxxXXXXxXX\n--debug true'
   });
   const inputs = utilities.gatherInputs();
   const cliCommand = utilities.buildCLICommand(inputs);
   expect(cliCommand)
-      .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX rescan --repo-dir ${workspace} --cicd-platform github-action --scan-id hawk.xxxx --debug true stackhawk.yml`);
+      .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX rescan --repo-dir ${workspace} --cicd-platform github-action --scan-id XXxxXXXX-xXXX-xxXX-XXxX-xXXxxXXXXxXX --debug true stackhawk.yml`);
 });
 
 test('get download object', () => {
