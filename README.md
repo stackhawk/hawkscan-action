@@ -33,6 +33,39 @@ jobs:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
 
+### `args`
+
+**Optional** If you wish to supply additional arguments as a multi line input use the `args` option.
+
+For example:
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: stackhawk/hawkscan-action@v2.0.3
+      with:
+        args: |
+          --hawk-mem 1g
+```
+
+### `command`
+
+**Optional** If you want to run a command other than `scan`, it can be supplied in the command option.
+
+For example:
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: stackhawk/hawkscan-action@v2.0.3
+      with:
+        command: rescan
+```
+
 ### `dryRun`
 
 **Optional** If set to `true`, shows HawkScan commands, but don't run them. 

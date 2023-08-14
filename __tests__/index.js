@@ -27,11 +27,15 @@ beforeEach(() => {
   delete process.env.INPUT_SOURCEURL;
   delete process.env.INPUT_VERBOSE;
   delete process.env.INPUT_DEBUG;
+  delete process.env.INPUT_COMMAND;
+  delete process.env.INPUT_ARGS;
 });
 
 test('gather minimal inputs', () => {
   expect(utilities.gatherInputs()).toEqual({
     apiKey: '',
+    args: [],
+    command: 'scan',
     githubToken: "",
     configurationFiles: ['stackhawk.yml'],
     version: 'latest',
@@ -41,13 +45,15 @@ test('gather minimal inputs', () => {
     workspace : workspace,
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
     verbose: 'false',
-    debug: 'false'
+    debug: 'false',
   });
 });
 
 test('gather max inputs', () => {
   buildInput({
     apiKey: 'testkey',
+    args: '--scan-id XXxxXXXX-xXXX-xxXX-XXxX-xXXxxXXXXxXX',
+    command: 'rescan',
     githubToken: "gh.xXx.XxX",
     configurationFiles: "one.yml two.yml, three.yml\nfour.yml  five.yaml,,six.yml,\n\n seven.yml, ",
     version: 'latest',
@@ -62,6 +68,8 @@ test('gather max inputs', () => {
   expect(utilities.gatherInputs()).toEqual({
     workspace: workspace,
     apiKey: 'testkey',
+    args: ['--scan-id XXxxXXXX-xXXX-xxXX-XXxX-xXXxxXXXXxXX'],
+    command: 'rescan',
     githubToken: "gh.xXx.XxX",
     configurationFiles: ['one.yml', 'two.yml', 'three.yml', 'four.yml', 'five.yaml', 'six.yml', 'seven.yml'],
     version: 'latest',
@@ -78,12 +86,26 @@ test('cli dry-run', () => {
   buildInput({
     dryRun: 'true',
     apiKey: 'hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX',
-    version: '2.1.0'
+    version: '2.1.0',
   });
   const inputs = utilities.gatherInputs();
   const cliCommand = utilities.buildCLICommand(inputs);
   expect(cliCommand)
       .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX scan --repo-dir ${workspace} --cicd-platform github-action stackhawk.yml`);
+});
+
+test('cli dry-run args', () => {
+  buildInput({
+    dryRun: 'true',
+    apiKey: 'hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX',
+    version: '2.1.0',
+    command: 'rescan',
+    args: '--scan-id XXxxXXXX-xXXX-xxXX-XXxX-xXXxxXXXXxXX\n--debug true'
+  });
+  const inputs = utilities.gatherInputs();
+  const cliCommand = utilities.buildCLICommand(inputs);
+  expect(cliCommand)
+      .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX rescan --repo-dir ${workspace} --cicd-platform github-action --scan-id XXxxXXXX-xXXX-xxXX-XXxX-xXXxxXXXXxXX --debug true stackhawk.yml`);
 });
 
 test('get download object', () => {

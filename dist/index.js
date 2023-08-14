@@ -17988,19 +17988,23 @@ module.exports.gatherInputs = function gatherInputs() {
     installCLIOnly : core.getInput('installCLIOnly') || 'false',
     sourceURL : core.getInput('sourceURL') || 'https://download.stackhawk.com/hawk/cli',
     verbose: core.getInput('verbose').toLowerCase() || 'false',
-    debug: core.getInput('debug').toLowerCase() || 'false'
+    debug: core.getInput('debug').toLowerCase() || 'false',
+    command: core.getInput('command').toLowerCase() || 'scan',
+    args: core.getMultilineInput('args', { required: false }),
   }
 }
 
 module.exports.buildCLICommand = function buildCLICommand(inputs) {
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
+
   const cliCommand = (`hawk ` +
       `--api-key=${inputs.apiKey} ` +
-      `scan ` +
+      `${inputs.command} ` +
       `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
       `${(inputs.debug === 'true') ? "--debug " : ""}` +
       `--repo-dir ${inputs.workspace} ` +
       `--cicd-platform github-action ` +
+      `${inputs.args.join(' ')} ` +
       `${configurationFiles}`);
   const cleanCliClean = cliCommand.replace(/  +/g, ' ')
   if (inputs.dryRun === 'true') {
