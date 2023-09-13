@@ -38,7 +38,7 @@ Packaging creates a single consolidated action file in the `dist` folder. That d
 
 To release a new version of this action to the marketplace, you must do the following:
  1. Lint, package, and test the code in your feature branch
- 2. Bump the version number in `package.json` and `README.md`
+ 2. Bump the version number in `package.json` and `README.md` and `.bumpversion.cfg`. run npm install again to ensure version attaches in package-lock.json.
  3. Create a PR to `main` with your changes
  4. Once the PR is merged, tag and release it
  5. Publish the release to the GitHub Marketplace
