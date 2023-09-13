@@ -14,6 +14,9 @@
         "ecmaVersion": 2018
     },
     "rules": {
-        "no-control-regex": 0
+        "no-control-regex": 0,
+        "guard-for-in": "warn",
+        "object-shorthand": "warn",
+        "@typescript-eslint/no-var-requires": "off"
     }
 }

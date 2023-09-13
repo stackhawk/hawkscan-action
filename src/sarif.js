@@ -10,7 +10,9 @@ module.exports.uploadSarif = async function uploadSarif(scanData, githubToken) {
   const octokit = new Octokit({ auth: githubToken });
 
   const githubRepository = process.env['GITHUB_REPOSITORY'];
-  if (githubRepository === undefined || '') throw new Error(`GITHUB_REPOSITORY environment variable must be set`);
+  if (githubRepository === undefined || ''){
+    throw new Error(`GITHUB_REPOSITORY environment variable must be set`);
+  }
   const [owner, repo] = githubRepository.split('/');
   const ref = await getRef();
   const commitShaLocal = await git.revparse('HEAD')
@@ -58,7 +60,7 @@ async function getRef() {
 
 function sarifBuilder(scanData) {
   core.info('Preparing SARIF scan results file for GitHub Code Scanning Alerts.');
-  let sarif = {
+  const sarif = {
     "version": "2.1.0",
     "$schema": "http://json.schemastore.org/sarif-2.1.0",
     "runs": [

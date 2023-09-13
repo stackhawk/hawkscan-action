@@ -4,7 +4,7 @@ module.exports.spawnHawk = function spawnHawk(command, args) {
     const child = spawn(command,args)
     let stdout = '';
     let stderr = '';
-    let response = {};
+    const response = {};
 
     if (child.stdout) {
         child.stdout.on('data', data => {

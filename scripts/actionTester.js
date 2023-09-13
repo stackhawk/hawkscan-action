@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-console */
 const utilities = require('../src/utilities');
 const process = require('process');
 const { spawn } = require('child_process');
