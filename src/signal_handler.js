@@ -9,9 +9,9 @@ function killHawkProcess() {
 function interruptProcess(name){
     core.debug(`Killing process ${name}`)
     exec(`pgrep ${name}`, function(err, stdout) {
-        let result = stdout.toString().split('\n');
+        const result = stdout.toString().split('\n');
         result.forEach(element => {
-            let pid = parseInt(element);
+            const pid = parseInt(element, 10);
             if (!isNaN(pid) && pid > -1) {
                 core.debug(`Killing process id ${element}`);
                 try {

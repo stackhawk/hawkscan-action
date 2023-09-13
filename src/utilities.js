@@ -85,7 +85,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
 }
 
 module.exports.runCommand = async function runCommand(command) {
-  let scanData = {};
+  const scanData = {};
   const commandArray = command.split(" ");
 
   await spawnHawk(commandArray[0], commandArray.slice(1))
