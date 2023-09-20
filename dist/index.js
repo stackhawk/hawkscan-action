@@ -17704,16 +17704,16 @@ const {gatherInputs} = __nccwpck_require__(7677)
 /**
  * Gets RUNNER_TEMP
  */
-function _getTempDirectory() {
-  const tempDirectory = process.env["RUNNER_TEMP"] || "";
-  return tempDirectory;
-}
+// function _getTempDirectory() {
+//   const tempDirectory = process.env["RUNNER_TEMP"] || "";
+//   return tempDirectory;
+// }
 
-async function createDirectory(directoryPath) {
-  if (!fs.existsSync(directoryPath)) {
-    await fs.mkdirSync(directoryPath);
-  }
-}
+// async function createDirectory(directoryPath) {
+//   if (!fs.existsSync(directoryPath)) {
+//     await fs.mkdirSync(directoryPath);
+//   }
+// }
 
 async function setup() {
   try {
@@ -17728,21 +17728,31 @@ async function setup() {
     const download = getDownloadObject(cliVersion, sourceUrl);
 
     const pathToTarball = await tc.downloadTool(download.url);
-    const pathToDest = path.join(_getTempDirectory(), "hawkscan");
+    // const pathToDest = path.join(_getTempDirectory(), "hawkscan");
 
     // Create dest directory
-    core.info(`creating ${pathToDest}`);
-    createDirectory(pathToDest);
+    // core.info(`creating ${pathToDest}`);
+    // createDirectory(pathToDest);
 
     // Extract the zip onto host runner
     const extract = download.url.endsWith(".zip")
       ? tc.extractZip
       : tc.extractTar;
-    const pathToCLI = await extract(pathToTarball, pathToDest);
+    const pathToCLI = await extract(pathToTarball);
     core.info(`created ${pathToCLI}`);
+    const hawkShPath = fs.existsSync(path.join(pathToCLI, "hawk.ps1"))
+    const hawkPwshPath = fs.existsSync(path.join(pathToCLI, "hawk.sh"))
+    if (!fs.existsSync(hawkShPath)) {
+        core.setFailed(`could not find ${hawkShPath}`)
+    }
+    if (!fs.existsSync(hawkPwshPath)) {
+        core.setFailed(`could not find ${hawkPwshPath}`)
+    }
 
     // Expose the tool by adding it to the PATH
-    core.addPath(path.join(pathToCLI, download.binPath));
+    const hawkScanPath = path.join(pathToCLI, download.binPath)
+    core.addPath(hawkScanPath);
+    core.info(`created ${hawkScanPath}`);
   } catch (e) {
     core.info(e);
     core.setFailed(e);
