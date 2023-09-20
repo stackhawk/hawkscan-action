@@ -2,12 +2,17 @@ name: "action-tests"
 on:
   pull_request:
   push:
+    branches:
+      - windows-testing # TODO: remove this
 
 jobs:
   # Run JS unit tests
   unit-tests:
+    strategy:
+      matrix:
+        runner: [ 'ubuntu-latest', 'windows-latest' ]
     name: Unit Tests
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.runner }}
     env:
       SHAWK_API_KEY: ${{ secrets.HAWK_API_KEY }}
     steps:
@@ -19,8 +24,11 @@ jobs:
 
   # Run a HawkScan with this Action
   live-test:
+    strategy:
+      matrix:
+        runner: [ 'ubuntu-latest', 'windows-latest' ]
     name: Live Test
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Check it out
         uses: actions/checkout@v3
