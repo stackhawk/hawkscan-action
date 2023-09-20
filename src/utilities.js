@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+const os = require('os')
 const { spawnHawk } = require('./hawk_process')
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
@@ -64,10 +65,14 @@ module.exports.gatherInputs = function gatherInputs() {
   }
 }
 
+module.exports.hawkExecutable = function() {
+  return os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
+}
+
 module.exports.buildCLICommand = function buildCLICommand(inputs) {
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
-
-  const cliCommand = (`hawk ` +
+  const hawk = this.hawkExecutable()
+  const cliCommand = (`${hawk} ` +
       `--api-key=${inputs.apiKey} ` +
       `${inputs.command} ` +
       `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
@@ -84,11 +89,22 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   return cleanCliClean
 }
 
-module.exports.runCommand = async function runCommand(command) {
-  const scanData = {};
-  const commandArray = command.split(" ");
+module.exports.spawnFileArgs = function spawnFileArgs(hawkPath, command) {
+  const hawkArgs = command.split(" ").slice(1);
+  return (os.platform() === 'win32') ? {
+    file: 'powershell',
+    args: [hawkPath, ...hawkArgs]
+  } : {
+    file: hawkPath,
+    args: hawkArgs
+  }
+}
 
-  await spawnHawk(commandArray[0], commandArray.slice(1))
+module.exports.runCommand = async function runCommand(hawkPath, command) {
+  const scanData = {};
+  const { file, args } = this.spawnFileArgs(hawkPath, command)
+  core.info(`${file} ${args}`)
+  await spawnHawk(file, args)
       .then(data  => {
         scanData.exitCode = data.code;
         scanData.resultsLink = scanParser(data.stdout,
