@@ -17697,36 +17697,58 @@ function sarifBuilder(scanData) {
 const path = __nccwpck_require__(1017);
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
+const fs = __nccwpck_require__(7147);
 const { getDownloadObject, getLatestVersion } = __nccwpck_require__(7254);
 const {gatherInputs} = __nccwpck_require__(7677)
 
-async function setup() {
-    try {
-        const inputs = gatherInputs();
-        // Get version of tool to be installed
-        const version = inputs.version;
-        const sourceUrl = inputs.sourceURL;
-
-        // Download the specific version of the tool, e.g. as a tarball/zipball
-        const cliVersion = version === 'latest' ? await getLatestVersion() : version;
-        const download = getDownloadObject(cliVersion, sourceUrl);
-
-        const pathToTarball = await tc.downloadTool(download.url);
-
-        // Extract the zip onto host runner
-        const extract = download.url.endsWith('.zip') ? tc.extractZip : tc.extractTar;
-        const pathToCLI = await extract(pathToTarball);
-
-        // Expose the tool by adding it to the PATH
-        core.addPath(path.join(pathToCLI, download.binPath));
-
-    } catch (e) {
-        core.info(e)
-        core.setFailed(e);
-    }
+/**
+ * Gets RUNNER_TEMP
+ */
+function _getTempDirectory() {
+  const tempDirectory = process.env["RUNNER_TEMP"] || "";
+  return tempDirectory;
 }
 
-module.exports ={ setup }
+async function createDirectory(directoryPath) {
+  if (!fs.existsSync(directoryPath)) {
+    await fs.mkdirSync(directoryPath);
+  }
+}
+
+async function setup() {
+  try {
+    const inputs = gatherInputs();
+    // Get version of tool to be installed
+    const version = inputs.version;
+    const sourceUrl = inputs.sourceURL;
+
+    // Download the specific version of the tool, e.g. as a tarball/zipball
+    const cliVersion =
+      version === "latest" ? await getLatestVersion() : version;
+    const download = getDownloadObject(cliVersion, sourceUrl);
+
+    const pathToTarball = await tc.downloadTool(download.url);
+    const pathToDest = path.join(_getTempDirectory(), "hawkscan");
+
+    // Create dest directory
+    createDirectory(pathToDest);
+
+    // Extract the zip onto host runner
+    const extract = download.url.endsWith(".zip")
+      ? tc.extractZip
+      : tc.extractTar;
+    const pathToCLI = await extract(pathToTarball, pathToDest);
+
+    // Expose the tool by adding it to the PATH
+    core.addPath(path.join(pathToCLI, download.binPath));
+  } catch (e) {
+    core.info(e);
+    core.setFailed(e);
+  }
+}
+
+module.exports = { setup };
+
 
 /***/ }),
 
