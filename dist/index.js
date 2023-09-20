@@ -17731,6 +17731,7 @@ async function setup() {
     const pathToDest = path.join(_getTempDirectory(), "hawkscan");
 
     // Create dest directory
+    core.info(`creating ${pathToDest}`);
     createDirectory(pathToDest);
 
     // Extract the zip onto host runner
@@ -17738,6 +17739,7 @@ async function setup() {
       ? tc.extractZip
       : tc.extractTar;
     const pathToCLI = await extract(pathToTarball, pathToDest);
+    core.info(`created ${pathToCLI}`);
 
     // Expose the tool by adding it to the PATH
     core.addPath(path.join(pathToCLI, download.binPath));
