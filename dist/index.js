@@ -17739,9 +17739,9 @@ async function setup() {
       ? tc.extractZip
       : tc.extractTar;
     const pathToCLI = await extract(pathToTarball);
-    core.info(`created ${pathToCLI}`);
-    const hawkShPath = path.join(pathToCLI, "hawk.ps1")
-    const hawkPwshPath = path.join(pathToCLI, "hawk")
+    const hawkScanPath = path.join(pathToCLI, download.binPath)
+    const hawkShPath = path.join(hawkScanPath, "hawk.ps1")
+    const hawkPwshPath = path.join(hawkScanPath, "hawk")
     if (!fs.existsSync(hawkShPath)) {
         core.setFailed(`could not find ${hawkShPath}`)
     }
@@ -17750,7 +17750,6 @@ async function setup() {
     }
 
     // Expose the tool by adding it to the PATH
-    const hawkScanPath = path.join(pathToCLI, download.binPath)
     core.addPath(hawkScanPath);
     core.info(`added ${hawkScanPath} to the PATH`);
   } catch (e) {
@@ -17873,10 +17872,14 @@ module.exports.gatherInputs = function gatherInputs() {
   }
 }
 
+module.exports.hawkExecutable = function() {
+  return os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
+}
+
 module.exports.buildCLICommand = function buildCLICommand(inputs) {
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
-  const hawkExecutable = os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
-  const cliCommand = (`${hawkExecutable} ` +
+  const hawk = this.hawkExecutable()
+  const cliCommand = (`${hawk} ` +
       `--api-key=${inputs.apiKey} ` +
       `${inputs.command} ` +
       `${(inputs.verbose === 'true') ? "--verbose " : ""}` +

@@ -65,10 +65,14 @@ module.exports.gatherInputs = function gatherInputs() {
   }
 }
 
+module.exports.hawkExecutable = function() {
+  return os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
+}
+
 module.exports.buildCLICommand = function buildCLICommand(inputs) {
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
-  const hawkExecutable = os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
-  const cliCommand = (`${hawkExecutable} ` +
+  const hawk = this.hawkExecutable()
+  const cliCommand = (`${hawk} ` +
       `--api-key=${inputs.apiKey} ` +
       `${inputs.command} ` +
       `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
