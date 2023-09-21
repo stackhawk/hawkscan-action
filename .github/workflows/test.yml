@@ -2,8 +2,6 @@ name: "action-tests"
 on:
   pull_request:
   push:
-    branches:
-      - windows-testing # TODO: remove this
 
 jobs:
   # Run JS unit tests
