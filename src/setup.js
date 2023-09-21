@@ -2,23 +2,13 @@ const path = require('path');
 const core = require('@actions/core');
 const tc = require('@actions/tool-cache');
 const fs = require('fs');
+const os = require('os')
 const { getDownloadObject, getLatestVersion } = require('./cli_utils');
 const {gatherInputs} = require('./utilities')
 
-/**
- * Gets RUNNER_TEMP
- */
-// function _getTempDirectory() {
-//   const tempDirectory = process.env["RUNNER_TEMP"] || "";
-//   return tempDirectory;
-// }
-
-// async function createDirectory(directoryPath) {
-//   if (!fs.existsSync(directoryPath)) {
-//     await fs.mkdirSync(directoryPath);
-//   }
-// }
-
+/*
+Returns the path of the hawkscan executable to run for the respective OS
+*/
 async function setup() {
   try {
     const inputs = gatherInputs();
@@ -30,14 +20,8 @@ async function setup() {
     const cliVersion =
       version === "latest" ? await getLatestVersion() : version;
     const download = getDownloadObject(cliVersion, sourceUrl);
-
     const pathToTarball = await tc.downloadTool(download.url);
-    // const pathToDest = path.join(_getTempDirectory(), "hawkscan");
-
-    // Create dest directory
-    // core.info(`creating ${pathToDest}`);
-    // createDirectory(pathToDest);
-
+    
     // Extract the zip onto host runner
     const extract = download.url.endsWith(".zip")
       ? tc.extractZip
@@ -56,6 +40,7 @@ async function setup() {
     // Expose the tool by adding it to the PATH
     core.addPath(hawkScanPath);
     core.info(`added ${hawkScanPath} to the PATH`);
+    return os.platform() === 'win32' ? hawkPwshPath : hawkShPath;
   } catch (e) {
     core.info(e);
     core.setFailed(e);

@@ -17698,23 +17698,13 @@ const path = __nccwpck_require__(1017);
 const core = __nccwpck_require__(2186);
 const tc = __nccwpck_require__(7784);
 const fs = __nccwpck_require__(7147);
+const os = __nccwpck_require__(2037)
 const { getDownloadObject, getLatestVersion } = __nccwpck_require__(7254);
 const {gatherInputs} = __nccwpck_require__(7677)
 
-/**
- * Gets RUNNER_TEMP
- */
-// function _getTempDirectory() {
-//   const tempDirectory = process.env["RUNNER_TEMP"] || "";
-//   return tempDirectory;
-// }
-
-// async function createDirectory(directoryPath) {
-//   if (!fs.existsSync(directoryPath)) {
-//     await fs.mkdirSync(directoryPath);
-//   }
-// }
-
+/*
+Returns the path of the hawkscan executable to run for the respective OS
+*/
 async function setup() {
   try {
     const inputs = gatherInputs();
@@ -17726,14 +17716,8 @@ async function setup() {
     const cliVersion =
       version === "latest" ? await getLatestVersion() : version;
     const download = getDownloadObject(cliVersion, sourceUrl);
-
     const pathToTarball = await tc.downloadTool(download.url);
-    // const pathToDest = path.join(_getTempDirectory(), "hawkscan");
-
-    // Create dest directory
-    // core.info(`creating ${pathToDest}`);
-    // createDirectory(pathToDest);
-
+    
     // Extract the zip onto host runner
     const extract = download.url.endsWith(".zip")
       ? tc.extractZip
@@ -17752,6 +17736,7 @@ async function setup() {
     // Expose the tool by adding it to the PATH
     core.addPath(hawkScanPath);
     core.info(`added ${hawkScanPath} to the PATH`);
+    return os.platform() === 'win32' ? hawkPwshPath : hawkShPath;
   } catch (e) {
     core.info(e);
     core.setFailed(e);
@@ -17806,6 +17791,7 @@ module.exports.addSignalHandler = function addSignalHandler(){
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
+const path = __nccwpck_require__(1017);
 const os = __nccwpck_require__(2037)
 const { spawnHawk } = __nccwpck_require__(9420)
 
@@ -17873,7 +17859,7 @@ module.exports.gatherInputs = function gatherInputs() {
 }
 
 module.exports.hawkExecutable = function() {
-  return os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
+  return os.platform() === 'win32' ? path.join(this.hawkExecutablePath(), 'hawk.ps1') : 'hawk'
 }
 
 module.exports.buildCLICommand = function buildCLICommand(inputs) {
@@ -17896,11 +17882,11 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   return cleanCliClean
 }
 
-module.exports.runCommand = async function runCommand(command) {
+module.exports.runCommand = async function runCommand(hawkPath, command) {
   const scanData = {};
   const commandArray = command.split(" ");
 
-  await spawnHawk(commandArray[0], commandArray.slice(1))
+  await spawnHawk(hawkPath, commandArray.slice(1))
       .then(data  => {
         scanData.exitCode = data.code;
         scanData.resultsLink = scanParser(data.stdout,
@@ -18148,10 +18134,10 @@ async function run() {
   if (inputs.dryRun !== 'true') {
     // Install the CLI and set up signal handling
     addSignalHandler();
-    await setup();
+    const hawkPath = await setup();
     // Run hawk command if installCLIOnly is false
     if (inputs.installCLIOnly !== 'true') {
-      scanData = await utilities.runCommand(cliCommand);
+      scanData = await utilities.runCommand(hawkPath, cliCommand);
       exitCode = scanData.exitCode;
       core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
       core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);

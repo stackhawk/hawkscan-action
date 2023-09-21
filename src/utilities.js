@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+const path = require('path');
 const os = require('os')
 const { spawnHawk } = require('./hawk_process')
 
@@ -66,7 +67,7 @@ module.exports.gatherInputs = function gatherInputs() {
 }
 
 module.exports.hawkExecutable = function() {
-  return os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
+  return os.platform() === 'win32' ? path.join(this.hawkExecutablePath(), 'hawk.ps1') : 'hawk'
 }
 
 module.exports.buildCLICommand = function buildCLICommand(inputs) {
@@ -89,11 +90,11 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   return cleanCliClean
 }
 
-module.exports.runCommand = async function runCommand(command) {
+module.exports.runCommand = async function runCommand(hawkPath, command) {
   const scanData = {};
   const commandArray = command.split(" ");
 
-  await spawnHawk(commandArray[0], commandArray.slice(1))
+  await spawnHawk(hawkPath, commandArray.slice(1))
       .then(data  => {
         scanData.exitCode = data.code;
         scanData.resultsLink = scanParser(data.stdout,

@@ -15,10 +15,10 @@ async function run() {
   if (inputs.dryRun !== 'true') {
     // Install the CLI and set up signal handling
     addSignalHandler();
-    await setup();
+    const hawkPath = await setup();
     // Run hawk command if installCLIOnly is false
     if (inputs.installCLIOnly !== 'true') {
-      scanData = await utilities.runCommand(cliCommand);
+      scanData = await utilities.runCommand(hawkPath, cliCommand);
       exitCode = scanData.exitCode;
       core.debug(`Scanner exit code: ${scanData.exitCode} (${typeof scanData.exitCode})`);
       core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
