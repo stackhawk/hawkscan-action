@@ -49,7 +49,10 @@ jobs:
   # Run a HawkScan with verbose and debug logging
   verbose-debug-test:
     name: Verbose and Debug Logging Test
-    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        runner: [ 'ubuntu-latest', 'windows-latest' ]
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Check it out
         uses: actions/checkout@v3
@@ -61,7 +64,7 @@ jobs:
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
           sourceURL: ${{ secrets.TEST_HAWK_CLI_SOURCE_URL }}
-          version: 2.2.0-beta
+          version: 3.3.0
           verbose: true
           debug: true
 

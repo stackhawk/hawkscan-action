@@ -17735,7 +17735,8 @@ async function setup() {
 
     // Expose the tool by adding it to the PATH
     core.addPath(hawkScanPath);
-    core.info(`added ${hawkScanPath} to the PATH`);
+    core.info(`added ${hawkScanPath} to the ${os.platform()} PATH`);
+
     return os.platform() === 'win32' ? hawkPwshPath : hawkShPath;
   } catch (e) {
     core.info(e);
@@ -17884,7 +17885,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
 module.exports.runCommand = async function runCommand(hawkPath, command) {
   const scanData = {};
   const commandArray = command.split(" ");
-
+  core.info(`${hawkPath} ${commandArray.slice(1)}`)
   await spawnHawk(hawkPath, commandArray.slice(1))
       .then(data  => {
         scanData.exitCode = data.code;

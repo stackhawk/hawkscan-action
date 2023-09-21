@@ -92,7 +92,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
 module.exports.runCommand = async function runCommand(hawkPath, command) {
   const scanData = {};
   const commandArray = command.split(" ");
-
+  core.info(`${hawkPath} ${commandArray.slice(1)}`)
   await spawnHawk(hawkPath, commandArray.slice(1))
       .then(data  => {
         scanData.exitCode = data.code;
