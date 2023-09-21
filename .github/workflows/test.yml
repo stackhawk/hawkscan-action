@@ -2,12 +2,17 @@ name: "action-tests"
 on:
   pull_request:
   push:
+    branches:
+      - main
 
 jobs:
   # Run JS unit tests
   unit-tests:
+    strategy:
+      matrix:
+        runner: [ 'ubuntu-latest', 'windows-latest' ]
     name: Unit Tests
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.runner }}
     env:
       SHAWK_API_KEY: ${{ secrets.HAWK_API_KEY }}
     steps:
@@ -19,11 +24,20 @@ jobs:
 
   # Run a HawkScan with this Action
   live-test:
+    strategy:
+      matrix:
+        runner: [ 'ubuntu-latest', 'windows-latest' ]
     name: Live Test
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Check it out
         uses: actions/checkout@v3
+      - name: Setup java on Windows
+        if: ${{ matrix.runner=='windows-latest' }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       - name: Run Scan
         id: run-scan
         uses: ./
@@ -36,15 +50,22 @@ jobs:
       - name: Check Scan Id
         run: echo "The last scan id was ${{ steps.run-scan.outputs.scanId }}"
 
-
-
   # Run a HawkScan with verbose and debug logging
   verbose-debug-test:
     name: Verbose and Debug Logging Test
-    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        runner: [ 'ubuntu-latest', 'windows-latest' ]
+    runs-on: ${{ matrix.runner }}
     steps:
       - name: Check it out
         uses: actions/checkout@v3
+      - name: Setup java on Windows
+        if: ${{ matrix.runner=='windows-latest' }}
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       - name: Run Scan
         uses: ./
         with:
@@ -52,8 +73,7 @@ jobs:
           githubToken: ${{ github.token }}
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
-          sourceURL: ${{ secrets.TEST_HAWK_CLI_SOURCE_URL }}
-          version: 2.2.0-beta
+          version: 3.3.0
           verbose: true
           debug: true
 

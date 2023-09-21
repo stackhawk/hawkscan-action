@@ -90,8 +90,9 @@ test('cli dry-run', () => {
   });
   const inputs = utilities.gatherInputs();
   const cliCommand = utilities.buildCLICommand(inputs);
+  const hawk = utilities.hawkExecutable();
   expect(cliCommand)
-      .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX scan --repo-dir ${workspace} --cicd-platform github-action stackhawk.yml`);
+      .toEqual(`${hawk} --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX scan --repo-dir ${workspace} --cicd-platform github-action stackhawk.yml`);
 });
 
 test('cli dry-run args', () => {
@@ -104,8 +105,9 @@ test('cli dry-run args', () => {
   });
   const inputs = utilities.gatherInputs();
   const cliCommand = utilities.buildCLICommand(inputs);
+  const hawk = utilities.hawkExecutable();
   expect(cliCommand)
-      .toEqual(`hawk --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX rescan --repo-dir ${workspace} --cicd-platform github-action --scan-id XXxxXXXX-xXXX-xxXX-XXxX-xXXxxXXXXxXX --debug true stackhawk.yml`);
+      .toEqual(`${hawk} --api-key=hawk.xxxxXXXXxxXXxxxXXxXX.xxxXXxxxXXxxXXxxxXXX rescan --repo-dir ${workspace} --cicd-platform github-action --scan-id XXxxXXXX-xXXX-xxXX-XXxX-xXXxxXXXXxXX --debug true stackhawk.yml`);
 });
 
 test('get download object', () => {

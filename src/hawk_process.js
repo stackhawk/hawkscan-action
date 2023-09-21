@@ -1,7 +1,7 @@
 const {spawn} = require("child_process");
 
 module.exports.spawnHawk = function spawnHawk(command, args) {
-    const child = spawn(command,args)
+    const child = spawn(command, args)
     let stdout = '';
     let stderr = '';
     const response = {};

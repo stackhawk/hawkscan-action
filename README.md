@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.1
+    - uses: stackhawk/hawkscan-action@v2.1.2
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.1
+    - uses: stackhawk/hawkscan-action@v2.1.2
       with:
         args: |
           --hawk-mem 1g
@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.1
+    - uses: stackhawk/hawkscan-action@v2.1.2
       with:
         command: rescan
 ```
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.1
+    - uses: stackhawk/hawkscan-action@v2.1.2
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.1
+    - uses: stackhawk/hawkscan-action@v2.1.2
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         configurationFiles: stackhawk.yml stackhawk-extra.yml
@@ -111,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.1
+    - uses: stackhawk/hawkscan-action@v2.1.2
     with:
       installCLIOnly: true
     - name: Run CLI Scan
@@ -131,7 +131,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.1
+    - uses: stackhawk/hawkscan-action@v2.1.2
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         codeScanningAlerts: true
@@ -154,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v2.1.1
+      - uses: stackhawk/hawkscan-action@v2.1.2
         with:
           apiKey: ${{ secrets.HAWK_API_KEY }}
           verbose: true
@@ -171,7 +171,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v2.1.1
+      - uses: stackhawk/hawkscan-action@v2.1.2
         with:
           workspace: ./app/config/
 ```
@@ -186,7 +186,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v2.1.1
+      - uses: stackhawk/hawkscan-action@v2.1.2
         with:
           version: 2.7.0
 ```
@@ -241,7 +241,7 @@ jobs:
         pip3 install -r requirements.txt
         nohup python3 app.py &
     - name: Scan my app
-      uses: stackhawk/hawkscan-action@v2.1.1
+      uses: stackhawk/hawkscan-action@v2.1.2
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -265,7 +265,7 @@ jobs:
         APP_HOST: 'http://localhost:5000'
         APP_ID: AE624DB7-11FC-4561-B8F2-2C8ECF77C2C7
         APP_ENV: Development
-      uses: stackhawk/hawkscan-action@v2.1.1
+      uses: stackhawk/hawkscan-action@v2.1.2
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
@@ -275,6 +275,27 @@ jobs:
 ```
 
 The configuration above will perform a dry run, meaning it will only print out the Docker command that it would run if `dryRun` were set to `false`, which is the default.  Finally, it tells HawkScan to use the `stackhawk.yml` configuration file and overlay the `stackhawk-extra.yml` configuration file on top of it.
+
+## Windows Support
+The HawkScan action is also supported on windows! With some nuances:
+
+### Ensure java is up to date
+Github's `windows-2022` runners may default to an earlier version of Java 11. As a result, you might see this error when running on Windows:
+
+```
+Error: A JNI error has occurred, please check your installation and try again
+com/stackhawk/zap/Bootstrap has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
+```
+
+To address this, Java on Hosted Windows Runners can be easily setup in a prior workflow step to instead use a later java version:
+```yaml
+    - uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+```
+
+Due to the nature of powershell and how we call java, this defect may not fail a build, and can pass silently.
 
 ## Need Help?
 
