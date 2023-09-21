@@ -4,10 +4,11 @@ const simpleGit = require('simple-git');
 const zlib = require('zlib');
 const url = require("url");
 const git = simpleGit();
+const fetch = require('fetch');
 
 // https://docs.github.com/en/rest/reference/code-scanning#upload-an-analysis-as-sarif-data--code-samples
 module.exports.uploadSarif = async function uploadSarif(scanData, githubToken) {
-  const octokit = new Octokit({ auth: githubToken });
+  const octokit = new Octokit({ auth: githubToken, fetch });
 
   const githubRepository = process.env['GITHUB_REPOSITORY'];
   if (githubRepository === undefined || ''){

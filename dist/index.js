@@ -13750,10 +13750,11 @@ const simpleGit = __nccwpck_require__(9103);
 const zlib = __nccwpck_require__(9796);
 const url = __nccwpck_require__(7310);
 const git = simpleGit();
+const fetch = __nccwpck_require__(2409);
 
 // https://docs.github.com/en/rest/reference/code-scanning#upload-an-analysis-as-sarif-data--code-samples
 module.exports.uploadSarif = async function uploadSarif(scanData, githubToken) {
-  const octokit = new Octokit({ auth: githubToken });
+  const octokit = new Octokit({ auth: githubToken, fetch });
 
   const githubRepository = process.env['GITHUB_REPOSITORY'];
   if (githubRepository === undefined || ''){
@@ -14095,6 +14096,14 @@ module.exports.runCommand = async function runCommand(hawkPath, command) {
 
   return scanData;
 }
+
+
+/***/ }),
+
+/***/ 2409:
+/***/ ((module) => {
+
+module.exports = eval("require")("fetch");
 
 
 /***/ }),
