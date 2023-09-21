@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - windows-testing # TODO remove me
 
 jobs:
   # Run JS unit tests
