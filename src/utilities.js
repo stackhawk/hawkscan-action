@@ -89,11 +89,22 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   return cleanCliClean
 }
 
+module.exports.spawnFileArgs = function spawnFileArgs(hawkPath, command) {
+  const hawkArgs = command.split(" ").slice(1);
+  return (os.platform() === 'win32') ? {
+    file: 'powershell',
+    args: [hawkPath, ...hawkArgs]
+  } : {
+    file: hawkPath,
+    args: hawkArgs
+  }
+}
+
 module.exports.runCommand = async function runCommand(hawkPath, command) {
   const scanData = {};
-  const commandArray = command.split(" ");
-  core.info(`${hawkPath} ${commandArray.slice(1)}`)
-  await spawnHawk(hawkPath, commandArray.slice(1))
+  const { file, args } = this.spawnFileArgs(hawkPath, command)
+  core.info(`${file} ${args}`)
+  await spawnHawk(file, args)
       .then(data  => {
         scanData.exitCode = data.code;
         scanData.resultsLink = scanParser(data.stdout,
