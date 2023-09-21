@@ -44,8 +44,8 @@ async function setup() {
       : tc.extractTar;
     const pathToCLI = await extract(pathToTarball);
     core.info(`created ${pathToCLI}`);
-    const hawkShPath = fs.existsSync(path.join(pathToCLI, "hawk.ps1"))
-    const hawkPwshPath = fs.existsSync(path.join(pathToCLI, "hawk.sh"))
+    const hawkShPath = path.join(pathToCLI, "hawk.ps1")
+    const hawkPwshPath = path.join(pathToCLI, "hawk")
     if (!fs.existsSync(hawkShPath)) {
         core.setFailed(`could not find ${hawkShPath}`)
     }
@@ -56,7 +56,7 @@ async function setup() {
     // Expose the tool by adding it to the PATH
     const hawkScanPath = path.join(pathToCLI, download.binPath)
     core.addPath(hawkScanPath);
-    core.info(`created ${hawkScanPath}`);
+    core.info(`added ${hawkScanPath} to the PATH`);
   } catch (e) {
     core.info(e);
     core.setFailed(e);

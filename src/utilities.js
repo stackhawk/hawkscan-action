@@ -1,4 +1,5 @@
 const core = require('@actions/core');
+const os = require('os')
 const { spawnHawk } = require('./hawk_process')
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
@@ -66,8 +67,8 @@ module.exports.gatherInputs = function gatherInputs() {
 
 module.exports.buildCLICommand = function buildCLICommand(inputs) {
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
-
-  const cliCommand = (`hawk ` +
+  const hawkExecutable = os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
+  const cliCommand = (`${hawkExecutable} ` +
       `--api-key=${inputs.apiKey} ` +
       `${inputs.command} ` +
       `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
