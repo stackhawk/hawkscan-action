@@ -1,5 +1,4 @@
 const core = require('@actions/core');
-const path = require('path');
 const os = require('os')
 const { spawnHawk } = require('./hawk_process')
 
@@ -67,7 +66,7 @@ module.exports.gatherInputs = function gatherInputs() {
 }
 
 module.exports.hawkExecutable = function() {
-  return os.platform() === 'win32' ? path.join(this.hawkExecutablePath(), 'hawk.ps1') : 'hawk'
+  return os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
 }
 
 module.exports.buildCLICommand = function buildCLICommand(inputs) {

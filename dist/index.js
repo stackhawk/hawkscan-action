@@ -17791,7 +17791,6 @@ module.exports.addSignalHandler = function addSignalHandler(){
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const core = __nccwpck_require__(2186);
-const path = __nccwpck_require__(1017);
 const os = __nccwpck_require__(2037)
 const { spawnHawk } = __nccwpck_require__(9420)
 
@@ -17859,7 +17858,7 @@ module.exports.gatherInputs = function gatherInputs() {
 }
 
 module.exports.hawkExecutable = function() {
-  return os.platform() === 'win32' ? path.join(this.hawkExecutablePath(), 'hawk.ps1') : 'hawk'
+  return os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
 }
 
 module.exports.buildCLICommand = function buildCLICommand(inputs) {
