@@ -73,7 +73,6 @@ jobs:
           githubToken: ${{ github.token }}
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
-          version: 3.3.0
           verbose: true
           debug: true
 
