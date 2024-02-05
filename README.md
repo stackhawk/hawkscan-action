@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.2
+    - uses: stackhawk/hawkscan-action@v2.1.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.2
+    - uses: stackhawk/hawkscan-action@v2.1.3
       with:
         args: |
           --hawk-mem 1g
@@ -61,7 +61,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.2
+    - uses: stackhawk/hawkscan-action@v2.1.3
       with:
         command: rescan
 ```
@@ -77,7 +77,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.2
+    - uses: stackhawk/hawkscan-action@v2.1.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.2
+    - uses: stackhawk/hawkscan-action@v2.1.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         configurationFiles: stackhawk.yml stackhawk-extra.yml
@@ -111,7 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.2
+    - uses: stackhawk/hawkscan-action@v2.1.3
     with:
       installCLIOnly: true
     - name: Run CLI Scan
@@ -131,7 +131,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v2.1.2
+    - uses: stackhawk/hawkscan-action@v2.1.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         codeScanningAlerts: true
@@ -154,7 +154,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v2.1.2
+      - uses: stackhawk/hawkscan-action@v2.1.3
         with:
           apiKey: ${{ secrets.HAWK_API_KEY }}
           verbose: true
@@ -171,7 +171,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v2.1.2
+      - uses: stackhawk/hawkscan-action@v2.1.3
         with:
           workspace: ./app/config/
 ```
@@ -186,7 +186,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v2.1.2
+      - uses: stackhawk/hawkscan-action@v2.1.3
         with:
           version: 2.7.0
 ```
@@ -208,7 +208,7 @@ jobs:
         pip3 install -r requirements.txt
         nohup python3 app.py &
     - name: Scan my app
-      uses: stackhawk/hawkscan-action@v2.1.2
+      uses: stackhawk/hawkscan-action@v2.1.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -232,7 +232,7 @@ jobs:
         APP_HOST: 'http://localhost:5000'
         APP_ID: AE624DB7-11FC-4561-B8F2-2C8ECF77C2C7
         APP_ENV: Development
-      uses: stackhawk/hawkscan-action@v2.1.2
+      uses: stackhawk/hawkscan-action@v2.1.3
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
