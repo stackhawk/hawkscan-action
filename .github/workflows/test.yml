@@ -69,7 +69,7 @@ jobs:
       - name: Run Scan
         uses: ./
         with:
-          apiKey: ${{ secrets.HAWK_API_KEY }}
+#          apiKey: ${{ secrets.HAWK_API_KEY }}
           githubToken: ${{ github.token }}
           configurationFiles: __tests__/stackhawk.yml
           codeScanningAlerts: true
