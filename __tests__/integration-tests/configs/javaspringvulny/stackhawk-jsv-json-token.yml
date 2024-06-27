@@ -1,7 +1,6 @@
 hawk:
   spider:
     maxDurationMinutes: 2
-  failureThreshold: low
 app:
   applicationId: ${APPLICATION_ID:test-app-id}
   env: ${ENV:Action Test}
