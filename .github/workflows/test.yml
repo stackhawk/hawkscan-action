@@ -32,9 +32,8 @@ jobs:
     steps:
       - name: Check it out
         uses: actions/checkout@v3
-      - name: Setup java on Windows
-        if: ${{ matrix.runner=='windows-latest' }}
-        uses: actions/setup-java@v3
+      - name: Setup java
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -60,9 +59,8 @@ jobs:
     steps:
       - name: Check it out
         uses: actions/checkout@v3
-      - name: Setup java on Windows
-        if: ${{ matrix.runner=='windows-latest' }}
-        uses: actions/setup-java@v3
+      - name: Setup java
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -82,6 +80,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       - name: Install CLI
         uses: ./
         with:
@@ -96,6 +99,11 @@ jobs:
       steps:
         - name: Check it out
           uses: actions/checkout@v3
+        - name: Setup java
+          uses: actions/setup-java@v4
+          with:
+            distribution: 'temurin'
+            java-version: '17'
         - name: Run Scan
           uses: ./
           with:
@@ -109,6 +117,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
+      - name: Setup java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
       - name: Checkout javaspringvulny repository
         uses: actions/checkout@v3
         with:
