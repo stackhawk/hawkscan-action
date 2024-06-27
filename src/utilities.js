@@ -117,6 +117,8 @@ module.exports.runCommand = async function runCommand(hawkPath, command) {
             /(?<=View on StackHawk platform: https:\/\/app.stackhawk.com\/scans\/)(?<group>.*)/m, 'group') || 'No scan id found';
       })
       .catch(error => {
+        core.info(`Here is the error ${error.message}`);
+        core.info(`Here is the error ${error}`);
         core.setFailed(error.message);
       });
 
