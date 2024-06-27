@@ -24,6 +24,9 @@ async function run() {
       core.debug(`Link to scan results: ${scanData.resultsLink} (${typeof scanData.resultsLink})`);
       core.debug(`This is the scan id: ${scanData.scanId} (${typeof scanData.scanId})`);
       core.setOutput("scanId", scanData.scanId);
+      if (exitCode !== 0) {
+        core.setFailed("This failed yo")
+      }
     }
 
   }
