@@ -18330,7 +18330,6 @@ async function run() {
       if (exitCode !== 0) {
         core.debug("It really really failed")
         core.setFailed("This failed yo")
-        process.exit()
       }
     }
 
