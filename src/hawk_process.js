@@ -36,6 +36,7 @@ module.exports.spawnHawk = function spawnHawk(command, args) {
                 // err.stderr = stderr;
                 // err.stdout = stdout;
                 reject(err);
+                //throw err
             }
         })
     })

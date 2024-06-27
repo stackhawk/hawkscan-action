@@ -103,6 +103,7 @@ module.exports.spawnFileArgs = function spawnFileArgs(hawkPath, command) {
 module.exports.runCommand = async function runCommand(hawkPath, command) {
   const scanData = {};
   const { file, args } = this.spawnFileArgs(hawkPath, command)
+  core.info("IN the command thingy")
   core.info(`${file} ${args}`)
   await spawnHawk(file, args)
       .then(data  => {
@@ -117,6 +118,7 @@ module.exports.runCommand = async function runCommand(hawkPath, command) {
             /(?<=View on StackHawk platform: https:\/\/app.stackhawk.com\/scans\/)(?<group>.*)/m, 'group') || 'No scan id found';
       })
       .catch(error => {
+        core.info("really in here")
         core.info(`Here is the error ${error.message}`);
         core.info(`Here is the error ${error}`);
         core.setFailed(error.message);
