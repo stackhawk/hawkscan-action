@@ -1,5 +1,4 @@
 const {spawn} = require("child_process");
-const core = require('@actions/core');
 
 module.exports.spawnHawk = function spawnHawk(command, args) {
     const child = spawn(command, args)
@@ -23,24 +22,20 @@ module.exports.spawnHawk = function spawnHawk(command, args) {
 
     const promise = new Promise((resolve, reject) => {
         child.on('error',(err) => {
-            core.info("The child process errored")
             reject(err);
         });
 
         child.on('close', code => {
-            core.info("The child process closed")
             if (code === 0) {
                 response.stdout = stdout;
                 response.code = code;
                 resolve(response);
             } else {
-                core.info("The child process non zeroed")
                 const err = new Error(`child exited with code ${code}`);
-                // err.code = code;
-                // err.stderr = stderr;
-                // err.stdout = stdout;
+                err.code = code;
+                err.stderr = stderr;
+                err.stdout = stdout;
                 reject(err);
-                //throw err
             }
         })
     })

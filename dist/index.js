@@ -17677,7 +17677,6 @@ module.exports = { getDownloadObject, getLatestVersion };
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const {spawn} = __nccwpck_require__(2081);
-const core = __nccwpck_require__(2186);
 
 module.exports.spawnHawk = function spawnHawk(command, args) {
     const child = spawn(command, args)
@@ -17701,24 +17700,20 @@ module.exports.spawnHawk = function spawnHawk(command, args) {
 
     const promise = new Promise((resolve, reject) => {
         child.on('error',(err) => {
-            core.info("The child process errored")
             reject(err);
         });
 
         child.on('close', code => {
-            core.info("The child process closed")
             if (code === 0) {
                 response.stdout = stdout;
                 response.code = code;
                 resolve(response);
             } else {
-                core.info("The child process non zeroed")
                 const err = new Error(`child exited with code ${code}`);
-                // err.code = code;
-                // err.stderr = stderr;
-                // err.stdout = stdout;
+                err.code = code;
+                err.stderr = stderr;
+                err.stdout = stdout;
                 reject(err);
-                //throw err
             }
         })
     })
@@ -18065,7 +18060,6 @@ module.exports.spawnFileArgs = function spawnFileArgs(hawkPath, command) {
 module.exports.runCommand = async function runCommand(hawkPath, command) {
   const scanData = {};
   const { file, args } = this.spawnFileArgs(hawkPath, command)
-  core.info("IN the command thingy")
   core.info(`${file} ${args}`)
   await spawnHawk(file, args)
       .then(data  => {
@@ -18080,10 +18074,9 @@ module.exports.runCommand = async function runCommand(hawkPath, command) {
             /(?<=View on StackHawk platform: https:\/\/app.stackhawk.com\/scans\/)(?<group>.*)/m, 'group') || 'No scan id found';
       })
       .catch(error => {
-        core.info("really in here")
-        core.info(`Here is the error ${error.message}`);
-        core.info(`Here is the error ${error}`);
-        core.setFailed(error.message);
+        scanData.exitCode = error.code;
+        scanData.errorMessage = error.message;
+        core.error(error.message);
       });
 
   return scanData;
@@ -18328,8 +18321,7 @@ async function run() {
       core.debug(`This is the scan id: ${scanData.scanId} (${typeof scanData.scanId})`);
       core.setOutput("scanId", scanData.scanId);
       if (exitCode !== 0) {
-        core.debug("It really really failed")
-        core.setFailed("This failed yo")
+        core.setFailed(scanData.errorMessage)
       }
     }
 

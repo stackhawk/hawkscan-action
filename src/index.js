@@ -25,8 +25,7 @@ async function run() {
       core.debug(`This is the scan id: ${scanData.scanId} (${typeof scanData.scanId})`);
       core.setOutput("scanId", scanData.scanId);
       if (exitCode !== 0) {
-        core.debug("It really really failed")
-        core.setFailed("This failed yo")
+        core.setFailed(scanData.errorMessage)
       }
     }
 
