@@ -243,26 +243,16 @@ jobs:
 
 The configuration above will perform a dry run, meaning it will only print out the Docker command that it would run if `dryRun` were set to `false`, which is the default.  Finally, it tells HawkScan to use the `stackhawk.yml` configuration file and overlay the `stackhawk-extra.yml` configuration file on top of it.
 
-## Windows Support
-The HawkScan action is also supported on windows! With some nuances:
+## Java Requirements for HawkScan 
+HawkScan 4 and above requires Java 17 through 21.  If you are defaulting to latest version of HawkScan, please ensure your Java is set to the correct version on your Github runners.
 
-### Ensure java is up to date
-Github's `windows-2022` runners may default to an earlier version of Java 11. As a result, you might see this error when running on Windows:
-
-```
-Error: A JNI error has occurred, please check your installation and try again
-com/stackhawk/zap/Bootstrap has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
-```
-
-To address this, Java on Hosted Windows Runners can be easily setup in a prior workflow step to instead use a later java version:
+To address this, Java on Hosted Runners can be easily setup in a prior workflow step to instead use the correct Java version:
 ```yaml
-    - uses: actions/setup-java@v3
+    - uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
 ```
-
-Due to the nature of powershell and how we call java, this defect may not fail a build, and can pass silently.
 
 ## Need Help?
 
