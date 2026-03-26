@@ -53,13 +53,21 @@ Run `release-pr.sh` with your desired bump level - **major**, **minor**, or **pa
 ./scripts/release-pr.sh -b patch
 ```
 
-Once the PR is merged, the `.github/workflows/test.yml` workflow handles step 4, tagging and releasing, automatically.
+Once the PR is merged, the `.github/workflows/test.yml` workflow handles step 4, tagging and releasing automatically. It creates a GitHub Release with tag `v{version}` (e.g. `v2.3.1`).
 
 The next *manual* step is to [edit the release](https://github.com/stackhawk/hawkscan-action/releases) and publish it to the GitHub Marketplace.
 
-Lastly, you must *manually* run the hawkscan-action job to update the main version. You must provide the same release tag as what was just released. This will update the major version tag (e.g. `v2`) to this specific version.
-
 > ✅ *Publish this Action to the GitHub Marketplace*
+
+Lastly, you must *manually* run the **"Update Main Version"** workflow dispatch to move the `v2` tag to your new release:
+
+1. Go to [Actions > Update Main Version](https://github.com/stackhawk/hawkscan-action/actions/workflows/update-main-version.yml)
+2. Click **"Run workflow"**
+3. Set **target** to the release tag (e.g. `v2.3.1`)
+4. Set **main_version** to `v2`
+5. Click **"Run workflow"**
+
+This ensures users referencing `stackhawk/hawkscan-action@v2` get the latest release.
 
 ## Check the Marketplace
 
