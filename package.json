@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "prepare": "node scripts/patch-esm-exports.js && ncc build src/index.js -o dist --source-map --license licenses.txt",
+    "prepare": "ncc build src/index.js -o dist --source-map --license licenses.txt",
     "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "all": "npm run lint && npm run prepare && npm run test"
   },
@@ -26,8 +26,8 @@
   },
   "homepage": "https://github.com/actions/javascript-action#readme",
   "dependencies": {
-    "@actions/core": "^2.0.0",
-    "@actions/tool-cache": "^3.0.0",
+    "@actions/core": "^3.0.0",
+    "@actions/tool-cache": "^4.0.0",
     "@octokit/core": "^5.1.0"
   },
   "devDependencies": {
