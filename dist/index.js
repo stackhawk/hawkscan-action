@@ -42418,7 +42418,7 @@ async function run() {
     }
   }
 
-  process.exit(exitCode);
+  process.exitCode = exitCode;
 }
 
 run();
