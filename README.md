@@ -1,4 +1,4 @@
-[![StackHawk](https://www.stackhawk.com/stackhawk-light-long@2x.png)](https://stackhawk.com)
+[![StackHawk](https://docs.stackhawk.com/images/logos/stackhawk-light-long.png)](https://stackhawk.com)
 
 # StackHawk HawkScan Action
 
@@ -13,7 +13,8 @@ Here's the rundown:
 
 ## Getting Started
  * Get your application set up in StackHawk with our [quickstart guide](https://docs.stackhawk.com/hawkscan/#quickstart)
- * Add your HawkScan Action to your GitHub repository. [Continuous Integration with HawkScan GitHub Action](https://docs.stackhawk.com/continuous-integration/github-actions.html)
+ * Add your HawkScan Action to your GitHub repository. [Continuous Integration with HawkScan GitHub Action](https://docs.stackhawk.com/integrations/ci-cd/github-actions/)
+ * Start HawkScan against your running web application in cicd, with test credentials. [Connect GitHub SAST results to StackHawk](https://docs.stackhawk.com/integrations/ci-cd/github-actions/github-code-scanning/)
 
 ## Inputs
 
@@ -120,7 +121,7 @@ jobs:
 
 ### `codeScanningAlerts`
 
-**Optional** *(requires [`githubToken`](#githubtoken))* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.github.com/en/code-security/secure-coding/automatically-scanning-your-code-for-vulnerabilities-and-errors/about-code-scanning).
+**Optional** *(requires [`githubToken`](#githubtoken))* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.stackhawk.com/integrations/workflows/microsoft/defender-for-cloud/).
 
 The `codeScanningAlerts` feature works in conjunction with the HawkScan's [`hawk.failureThreshold`](https://docs.stackhawk.com/hawkscan/configuration/#hawk) configuration option. If your scan produces alerts that meet or exceed your `hawk.failureThreshold` alert level, it will fail the scan with exit code 42, and trigger a Code Scanning alert in GitHub with a link to your scan results.
 
