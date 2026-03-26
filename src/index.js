@@ -1,8 +1,8 @@
-const core = require('@actions/core');
-const utilities = require('./utilities');
-const sarif = require('./sarif');
-const { setup } = require('./setup');
-const {addSignalHandler} = require("./signal_handler");
+import core from '@actions/core';
+import * as utilities from './utilities.js';
+import * as sarif from './sarif.js';
+import { setup } from './setup.js';
+import { addSignalHandler } from './signal_handler.js';
 
 async function run() {
   core.info('Starting HawkScan Action');

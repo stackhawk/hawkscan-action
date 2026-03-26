@@ -1,6 +1,6 @@
-const https = require('https');
+import https from 'https';
 
-function getDownloadObject(version, urlPath) {
+export function getDownloadObject(version, urlPath) {
   const binPath = `/hawk-${version}`;
   const url = `${urlPath}/hawk-${version}.zip`;
   return {
@@ -9,7 +9,7 @@ function getDownloadObject(version, urlPath) {
   };
 }
 
-async function getLatestVersion() {
+export async function getLatestVersion() {
   return new Promise(function (resolve, reject) {
     https
       .get('https://api.stackhawk.com/hawkscan/version', (res) => {
@@ -31,4 +31,3 @@ async function getLatestVersion() {
       });
   });
 }
-module.exports = { getDownloadObject, getLatestVersion };

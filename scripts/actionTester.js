@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
-const utilities = require('../src/utilities');
-const process = require('process');
-const { spawn } = require('child_process');
+import * as utilities from '../src/utilities.js';
+import { spawn } from 'child_process';
 
 // Take an object of key/value pairs and convert it to input environment variables
 function buildInput(inputs) {

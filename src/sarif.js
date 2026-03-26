@@ -1,12 +1,12 @@
-const core = require('@actions/core');
-const { Octokit } = require('@octokit/core');
-const simpleGit = require('simple-git');
-const zlib = require('zlib');
-const url = require("url");
+import core from '@actions/core';
+import { Octokit } from '@octokit/core';
+import simpleGit from 'simple-git';
+import zlib from 'zlib';
+import url from 'url';
 const git = simpleGit();
 
 // https://docs.github.com/en/rest/reference/code-scanning#upload-an-analysis-as-sarif-data--code-samples
-module.exports.uploadSarif = async function uploadSarif(scanData, githubToken) {
+export async function uploadSarif(scanData, githubToken) {
   const octokit = new Octokit({ auth: githubToken });
 
   const githubRepository = process.env['GITHUB_REPOSITORY'];
@@ -84,7 +84,7 @@ function sarifBuilder(scanData) {
                 },
                 "properties": {
                   "tags": [
-                    "🦅"
+                    "\uD83E\uDD85"
                   ]
                 }
               }

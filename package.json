@@ -3,10 +3,11 @@
   "version": "2.3.1",
   "description": "StackHawk HawkScan Action",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "prepare": "ncc build src/index.js -o dist --source-map --license licenses.txt",
-    "test": "jest",
+    "prepare": "node scripts/patch-esm-exports.js && ncc build src/index.js -o dist --source-map --license licenses.txt",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest",
     "all": "npm run lint && npm run prepare && npm run test"
   },
   "repository": {

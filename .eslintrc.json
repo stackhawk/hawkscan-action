@@ -1,7 +1,6 @@
 {
     "env": {
-        "commonjs": true,
-        "es6": true,
+        "es2020": true,
         "jest": true,
         "node": true
     },
@@ -11,12 +10,12 @@
         "SharedArrayBuffer": "readonly"
     },
     "parserOptions": {
-        "ecmaVersion": 2018
+        "ecmaVersion": 2020,
+        "sourceType": "module"
     },
     "rules": {
         "no-control-regex": 0,
         "guard-for-in": "warn",
-        "object-shorthand": "warn",
-        "@typescript-eslint/no-var-requires": "off"
+        "object-shorthand": "warn"
     }
 }

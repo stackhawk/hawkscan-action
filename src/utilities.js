@@ -1,6 +1,6 @@
-const core = require('@actions/core');
-const os = require('os')
-const { spawnHawk } = require('./hawk_process')
+import core from '@actions/core';
+import os from 'os';
+import { spawnHawk } from './hawk_process.js';
 
 // A filter that returns 'true' if an element contains anything other than null or an empty string
 function checkNotEmpty(element) {
@@ -47,7 +47,7 @@ function scanParser(input, regex, captureGroup) {
 }
 
 // Gather all conditioned inputs
-module.exports.gatherInputs = function gatherInputs() {
+export function gatherInputs() {
   return {
     workspace: core.getInput('workspace') || process.cwd(),
     apiKey: core.getInput('apiKey') || '',
@@ -65,13 +65,13 @@ module.exports.gatherInputs = function gatherInputs() {
   }
 }
 
-module.exports.hawkExecutable = function() {
+export function hawkExecutable() {
   return os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
 }
 
-module.exports.buildCLICommand = function buildCLICommand(inputs) {
+export function buildCLICommand(inputs) {
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
-  const hawk = this.hawkExecutable()
+  const hawk = hawkExecutable()
   const cliCommand = (`${hawk} ` +
       `--api-key=${inputs.apiKey} ` +
       `${inputs.command} ` +
@@ -89,7 +89,7 @@ module.exports.buildCLICommand = function buildCLICommand(inputs) {
   return cleanCliClean
 }
 
-module.exports.spawnFileArgs = function spawnFileArgs(hawkPath, command) {
+export function spawnFileArgs(hawkPath, command) {
   const hawkArgs = command.split(" ").slice(1);
   return (os.platform() === 'win32') ? {
     file: 'powershell',
@@ -100,9 +100,9 @@ module.exports.spawnFileArgs = function spawnFileArgs(hawkPath, command) {
   }
 }
 
-module.exports.runCommand = async function runCommand(hawkPath, command) {
+export async function runCommand(hawkPath, command) {
   const scanData = {};
-  const { file, args } = this.spawnFileArgs(hawkPath, command)
+  const { file, args } = spawnFileArgs(hawkPath, command)
   core.info(`${file} ${args}`)
   await spawnHawk(file, args)
       .then(data  => {
