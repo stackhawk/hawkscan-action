@@ -158,6 +158,8 @@ jobs:
   release-new-version:
     name: Release New Version
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     needs:
       - unit-tests
