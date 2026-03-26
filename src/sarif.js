@@ -1,4 +1,4 @@
-import core from '@actions/core';
+import * as core from '@actions/core';
 import { Octokit } from '@octokit/core';
 import simpleGit from 'simple-git';
 import zlib from 'zlib';

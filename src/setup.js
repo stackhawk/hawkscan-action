@@ -1,6 +1,6 @@
 import path from 'path';
-import core from '@actions/core';
-import tc from '@actions/tool-cache';
+import * as core from '@actions/core';
+import * as tc from '@actions/tool-cache';
 import fs from 'fs';
 import os from 'os';
 import { getDownloadObject, getLatestVersion } from './cli_utils.js';

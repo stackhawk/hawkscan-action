@@ -1,4 +1,4 @@
-import core from '@actions/core';
+import * as core from '@actions/core';
 import * as utilities from './utilities.js';
 import * as sarif from './sarif.js';
 import { setup } from './setup.js';

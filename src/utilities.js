@@ -1,4 +1,4 @@
-import core from '@actions/core';
+import * as core from '@actions/core';
 import os from 'os';
 import { spawnHawk } from './hawk_process.js';
 
