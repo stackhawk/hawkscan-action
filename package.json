@@ -28,7 +28,7 @@
   "dependencies": {
     "@actions/core": "^3.0.0",
     "@actions/tool-cache": "^4.0.0",
-    "@octokit/core": "^5.1.0"
+    "@octokit/core": "^7.0.6"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.38.4",
