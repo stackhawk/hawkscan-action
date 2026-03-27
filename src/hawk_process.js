@@ -1,6 +1,6 @@
-const {spawn} = require("child_process");
+import { spawn } from 'child_process';
 
-module.exports.spawnHawk = function spawnHawk(command, args) {
+export function spawnHawk(command, args) {
     const child = spawn(command, args)
     let stdout = '';
     let stderr = '';

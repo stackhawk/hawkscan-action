@@ -1,6 +1,5 @@
-const utilities = require('../src/utilities');
-const process = require('process');
-const { getDownloadObject } = require('../src/cli_utils');
+import * as utilities from '../src/utilities.js';
+import { getDownloadObject } from '../src/cli_utils.js';
 
 // Our workspace should be GITHUB_WORSPACE if it exists, or the current working directory otherwise
 const workspace = process.env.GITHUB_WORKSPACE || process.cwd();
@@ -15,7 +14,6 @@ function buildInput(inputs) {
 
 // Reset modules and remove input environment variables before each run
 beforeEach(() => {
-  jest.resetModules();
   delete process.env.INPUT_DRYRUN;
   delete process.env.INPUT_APIKEY;
   delete process.env.INPUT_WORKSPACE;

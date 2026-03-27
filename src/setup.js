@@ -1,15 +1,15 @@
-const path = require('path');
-const core = require('@actions/core');
-const tc = require('@actions/tool-cache');
-const fs = require('fs');
-const os = require('os')
-const { getDownloadObject, getLatestVersion } = require('./cli_utils');
-const {gatherInputs} = require('./utilities')
+import path from 'path';
+import * as core from '@actions/core';
+import * as tc from '@actions/tool-cache';
+import fs from 'fs';
+import os from 'os';
+import { getDownloadObject, getLatestVersion } from './cli_utils.js';
+import { gatherInputs } from './utilities.js';
 
 /*
 Returns the path of the hawkscan executable to run for the respective OS
 */
-async function setup() {
+export async function setup() {
   try {
     const inputs = gatherInputs();
     // Get version of tool to be installed
@@ -21,7 +21,7 @@ async function setup() {
       version === "latest" ? await getLatestVersion() : version;
     const download = getDownloadObject(cliVersion, sourceUrl);
     const pathToTarball = await tc.downloadTool(download.url);
-    
+
     // Extract the zip onto host runner
     const extract = download.url.endsWith(".zip")
       ? tc.extractZip
@@ -49,5 +49,3 @@ async function setup() {
     core.setFailed(e);
   }
 }
-
-module.exports = { setup };

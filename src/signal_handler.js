@@ -1,5 +1,5 @@
-const core = require("@actions/core");
-const {exec} = require("child_process");
+import * as core from '@actions/core';
+import { exec } from 'child_process';
 
 function killHawkProcess() {
     interruptProcess('hawk');
@@ -24,7 +24,7 @@ function interruptProcess(name){
     });
 }
 
-module.exports.addSignalHandler = function addSignalHandler(){
+export function addSignalHandler(){
     process.on('SIGINT', () => {
         core.debug(`SIGINT received for ${process.pid}`);
         killHawkProcess();
