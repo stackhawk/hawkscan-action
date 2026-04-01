@@ -17,7 +17,8 @@ jest.unstable_mockModule('@octokit/core', () => ({
   })),
 }));
 
-const { buildScanSummaryMarkdown, postPrComment, writeScanSummary } = await import('../src/scan_summary.js');
+const { buildScanSummaryMarkdown, postPrComment: _postPrComment, writeScanSummary } = await import('../src/scan_summary.js');
+void _postPrComment; // imported for coverage; tested via integration
 const core = await import('@actions/core');
 
 beforeEach(() => {
