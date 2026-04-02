@@ -25,13 +25,23 @@ Use the version in `.nvmrc` (currently v24). Run `nvm use` before any npm comman
 
 ## Release Process
 
-See `.github/CONTRIBUTING.md` for full details. Summary:
+**Every PR that should result in a new release MUST include a version bump.** Without it, the CI "Create Release" step will be skipped on merge because `scripts/version-check.sh` sees the existing tag and produces no output.
 
-1. Use `./scripts/release-pr.sh -b <major|minor|patch>` to create a release PR (requires `bump2version` and `gh`)
-2. The script bumps versions, runs `npm run all`, rebuilds dist/, commits, pushes, and creates a PR
-3. On merge to `main`, CI auto-creates a GitHub Release with tag `v{version}`
-4. Manually edit the release to publish to GitHub Marketplace
-5. Manually run the "Update Main Version" workflow dispatch to move the `v2` tag to the new release
+Bump the version using `bump2version`:
+
+```bash
+bump2version <major|minor|patch>   # updates .bumpversion.cfg, package.json, README.md and creates a commit
+```
+
+Alternatively, use the release PR script which handles the full flow:
+
+```bash
+./scripts/release-pr.sh -b <major|minor|patch>   # requires bump2version and gh CLI
+```
+
+On merge to `main`, CI auto-creates a GitHub Release with tag `v{version}`. After that:
+1. Manually edit the release to publish to GitHub Marketplace
+2. Manually run the "Update Main Version" workflow dispatch to move the `v2` tag to the new release
 
 ## Project Structure
 
