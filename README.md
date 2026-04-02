@@ -145,6 +145,30 @@ jobs:
 
 **Optional** If set to `${{ github.token }}`, gives HawkScan Action a temporary GitHub API token to enable uploading SARIF data. This input is required if `codeScanningAlerts` is set to `true`.
 
+### `commitShaCheck`
+
+**Optional** If set to `true`, the action will check the StackHawk platform for existing scan results matching the current commit SHA before running a new scan. This is useful when developers run HawkScan locally — the local scan captures the commit SHA, and when that commit appears in a PR, the action can reuse those results instead of re-scanning.
+
+When a matching scan is found, the action posts results as a PR comment and GitHub Step Summary, then passes or fails the check based on the scan's threshold status. When no matching scan is found, the action falls through to run HawkScan normally.
+
+The action automatically derives the `organizationId` from the `applicationId` in your `stackhawk.yml` configuration file.
+
+For example:
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - uses: stackhawk/hawkscan-action@v2.5.0
+      with:
+        apiKey: ${{ secrets.HAWK_API_KEY }}
+        commitShaCheck: true
+        configurationFiles: stackhawk.yml
+        codeScanningAlerts: true
+        githubToken: ${{ github.token }}
+```
+
 ### `debug` 
 
 **Optional** If you need additional information on your scans enable the debug and verbose environment variables to see detailed logs in the workflow output
