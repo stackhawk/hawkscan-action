@@ -58,11 +58,49 @@ export async function searchScanBySha({ token, organizationId, applicationId, co
   }
 }
 
+export async function lookupOrganizationId(token, applicationId) {
+  const url = `${STACKHAWK_API_BASE}/api/v1/app/${applicationId}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      core.warning(`StackHawk app lookup failed: ${response.status} ${response.statusText}`);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!data.organizationId) {
+      core.warning('Application lookup did not return an organizationId');
+      return null;
+    }
+
+    core.debug(`Found organizationId ${data.organizationId} for application ${applicationId}`);
+    return data.organizationId;
+  } catch (error) {
+    core.warning(`StackHawk app lookup error: ${error.message}`);
+    return null;
+  }
+}
+
 export async function checkForExistingScan({ apiKey, organizationId, applicationId, commitSha }) {
   const token = await authenticate(apiKey);
   if (!token) {
     return null;
   }
 
-  return searchScanBySha({ token, organizationId, applicationId, commitSha });
+  const resolvedOrgId = organizationId || await lookupOrganizationId(token, applicationId);
+  if (!resolvedOrgId) {
+    core.warning('Could not determine organizationId, falling back to normal scan');
+    return null;
+  }
+
+  return searchScanBySha({ token, organizationId: resolvedOrgId, applicationId, commitSha });
 }

@@ -26,11 +26,6 @@ async function runShaCheck(inputs) {
 
   core.info('Commit SHA check enabled, looking for existing scan results...');
 
-  if (!inputs.organizationId) {
-    core.setFailed('organizationId is required when commitShaCheck is enabled');
-    return true;
-  }
-
   const applicationId = parseApplicationId(inputs.workspace, inputs.configurationFiles);
   if (!applicationId) {
     core.setFailed('Could not find applicationId in stackhawk configuration files');

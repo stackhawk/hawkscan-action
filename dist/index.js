@@ -46419,13 +46419,51 @@ async function searchScanBySha({ token, organizationId, applicationId, commitSha
   }
 }
 
+async function lookupOrganizationId(token, applicationId) {
+  const url = `${STACKHAWK_API_BASE}/api/v1/app/${applicationId}`;
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      warning(`StackHawk app lookup failed: ${response.status} ${response.statusText}`);
+      return null;
+    }
+
+    const data = await response.json();
+
+    if (!data.organizationId) {
+      warning('Application lookup did not return an organizationId');
+      return null;
+    }
+
+    core_debug(`Found organizationId ${data.organizationId} for application ${applicationId}`);
+    return data.organizationId;
+  } catch (error) {
+    warning(`StackHawk app lookup error: ${error.message}`);
+    return null;
+  }
+}
+
 async function checkForExistingScan({ apiKey, organizationId, applicationId, commitSha }) {
   const token = await authenticate(apiKey);
   if (!token) {
     return null;
   }
 
-  return searchScanBySha({ token, organizationId, applicationId, commitSha });
+  const resolvedOrgId = organizationId || await lookupOrganizationId(token, applicationId);
+  if (!resolvedOrgId) {
+    warning('Could not determine organizationId, falling back to normal scan');
+    return null;
+  }
+
+  return searchScanBySha({ token, organizationId: resolvedOrgId, applicationId, commitSha });
 }
 
 ;// CONCATENATED MODULE: ./src/scan_summary.js
@@ -46553,11 +46591,6 @@ async function runShaCheck(inputs) {
   }
 
   info('Commit SHA check enabled, looking for existing scan results...');
-
-  if (!inputs.organizationId) {
-    setFailed('organizationId is required when commitShaCheck is enabled');
-    return true;
-  }
 
   const applicationId = parseApplicationId(inputs.workspace, inputs.configurationFiles);
   if (!applicationId) {

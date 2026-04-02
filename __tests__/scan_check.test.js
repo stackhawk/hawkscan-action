@@ -13,7 +13,7 @@ jest.unstable_mockModule('@actions/core', () => ({
   },
 }));
 
-const { authenticate, searchScanBySha, checkForExistingScan } = await import('../src/scan_check.js');
+const { authenticate, searchScanBySha, lookupOrganizationId, checkForExistingScan } = await import('../src/scan_check.js');
 const core = await import('@actions/core');
 
 // Mock global fetch
@@ -141,17 +141,69 @@ describe('searchScanBySha', () => {
   });
 });
 
+describe('lookupOrganizationId', () => {
+  test('returns organizationId from app lookup', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ applicationId: 'app-456', organizationId: 'org-derived-123' }),
+    });
+
+    const orgId = await lookupOrganizationId('test-token', 'app-456');
+    expect(orgId).toBe('org-derived-123');
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://api.stackhawk.com/api/v1/app/app-456',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: 'Bearer test-token',
+        }),
+      })
+    );
+  });
+
+  test('returns null on API error', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+      statusText: 'Not Found',
+    });
+
+    const orgId = await lookupOrganizationId('test-token', 'bad-app');
+    expect(orgId).toBeNull();
+    expect(core.warning).toHaveBeenCalled();
+  });
+
+  test('returns null when response missing organizationId', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ applicationId: 'app-456' }),
+    });
+
+    const orgId = await lookupOrganizationId('test-token', 'app-456');
+    expect(orgId).toBeNull();
+  });
+
+  test('returns null on network error', async () => {
+    mockFetch.mockRejectedValueOnce(new Error('Network error'));
+
+    const orgId = await lookupOrganizationId('test-token', 'app-456');
+    expect(orgId).toBeNull();
+    expect(core.warning).toHaveBeenCalled();
+  });
+});
+
 describe('checkForExistingScan', () => {
-  test('returns scan result when found', async () => {
+  test('returns scan result when found with explicit orgId', async () => {
     const scanData = {
       scan: { id: 'scan-789', status: 'COMPLETED' },
       findings: { totalCount: 2 },
     };
 
+    // auth
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ token: 'test-token' }),
     });
+    // scan search (skips app lookup since orgId provided)
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: async () => ({ content: [scanData], totalElements: 1 }),
@@ -165,6 +217,41 @@ describe('checkForExistingScan', () => {
     });
 
     expect(result).toEqual(scanData);
+    // Should be 2 calls: auth + scan search (no app lookup)
+    expect(mockFetch).toHaveBeenCalledTimes(2);
+  });
+
+  test('auto-derives orgId from app lookup when not provided', async () => {
+    const scanData = {
+      scan: { id: 'scan-789', status: 'COMPLETED' },
+      findings: { totalCount: 2 },
+    };
+
+    // auth
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ token: 'test-token' }),
+    });
+    // app lookup
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ applicationId: 'app-456', organizationId: 'org-derived' }),
+    });
+    // scan search
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ content: [scanData], totalElements: 1 }),
+    });
+
+    const result = await checkForExistingScan({
+      apiKey: 'test-key',
+      applicationId: 'app-456',
+      commitSha: 'abc1234',
+    });
+
+    expect(result).toEqual(scanData);
+    // Should be 3 calls: auth + app lookup + scan search
+    expect(mockFetch).toHaveBeenCalledTimes(3);
   });
 
   test('returns null when auth fails', async () => {
@@ -176,7 +263,28 @@ describe('checkForExistingScan', () => {
 
     const result = await checkForExistingScan({
       apiKey: 'bad-key',
-      organizationId: 'org-123',
+      applicationId: 'app-456',
+      commitSha: 'abc1234',
+    });
+
+    expect(result).toBeNull();
+  });
+
+  test('returns null when orgId lookup fails', async () => {
+    // auth
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ token: 'test-token' }),
+    });
+    // app lookup fails
+    mockFetch.mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+      statusText: 'Not Found',
+    });
+
+    const result = await checkForExistingScan({
+      apiKey: 'test-key',
       applicationId: 'app-456',
       commitSha: 'abc1234',
     });
