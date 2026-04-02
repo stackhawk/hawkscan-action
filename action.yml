@@ -29,6 +29,10 @@ inputs:
     description: If `true`, Register a Code Scanning Alert in GitHub if scan alerts exceed `hawk.failureThreshold`
     required: false
     default: false
+  commitShaCheck:
+    description: If `true`, check the StackHawk platform for existing scan results matching the commit SHA before running a new scan
+    required: false
+    default: false
   githubToken:
     description: GitHub Token for uploading Code Scanning Alert info - required if `codeScanningAlerts` is enabled
     required: false

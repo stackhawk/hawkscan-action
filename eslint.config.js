@@ -5,12 +5,12 @@ export default [
   js.configs.recommended,
   {
     languageOptions: {
-      ecmaVersion: 2020,
+      ecmaVersion: 2022,
       sourceType: "module",
       globals: {
         ...globals.node,
         ...globals.jest,
-        ...globals.es2020,
+        ...globals.es2022,
         Atomics: "readonly",
         SharedArrayBuffer: "readonly",
       },
