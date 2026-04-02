@@ -39,7 +39,7 @@ Alternatively, use the release PR script which handles the full flow:
 ./scripts/release-pr.sh -b <major|minor|patch>   # requires bump2version and gh CLI
 ```
 
-On merge to `main`, CI auto-creates a GitHub Release with tag `v{version}`. After that:
+See `.github/CONTRIBUTING.md` for full release details. On merge to `main`, CI auto-creates a GitHub Release with tag `v{version}`. After that:
 1. Manually edit the release to publish to GitHub Marketplace
 2. Manually run the "Update Main Version" workflow dispatch to move the `v2` tag to the new release
 
