@@ -58,7 +58,6 @@ export function gatherInputs() {
     githubToken: core.getInput('githubToken') || process.env['GITHUB_TOKEN'] || '',
     installCLIOnly : core.getInput('installCLIOnly') || 'false',
     commitShaCheck: core.getInput('commitShaCheck').toLowerCase() || 'false',
-    organizationId: core.getInput('organizationId') || '',
     sourceURL : core.getInput('sourceURL') || 'https://download.stackhawk.com/hawk/cli',
     verbose: core.getInput('verbose').toLowerCase() || 'false',
     debug: core.getInput('debug').toLowerCase() || 'false',

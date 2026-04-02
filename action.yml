@@ -33,10 +33,6 @@ inputs:
     description: If `true`, check the StackHawk platform for existing scan results matching the commit SHA before running a new scan
     required: false
     default: false
-  organizationId:
-    description: StackHawk organization ID. Required when `commitShaCheck` is enabled
-    required: false
-    default: ''
   githubToken:
     description: GitHub Token for uploading Code Scanning Alert info - required if `codeScanningAlerts` is enabled
     required: false
