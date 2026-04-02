@@ -27,6 +27,7 @@ beforeEach(() => {
   delete process.env.INPUT_DEBUG;
   delete process.env.INPUT_COMMAND;
   delete process.env.INPUT_ARGS;
+  delete process.env.INPUT_COMMITSHACHECK;
 });
 
 test('gather minimal inputs', () => {
@@ -40,6 +41,7 @@ test('gather minimal inputs', () => {
     dryRun: 'false',
     installCLIOnly : 'false',
     codeScanningAlerts: 'false',
+    commitShaCheck: 'false',
     workspace : workspace,
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
     verbose: 'false',
@@ -58,6 +60,7 @@ test('gather max inputs', () => {
     dryRun: 'true',
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
+    commitShaCheck: 'true',
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
     verbose: 'false',
     debug: 'false'
@@ -74,6 +77,7 @@ test('gather max inputs', () => {
     dryRun: 'true',
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
+    commitShaCheck: 'true',
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
     verbose: 'false',
     debug: 'false'

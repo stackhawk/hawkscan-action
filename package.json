@@ -1,6 +1,6 @@
 {
   "name": "hawkscan-action",
-  "version": "2.4.0",
+  "version": "2.5.0",
   "description": "StackHawk HawkScan Action",
   "main": "src/index.js",
   "type": "module",
@@ -28,7 +28,8 @@
   "dependencies": {
     "@actions/core": "^3.0.0",
     "@actions/tool-cache": "^4.0.0",
-    "@octokit/core": "^7.0.6"
+    "@octokit/core": "^7.0.6",
+    "js-yaml": "^4.1.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
