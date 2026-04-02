@@ -16,17 +16,34 @@ on:
 jobs:
   tag:
     runs-on: ubuntu-latest
+    # SECURITY: Require human approval via a protected Environment before the
+    # force-push runs. Create a "tag-release" environment in:
+    #   Settings -> Environments -> New environment -> add Required Reviewers
+    environment: tag-release
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+
+      # SECURITY: Validate that target is an existing named tag.
+      # Prevents pointing v2 at an arbitrary commit SHA or branch ref.
+      - name: Validate target is an existing tag
+        run: |
+          if ! git rev-parse --verify "refs/tags/${{ github.event.inputs.target }}" > /dev/null 2>&1; then
+            echo "::error::Input 'target' must be an existing tag. '${{ github.event.inputs.target }}' was not found in refs/tags/."
+            exit 1
+          fi
+          echo "Validated: '${{ github.event.inputs.target }}' is an existing tag."
+
       - name: Git config
         run: |
           git config user.name hawkdeploy
           git config user.email hawkdeploy@stackhawk.com
+
       - name: Tag new target
         run: git tag -f ${{ github.event.inputs.main_version }} ${{ github.event.inputs.target }}
+
       - name: Push new tag
         run: git push origin ${{ github.event.inputs.main_version }} --force
