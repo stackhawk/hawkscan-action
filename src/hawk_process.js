@@ -1,6 +1,11 @@
 import { spawn } from 'child_process';
 
 export function spawnHawk(command, args) {
+    // Forward action version to HawkScan so the platform can track adoption metrics.
+    // GITHUB_ACTION_REF is set by the runner (e.g., "v3", "v3.1.0").
+    process.env['_STACKHAWK_ACTION_VERSION']    = process.env['GITHUB_ACTION_REF']        ?? 'unknown';
+    process.env['_STACKHAWK_ACTION_REPOSITORY'] = process.env['GITHUB_ACTION_REPOSITORY'] ?? 'unknown';
+
     const child = spawn(command, args)
     let stdout = '';
     let stderr = '';

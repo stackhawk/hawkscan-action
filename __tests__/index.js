@@ -123,3 +123,9 @@ test('get custom url download object', () => {
   expect(downloadObject.url).toEqual('https://download.stackhawk.com/hawk/cli/hawk-2.1.0.zip');
   expect(downloadObject.binPath).toEqual('/hawk-2.1.0');
 })
+
+test('get binary download object for 6.0.0+', () => {
+  const downloadObject = getDownloadObject('6.0.0', 'https://download.stackhawk.com/hawk/cli');
+  expect(downloadObject.isBinary).toBe(true);
+  expect(downloadObject.url).toMatch(/^https:\/\/download\.stackhawk\.com\/hawk\/6\.0\.0\/[a-z0-9-]+\/hawk(\.exe)?$/);
+})
