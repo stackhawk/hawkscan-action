@@ -13,6 +13,8 @@ jobs:
         runner: [ 'ubuntu-latest', 'windows-latest' ]
     name: Unit Tests
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
     env:
       SHAWK_API_KEY: ${{ secrets.HAWK_API_KEY }}
     steps:
@@ -29,6 +31,9 @@ jobs:
         runner: [ 'ubuntu-latest', 'windows-latest' ]
     name: Live Test
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Check it out
         uses: actions/checkout@v5
@@ -56,6 +61,9 @@ jobs:
       matrix:
         runner: [ 'ubuntu-latest', 'windows-latest' ]
     runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Check it out
         uses: actions/checkout@v5
@@ -78,6 +86,8 @@ jobs:
   command-line-test:
     name: Command Line Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
       - name: Setup java
@@ -96,6 +106,9 @@ jobs:
   ajax-test:
       name: Ajax Test
       runs-on: ubuntu-latest
+      permissions:
+        contents: read
+        security-events: write
       steps:
         - name: Check it out
           uses: actions/checkout@v5
@@ -115,6 +128,8 @@ jobs:
   javaspringvulny-test:
     name: Java Spring Vulny Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
       - name: Setup java
