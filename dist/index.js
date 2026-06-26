@@ -35344,12 +35344,18 @@ function hawkExecutable() {
   return external_os_.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
 }
 
+const ALLOWED_COMMANDS = new Set(['scan', 'rescan']);
+
 function buildCLICommand(inputs) {
+  const command = inputs.command.toLowerCase();
+  if (!ALLOWED_COMMANDS.has(command)) {
+    throw new Error(`Invalid command: '${inputs.command}'. Must be one of: ${[...ALLOWED_COMMANDS].join(', ')}`);
+  }
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
   const hawk = hawkExecutable()
   const cliCommand = (`${hawk} ` +
       `--api-key=${inputs.apiKey} ` +
-      `${inputs.command} ` +
+      `${command} ` +
       `${(inputs.verbose === 'true') ? "--verbose " : ""}` +
       `${(inputs.debug === 'true') ? "--debug " : ""}` +
       `--repo-dir ${inputs.workspace} ` +
