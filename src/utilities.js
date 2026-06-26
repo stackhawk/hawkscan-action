@@ -70,11 +70,12 @@ export function hawkExecutable() {
   return os.platform() === 'win32' ? 'hawk.ps1' : 'hawk'
 }
 
-const ALLOWED_COMMANDS = new Set(['scan', 'rescan']);
+const ALLOWED_COMMANDS = new Set(['scan', 'rescan', 'validate']);
 
 export function buildCLICommand(inputs) {
   const command = inputs.command.toLowerCase();
-  if (!ALLOWED_COMMANDS.has(command)) {
+  const subcommand = command.split(/\s+/)[0];
+  if (!ALLOWED_COMMANDS.has(subcommand)) {
     throw new Error(`Invalid command: '${inputs.command}'. Must be one of: ${[...ALLOWED_COMMANDS].join(', ')}`);
   }
   const configurationFiles = stringifyArguments(inputs.configurationFiles);
