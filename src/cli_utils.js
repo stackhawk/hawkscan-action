@@ -57,7 +57,7 @@ export async function getLatestVersion() {
           data += chunk;
         });
         res.on('end', function () {
-          resolve(data);
+          resolve(data.trim());
         });
       })
       .on('error', (e) => {

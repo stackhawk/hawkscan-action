@@ -35221,10 +35221,13 @@ function getIDToken(aud) {
 function spawnHawk(command, args) {
     // Forward action version to HawkScan so the platform can track adoption metrics.
     // GITHUB_ACTION_REF is set by the runner (e.g., "v3", "v3.1.0").
-    process.env['_STACKHAWK_ACTION_VERSION']    = process.env['GITHUB_ACTION_REF']        ?? 'unknown';
-    process.env['_STACKHAWK_ACTION_REPOSITORY'] = process.env['GITHUB_ACTION_REPOSITORY'] ?? 'unknown';
+    const env = {
+        ...process.env,
+        '_STACKHAWK_ACTION_VERSION':    process.env['GITHUB_ACTION_REF']        ?? 'unknown',
+        '_STACKHAWK_ACTION_REPOSITORY': process.env['GITHUB_ACTION_REPOSITORY'] ?? 'unknown',
+    };
 
-    const child = (0,external_child_process_namespaceObject.spawn)(command, args)
+    const child = (0,external_child_process_namespaceObject.spawn)(command, args, { env })
     let stdout = '';
     let stderr = '';
     const response = {};
@@ -42502,7 +42505,7 @@ async function getLatestVersion() {
           data += chunk;
         });
         res.on('end', function () {
-          resolve(data);
+          resolve(data.trim());
         });
       })
       .on('error', (e) => {
