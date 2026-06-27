@@ -28,7 +28,8 @@ export async function setup() {
       const binDir = path.join(os.tmpdir(), `hawk-bin-${cliVersion}`);
       fs.mkdirSync(binDir, { recursive: true });
       const binaryPath = path.join(binDir, download.binaryName);
-      fs.renameSync(downloadedPath, binaryPath);
+      fs.copyFileSync(downloadedPath, binaryPath);
+      fs.unlinkSync(downloadedPath);
       if (os.platform() !== 'win32') {
         fs.chmodSync(binaryPath, '755');
       }

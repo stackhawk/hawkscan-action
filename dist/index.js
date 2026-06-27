@@ -42554,7 +42554,8 @@ async function setup() {
       const binDir = external_path_namespaceObject.join(external_os_.tmpdir(), `hawk-bin-${cliVersion}`);
       external_fs_.mkdirSync(binDir, { recursive: true });
       const binaryPath = external_path_namespaceObject.join(binDir, download.binaryName);
-      external_fs_.renameSync(downloadedPath, binaryPath);
+      external_fs_.copyFileSync(downloadedPath, binaryPath);
+      external_fs_.unlinkSync(downloadedPath);
       if (external_os_.platform() !== 'win32') {
         external_fs_.chmodSync(binaryPath, '755');
       }
