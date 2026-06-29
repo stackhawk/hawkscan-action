@@ -268,10 +268,12 @@ jobs:
 
 The configuration above will perform a dry run, meaning it will only print out the Docker command that it would run if `dryRun` were set to `false`, which is the default.  Finally, it tells HawkScan to use the `stackhawk.yml` configuration file and overlay the `stackhawk-extra.yml` configuration file on top of it.
 
-## Java Requirements for HawkScan 
-HawkScan 4 and above requires Java 17 through 21.  If you are defaulting to latest version of HawkScan, please ensure your Java is set to the correct version on your Github runners.
+## Java Requirements for HawkScan
 
-To address this, Java on Hosted Runners can be easily setup in a prior workflow step to instead use the correct Java version:
+**HawkScan 6.0.0 and above** is a self-contained binary — no separate Java installation is required.
+
+**HawkScan 5.x and earlier** require Java 17 through 21. If you are using an older version of HawkScan, ensure Java is set to the correct version on your GitHub runners. Java on Hosted Runners can be set up in a prior workflow step:
+
 ```yaml
     - uses: actions/setup-java@v4
       with:
