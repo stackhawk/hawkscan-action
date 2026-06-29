@@ -11,6 +11,7 @@ on:
         type: choice
         description: The main version to update
         options:
+          - v3
           - v2
 
 jobs:
