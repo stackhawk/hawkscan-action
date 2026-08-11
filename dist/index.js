@@ -35332,6 +35332,7 @@ function gatherInputs() {
     githubToken: getInput('githubToken') || process.env['GITHUB_TOKEN'] || '',
     installCLIOnly : getInput('installCLIOnly') || 'false',
     commitShaCheck: getInput('commitShaCheck').toLowerCase() || 'false',
+    organizationId: getInput('organizationId') || '',
     sourceURL : getInput('sourceURL') || 'https://download.stackhawk.com/hawk/cli',
     verbose: getInput('verbose').toLowerCase() || 'false',
     debug: getInput('debug').toLowerCase() || 'false',
@@ -46766,6 +46767,7 @@ async function runShaCheck(inputs) {
 
   const scanResult = await checkForExistingScan({
     apiKey: inputs.apiKey,
+    organizationId: inputs.organizationId,
     applicationId,
     commitSha,
   });

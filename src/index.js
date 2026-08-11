@@ -42,6 +42,7 @@ async function runShaCheck(inputs) {
 
   const scanResult = await checkForExistingScan({
     apiKey: inputs.apiKey,
+    organizationId: inputs.organizationId,
     applicationId,
     commitSha,
   });

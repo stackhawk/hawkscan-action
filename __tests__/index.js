@@ -28,6 +28,7 @@ beforeEach(() => {
   delete process.env.INPUT_COMMAND;
   delete process.env.INPUT_ARGS;
   delete process.env.INPUT_COMMITSHACHECK;
+  delete process.env.INPUT_ORGANIZATIONID;
 });
 
 test('gather minimal inputs', () => {
@@ -42,6 +43,7 @@ test('gather minimal inputs', () => {
     installCLIOnly : 'false',
     codeScanningAlerts: 'false',
     commitShaCheck: 'false',
+    organizationId: '',
     workspace : workspace,
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
     verbose: 'false',
@@ -61,6 +63,7 @@ test('gather max inputs', () => {
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
     commitShaCheck: 'true',
+    organizationId: 'xXXxxXXX-xxXX-XXxx-xXXx-XXxxXXxxXXxx',
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
     verbose: 'false',
     debug: 'false'
@@ -78,6 +81,7 @@ test('gather max inputs', () => {
     codeScanningAlerts: 'true',
     installCLIOnly : 'true',
     commitShaCheck: 'true',
+    organizationId: 'xXXxxXXX-xxXX-XXxx-xXXx-XXxxXXxxXXxx',
     sourceURL : 'https://download.stackhawk.com/hawk/cli',
     verbose: 'false',
     debug: 'false'
