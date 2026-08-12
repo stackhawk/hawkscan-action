@@ -22,6 +22,9 @@ global.fetch = mockFetch;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  // clearAllMocks does not drain queued mockResolvedValueOnce values, so an
+  // unconsumed response would leak into the next test and shift its call order.
+  mockFetch.mockReset();
 });
 
 describe('authenticate', () => {
@@ -142,16 +145,26 @@ describe('searchScanBySha', () => {
 });
 
 describe('lookupOrganizationId', () => {
-  test('returns organizationId from app lookup', async () => {
+  // Shape of GetApplicationOrganizationResponse as returned by
+  // GET /api/v1/app/{appId}/org (Nest organization.proto GetApplicationOrganizationResponse).
+  const appOrgResponse = {
+    organization: {
+      id: 'org-derived-123',
+      name: 'Test Org',
+      plan: { type: 'BUSINESS' },
+    },
+  };
+
+  test('returns the owning organization id for the application', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ applicationId: 'app-456', organizationId: 'org-derived-123' }),
+      json: async () => appOrgResponse,
     });
 
     const orgId = await lookupOrganizationId('test-token', 'app-456');
     expect(orgId).toBe('org-derived-123');
     expect(mockFetch).toHaveBeenCalledWith(
-      'https://api.stackhawk.com/api/v1/app/app-456',
+      'https://api.stackhawk.com/api/v1/app/app-456/org',
       expect.objectContaining({
         headers: expect.objectContaining({
           Authorization: 'Bearer test-token',
@@ -172,14 +185,26 @@ describe('lookupOrganizationId', () => {
     expect(core.warning).toHaveBeenCalled();
   });
 
-  test('returns null when response missing organizationId', async () => {
+  test('returns null when response has no organization', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ applicationId: 'app-456' }),
+      json: async () => ({}),
     });
 
     const orgId = await lookupOrganizationId('test-token', 'app-456');
     expect(orgId).toBeNull();
+    expect(core.warning).toHaveBeenCalled();
+  });
+
+  test('returns null when organization has no id', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ organization: { name: 'Test Org' } }),
+    });
+
+    const orgId = await lookupOrganizationId('test-token', 'app-456');
+    expect(orgId).toBeNull();
+    expect(core.warning).toHaveBeenCalled();
   });
 
   test('returns null on network error', async () => {
@@ -192,7 +217,7 @@ describe('lookupOrganizationId', () => {
 });
 
 describe('checkForExistingScan', () => {
-  test('returns scan result when found with explicit orgId', async () => {
+  test('resolves the owning org, then searches that org for the commit SHA', async () => {
     const scanData = {
       scan: { id: 'scan-789', status: 'COMPLETED' },
       findings: { totalCount: 2 },
@@ -203,39 +228,10 @@ describe('checkForExistingScan', () => {
       ok: true,
       json: async () => ({ token: 'test-token' }),
     });
-    // scan search (skips app lookup since orgId provided)
+    // owning org lookup
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ content: [scanData], totalElements: 1 }),
-    });
-
-    const result = await checkForExistingScan({
-      apiKey: 'test-key',
-      organizationId: 'org-123',
-      applicationId: 'app-456',
-      commitSha: 'abc1234',
-    });
-
-    expect(result).toEqual(scanData);
-    // Should be 2 calls: auth + scan search (no app lookup)
-    expect(mockFetch).toHaveBeenCalledTimes(2);
-  });
-
-  test('auto-derives orgId from app lookup when not provided', async () => {
-    const scanData = {
-      scan: { id: 'scan-789', status: 'COMPLETED' },
-      findings: { totalCount: 2 },
-    };
-
-    // auth
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ token: 'test-token' }),
-    });
-    // app lookup
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ applicationId: 'app-456', organizationId: 'org-derived' }),
+      json: async () => ({ organization: { id: 'org-derived', name: 'Test Org' } }),
     });
     // scan search
     mockFetch.mockResolvedValueOnce({
@@ -250,8 +246,12 @@ describe('checkForExistingScan', () => {
     });
 
     expect(result).toEqual(scanData);
-    // Should be 3 calls: auth + app lookup + scan search
+    // auth + owning org lookup + scan search
     expect(mockFetch).toHaveBeenCalledTimes(3);
+    expect(mockFetch).toHaveBeenLastCalledWith(
+      expect.stringContaining('/api/v1/scan/org-derived?appIds=app-456&tag=GIT_SHA:abc1234*'),
+      expect.anything()
+    );
   });
 
   test('returns null when auth fails', async () => {
@@ -276,7 +276,7 @@ describe('checkForExistingScan', () => {
       ok: true,
       json: async () => ({ token: 'test-token' }),
     });
-    // app lookup fails
+    // owning org lookup fails
     mockFetch.mockResolvedValueOnce({
       ok: false,
       status: 404,
@@ -290,6 +290,8 @@ describe('checkForExistingScan', () => {
     });
 
     expect(result).toBeNull();
+    // no scan search attempted without an org
+    expect(mockFetch).toHaveBeenCalledTimes(2);
   });
 
   test('returns null when no scan matches', async () => {
@@ -299,12 +301,15 @@ describe('checkForExistingScan', () => {
     });
     mockFetch.mockResolvedValueOnce({
       ok: true,
+      json: async () => ({ organization: { id: 'org-derived' } }),
+    });
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
       json: async () => ({ content: [], totalElements: 0 }),
     });
 
     const result = await checkForExistingScan({
       apiKey: 'test-key',
-      organizationId: 'org-123',
       applicationId: 'app-456',
       commitSha: 'abc1234',
     });

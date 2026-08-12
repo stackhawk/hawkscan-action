@@ -46577,8 +46577,15 @@ async function searchScanBySha({ token, organizationId, applicationId, commitSha
   }
 }
 
+// Resolves the organization that owns an application.
+//
+// Uses the app-scoped endpoint rather than GET /api/v1/app/{appId}: that response
+// omits organizationId entirely (yarak never populates the proto field), and because
+// the path variable here is the application id, the platform evaluates plan
+// enforcement against the owning org rather than whichever org we asked about. This
+// mirrors PlatformApi.resolveApplicationAsync in the hawkscan CLI.
 async function lookupOrganizationId(token, applicationId) {
-  const url = `${STACKHAWK_API_BASE}/api/v1/app/${applicationId}`;
+  const url = `${STACKHAWK_API_BASE}/api/v1/app/${applicationId}/org`;
 
   try {
     const response = await fetch(url, {
@@ -46590,38 +46597,39 @@ async function lookupOrganizationId(token, applicationId) {
     });
 
     if (!response.ok) {
-      warning(`StackHawk app lookup failed: ${response.status} ${response.statusText}`);
+      warning(`StackHawk organization lookup failed: ${response.status} ${response.statusText}`);
       return null;
     }
 
     const data = await response.json();
+    const orgId = data.organization?.id;
 
-    if (!data.organizationId) {
-      warning('Application lookup did not return an organizationId');
+    if (!orgId) {
+      warning(`Organization lookup for application ${applicationId} did not return an organization`);
       return null;
     }
 
-    core_debug(`Found organizationId ${data.organizationId} for application ${applicationId}`);
-    return data.organizationId;
+    core_debug(`Found organizationId ${orgId} for application ${applicationId}`);
+    return orgId;
   } catch (error) {
-    warning(`StackHawk app lookup error: ${error.message}`);
+    warning(`StackHawk organization lookup error: ${error.message}`);
     return null;
   }
 }
 
-async function checkForExistingScan({ apiKey, organizationId, applicationId, commitSha }) {
+async function checkForExistingScan({ apiKey, applicationId, commitSha }) {
   const token = await authenticate(apiKey);
   if (!token) {
     return null;
   }
 
-  const resolvedOrgId = organizationId || await lookupOrganizationId(token, applicationId);
-  if (!resolvedOrgId) {
+  const organizationId = await lookupOrganizationId(token, applicationId);
+  if (!organizationId) {
     warning('Could not determine organizationId, falling back to normal scan');
     return null;
   }
 
-  return searchScanBySha({ token, organizationId: resolvedOrgId, applicationId, commitSha });
+  return searchScanBySha({ token, organizationId, applicationId, commitSha });
 }
 
 ;// CONCATENATED MODULE: ./src/scan_summary.js

@@ -151,7 +151,7 @@ jobs:
 
 When a matching scan is found, the action posts results as a PR comment and GitHub Step Summary, then passes or fails the check based on the scan's threshold status. When no matching scan is found, the action falls through to run HawkScan normally.
 
-The action automatically derives the `organizationId` from the `applicationId` in your `stackhawk.yml` configuration file.
+The action automatically resolves the organization that owns the `applicationId` in your `stackhawk.yml` configuration file, so no organization ID input is needed. Your `apiKey` must be able to read organizations and scans; if the lookup fails for any reason, the action logs a warning and runs a normal scan.
 
 For example:
 ```yaml
