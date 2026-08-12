@@ -46488,6 +46488,21 @@ var jsYaml = {
 
 
 
+// HawkScan interpolates ${VAR} and ${VAR:default} when it reads stackhawk.yml, so
+// applicationId is frequently an env var rather than a literal. We read the YAML
+// ourselves and must do the same, or we hand the API a placeholder string instead
+// of an application id. An unset variable with no default is left as-is so the
+// resulting lookup failure names the placeholder.
+function interpolateEnv(value) {
+  return value.replace(/\$\{([A-Za-z_][A-Za-z0-9_]*)(?::([^}]*))?\}/g, (placeholder, name, defaultValue) => {
+    const fromEnv = process.env[name];
+    if (fromEnv !== undefined && fromEnv !== '') {
+      return fromEnv;
+    }
+    return defaultValue !== undefined ? defaultValue : placeholder;
+  });
+}
+
 function parseApplicationId(workspace, configurationFiles) {
   for (const configFile of configurationFiles) {
     const configPath = external_path_namespaceObject.join(workspace, configFile);
@@ -46503,8 +46518,9 @@ function parseApplicationId(workspace, configurationFiles) {
       const applicationId = config?.app?.applicationId;
 
       if (applicationId) {
-        core_debug(`Found applicationId ${applicationId} in ${configFile}`);
-        return String(applicationId);
+        const resolved = interpolateEnv(String(applicationId));
+        core_debug(`Found applicationId ${resolved} in ${configFile}`);
+        return resolved;
       }
 
       core_debug(`No applicationId found in ${configFile}`);
@@ -46520,6 +46536,16 @@ function parseApplicationId(workspace, configurationFiles) {
 
 
 const STACKHAWK_API_BASE = 'https://api.stackhawk.com';
+
+// Reserved scan tag the platform uses for the commit SHA (Nest ReservedScanTagNames.kt).
+// HawkScan does not set this automatically — it must be declared in stackhawk.yml:
+//
+//   tags:
+//     - name: _STACKHAWK_GIT_COMMIT_SHA
+//       value: ${COMMIT_SHA:local}
+//
+// which is how StackHawk's own services configure it.
+const COMMIT_SHA_TAG = '_STACKHAWK_GIT_COMMIT_SHA';
 
 async function authenticate(apiKey) {
   try {
@@ -46546,7 +46572,7 @@ async function authenticate(apiKey) {
 }
 
 async function searchScanBySha({ token, organizationId, applicationId, commitSha }) {
-  const url = `${STACKHAWK_API_BASE}/api/v1/scan/${organizationId}?appIds=${applicationId}&tag=GIT_SHA:${commitSha}*&sortDir=desc&pageSize=1`;
+  const url = `${STACKHAWK_API_BASE}/api/v1/scan/${organizationId}?appIds=${applicationId}&tag=${COMMIT_SHA_TAG}:${commitSha}*&sortDir=desc&pageSize=1`;
 
   try {
     const response = await fetch(url, {

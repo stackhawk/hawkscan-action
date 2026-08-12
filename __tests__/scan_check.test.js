@@ -103,8 +103,11 @@ describe('searchScanBySha', () => {
 
     const result = await searchScanBySha(baseParams);
     expect(result).toEqual(scanResponse.content[0]);
+    // _STACKHAWK_GIT_COMMIT_SHA is the reserved tag name the platform uses
+    // (Nest ReservedScanTagNames.kt); the trailing * is a prefix match, which
+    // yarak translates to a SQL LIKE on the tag value.
     expect(mockFetch).toHaveBeenCalledWith(
-      expect.stringContaining(`/api/v1/scan/org-123?appIds=app-456&tag=GIT_SHA:abc1234*&sortDir=desc&pageSize=1`),
+      expect.stringContaining(`/api/v1/scan/org-123?appIds=app-456&tag=_STACKHAWK_GIT_COMMIT_SHA:abc1234*&sortDir=desc&pageSize=1`),
       expect.objectContaining({
         headers: expect.objectContaining({
           Authorization: 'Bearer test-token',
@@ -249,7 +252,7 @@ describe('checkForExistingScan', () => {
     // auth + owning org lookup + scan search
     expect(mockFetch).toHaveBeenCalledTimes(3);
     expect(mockFetch).toHaveBeenLastCalledWith(
-      expect.stringContaining('/api/v1/scan/org-derived?appIds=app-456&tag=GIT_SHA:abc1234*'),
+      expect.stringContaining('/api/v1/scan/org-derived?appIds=app-456&tag=_STACKHAWK_GIT_COMMIT_SHA:abc1234*'),
       expect.anything()
     );
   });

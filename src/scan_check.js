@@ -2,6 +2,16 @@ import * as core from '@actions/core';
 
 const STACKHAWK_API_BASE = 'https://api.stackhawk.com';
 
+// Reserved scan tag the platform uses for the commit SHA (Nest ReservedScanTagNames.kt).
+// HawkScan does not set this automatically — it must be declared in stackhawk.yml:
+//
+//   tags:
+//     - name: _STACKHAWK_GIT_COMMIT_SHA
+//       value: ${COMMIT_SHA:local}
+//
+// which is how StackHawk's own services configure it.
+const COMMIT_SHA_TAG = '_STACKHAWK_GIT_COMMIT_SHA';
+
 export async function authenticate(apiKey) {
   try {
     const response = await fetch(`${STACKHAWK_API_BASE}/api/v1/auth/login`, {
@@ -27,7 +37,7 @@ export async function authenticate(apiKey) {
 }
 
 export async function searchScanBySha({ token, organizationId, applicationId, commitSha }) {
-  const url = `${STACKHAWK_API_BASE}/api/v1/scan/${organizationId}?appIds=${applicationId}&tag=GIT_SHA:${commitSha}*&sortDir=desc&pageSize=1`;
+  const url = `${STACKHAWK_API_BASE}/api/v1/scan/${organizationId}?appIds=${applicationId}&tag=${COMMIT_SHA_TAG}:${commitSha}*&sortDir=desc&pageSize=1`;
 
   try {
     const response = await fetch(url, {

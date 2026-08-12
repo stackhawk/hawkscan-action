@@ -151,7 +151,27 @@ jobs:
 
 When a matching scan is found, the action posts results as a PR comment and GitHub Step Summary, then passes or fails the check based on the scan's threshold status. When no matching scan is found, the action falls through to run HawkScan normally.
 
-The action automatically resolves the organization that owns the `applicationId` in your `stackhawk.yml` configuration file, so no organization ID input is needed. Your `apiKey` must be able to read organizations and scans; if the lookup fails for any reason, the action logs a warning and runs a normal scan.
+**This requires your scans to be tagged with the commit SHA.** HawkScan does not add this tag automatically — add it to your `stackhawk.yml`:
+
+```yaml
+tags:
+  - name: _STACKHAWK_GIT_COMMIT_SHA
+    value: ${COMMIT_SHA:local}
+```
+
+and supply `COMMIT_SHA` wherever you run HawkScan. In GitHub Actions, use the pull request head SHA rather than `github.sha` — on `pull_request` events `github.sha` is the merge commit, not the commit being tested:
+
+```yaml
+    - uses: stackhawk/hawkscan-action@v3.1.0
+      with:
+        apiKey: ${{ secrets.HAWK_API_KEY }}
+      env:
+        COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+```
+
+Without that tag, no scan can be matched and every run falls through to a normal scan.
+
+The action automatically resolves the organization that owns the `applicationId` in your `stackhawk.yml` configuration file, so no organization ID input is needed. `${VAR}` and `${VAR:default}` in `applicationId` are interpolated from the environment, matching HawkScan's own behavior. Your `apiKey` must be able to read organizations and scans; if the lookup fails for any reason, the action logs a warning and runs a normal scan.
 
 For example:
 ```yaml

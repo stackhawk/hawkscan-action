@@ -29,3 +29,8 @@ app:
       success: ".*200.*"
   autoPolicy: true
   autoInputVectors: true
+tags:
+  # Required for commitShaCheck: the scan must carry the commit SHA as a tag for
+  # a later run to find it. HawkScan does not add this automatically.
+  - name: _STACKHAWK_GIT_COMMIT_SHA
+    value: ${COMMIT_SHA:local}

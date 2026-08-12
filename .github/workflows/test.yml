@@ -157,6 +157,11 @@ jobs:
           debug: true
         env:
           APPLICATION_ID: 4030d674-88b7-4e07-8065-7761f9c63788
+          # Tags the scan with the head commit SHA so the commitShaCheck step below
+          # can find it. On pull_request, github.sha is the merge commit, not the
+          # commit under test, so prefer the PR head SHA — the same thing the action
+          # looks up via getHeadSha().
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Run ReScan
         uses: ./
         with:
@@ -168,6 +173,38 @@ jobs:
             --scan-id ${{ steps.run-hawkscan.outputs.scanId }}
         env:
           APPLICATION_ID: 4030d674-88b7-4e07-8065-7761f9c63788
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      # Proves commitShaCheck end-to-end: the scans above are tagged with this
+      # commit's SHA, so this run must find one and skip scanning entirely.
+      #
+      # dryRun is the safety net. runShaCheck() executes before the dryRun branch
+      # in run(), so a match still sets outputs and returns early, while a miss
+      # cannot fall through into an actual scan. A non-empty scanId therefore
+      # means the reuse path fired, and nothing else does.
+      - name: Reuse existing scan by commit SHA
+        id: sha-check
+        uses: ./
+        with:
+          apiKey: ${{ secrets.HAWK_API_KEY }}
+          workspace: ${{ github.workspace }}/__tests__/integration-tests/configs/javaspringvulny/
+          configurationFiles: stackhawk-jsv-json-token.yml
+          commitShaCheck: true
+          dryRun: true
+          debug: true
+        env:
+          APPLICATION_ID: 4030d674-88b7-4e07-8065-7761f9c63788
+      - name: Assert existing scan was found
+        run: |
+          FOUND_SCAN_ID='${{ steps.sha-check.outputs.scanId }}'
+          EXPECTED_SHA='${{ github.event.pull_request.head.sha || github.sha }}'
+          if [ -z "$FOUND_SCAN_ID" ]; then
+            echo "::error::commitShaCheck found no scan for commit $EXPECTED_SHA."
+            echo "Expected to reuse a scan tagged _STACKHAWK_GIT_COMMIT_SHA:$EXPECTED_SHA"
+            echo "(tagged by the Run HawkScan step above). See that step's log for the scan id."
+            exit 1
+          fi
+          echo "commitShaCheck reused scan $FOUND_SCAN_ID for commit $EXPECTED_SHA"
 
   # If there is a new version according to the .bumpversion.cfg file in the main branch, tag and release
   release-new-version:
