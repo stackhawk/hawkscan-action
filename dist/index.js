@@ -46488,7 +46488,24 @@ var jsYaml = {
 
 
 
-function parseApplicationId(workspace, configurationFiles) {
+// HawkScan interpolates ${VAR} and ${VAR:default} when it reads stackhawk.yml, so
+// applicationId is frequently an env var rather than a literal. We read the YAML
+// ourselves and must do the same, or we hand the API a placeholder string instead
+// of an application id. An unset variable with no default is left as-is so the
+// resulting lookup failure names the placeholder.
+function interpolateEnv(value) {
+  return value.replace(/\$\{([A-Za-z_][A-Za-z0-9_]*)(?::([^}]*))?\}/g, (placeholder, name, defaultValue) => {
+    const fromEnv = process.env[name];
+    if (fromEnv !== undefined && fromEnv !== '') {
+      return fromEnv;
+    }
+    return defaultValue !== undefined ? defaultValue : placeholder;
+  });
+}
+
+// Returns the first value `select` finds across the configuration files, in the
+// order HawkScan itself would apply them.
+function readFromConfigs(workspace, configurationFiles, select, label) {
   for (const configFile of configurationFiles) {
     const configPath = external_path_namespaceObject.join(workspace, configFile);
 
@@ -46499,15 +46516,15 @@ function parseApplicationId(workspace, configurationFiles) {
 
     try {
       const fileContents = external_fs_.readFileSync(configPath, 'utf8');
-      const config = jsYaml.load(fileContents);
-      const applicationId = config?.app?.applicationId;
+      const value = select(jsYaml.load(fileContents));
 
-      if (applicationId) {
-        core_debug(`Found applicationId ${applicationId} in ${configFile}`);
-        return String(applicationId);
+      if (value) {
+        const resolved = interpolateEnv(String(value));
+        core_debug(`Found ${label} ${resolved} in ${configFile}`);
+        return resolved;
       }
 
-      core_debug(`No applicationId found in ${configFile}`);
+      core_debug(`No ${label} found in ${configFile}`);
     } catch (error) {
       warning(`Failed to parse config file ${configFile}: ${error.message}`);
     }
@@ -46516,10 +46533,31 @@ function parseApplicationId(workspace, configurationFiles) {
   return null;
 }
 
+function parseApplicationId(workspace, configurationFiles) {
+  return readFromConfigs(workspace, configurationFiles, (config) => config?.app?.applicationId, 'applicationId');
+}
+
+// hawk.failureThreshold is the severity at which HawkScan fails a scan (high,
+// medium, or low). A reused scan carries no pass/fail flag of its own, so we read
+// the same setting the scan itself would have used.
+function parseFailureThreshold(workspace, configurationFiles) {
+  return readFromConfigs(workspace, configurationFiles, (config) => config?.hawk?.failureThreshold, 'failureThreshold');
+}
+
 ;// CONCATENATED MODULE: ./src/scan_check.js
 
 
 const STACKHAWK_API_BASE = 'https://api.stackhawk.com';
+
+// Reserved scan tag the platform uses for the commit SHA (Nest ReservedScanTagNames.kt).
+// HawkScan does not set this automatically — it must be declared in stackhawk.yml:
+//
+//   tags:
+//     - name: _STACKHAWK_GIT_COMMIT_SHA
+//       value: ${COMMIT_SHA:local}
+//
+// which is how StackHawk's own services configure it.
+const COMMIT_SHA_TAG = '_STACKHAWK_GIT_COMMIT_SHA';
 
 async function authenticate(apiKey) {
   try {
@@ -46546,7 +46584,7 @@ async function authenticate(apiKey) {
 }
 
 async function searchScanBySha({ token, organizationId, applicationId, commitSha }) {
-  const url = `${STACKHAWK_API_BASE}/api/v1/scan/${organizationId}?appIds=${applicationId}&tag=GIT_SHA:${commitSha}*&sortDir=desc&pageSize=1`;
+  const url = `${STACKHAWK_API_BASE}/api/v1/scan/${organizationId}?appIds=${applicationId}&tag=${COMMIT_SHA_TAG}:${commitSha}*&sortDir=desc&pageSize=1`;
 
   try {
     const response = await fetch(url, {
@@ -46563,22 +46601,33 @@ async function searchScanBySha({ token, organizationId, applicationId, commitSha
     }
 
     const data = await response.json();
+    // ListScanResultsResponse.applicationScanResults (Nest application.proto:717).
+    // There is no `content` field -- reading one returns undefined for every
+    // response, which made this search silently yield nothing on every run.
+    const results = data.applicationScanResults;
 
-    if (!data.content || data.content.length === 0) {
+    if (!results || results.length === 0) {
       info('No existing scan found for this commit SHA');
       return null;
     }
 
     info(`Found existing scan for commit SHA: ${commitSha}`);
-    return data.content[0];
+    return results[0];
   } catch (error) {
     warning(`StackHawk scan search error: ${error.message}`);
     return null;
   }
 }
 
+// Resolves the organization that owns an application.
+//
+// Uses the app-scoped endpoint rather than GET /api/v1/app/{appId}: that response
+// omits organizationId entirely (yarak never populates the proto field), and because
+// the path variable here is the application id, the platform evaluates plan
+// enforcement against the owning org rather than whichever org we asked about. This
+// mirrors PlatformApi.resolveApplicationAsync in the hawkscan CLI.
 async function lookupOrganizationId(token, applicationId) {
-  const url = `${STACKHAWK_API_BASE}/api/v1/app/${applicationId}`;
+  const url = `${STACKHAWK_API_BASE}/api/v1/app/${applicationId}/org`;
 
   try {
     const response = await fetch(url, {
@@ -46590,38 +46639,97 @@ async function lookupOrganizationId(token, applicationId) {
     });
 
     if (!response.ok) {
-      warning(`StackHawk app lookup failed: ${response.status} ${response.statusText}`);
+      warning(`StackHawk organization lookup failed: ${response.status} ${response.statusText}`);
       return null;
     }
 
     const data = await response.json();
+    const orgId = data.organization?.id;
 
-    if (!data.organizationId) {
-      warning('Application lookup did not return an organizationId');
+    if (!orgId) {
+      warning(`Organization lookup for application ${applicationId} did not return an organization`);
       return null;
     }
 
-    core_debug(`Found organizationId ${data.organizationId} for application ${applicationId}`);
-    return data.organizationId;
+    core_debug(`Found organizationId ${orgId} for application ${applicationId}`);
+    return orgId;
   } catch (error) {
-    warning(`StackHawk app lookup error: ${error.message}`);
+    warning(`StackHawk organization lookup error: ${error.message}`);
     return null;
   }
 }
 
-async function checkForExistingScan({ apiKey, organizationId, applicationId, commitSha }) {
+async function checkForExistingScan({ apiKey, applicationId, commitSha }) {
   const token = await authenticate(apiKey);
   if (!token) {
     return null;
   }
 
-  const resolvedOrgId = organizationId || await lookupOrganizationId(token, applicationId);
-  if (!resolvedOrgId) {
+  const organizationId = await lookupOrganizationId(token, applicationId);
+  if (!organizationId) {
     warning('Could not determine organizationId, falling back to normal scan');
     return null;
   }
 
-  return searchScanBySha({ token, organizationId: resolvedOrgId, applicationId, commitSha });
+  return searchScanBySha({ token, organizationId, applicationId, commitSha });
+}
+
+;// CONCATENATED MODULE: ./src/findings.js
+// Finding counts and failure-threshold evaluation for a scan result returned by
+// GET /api/v1/scan/{orgId}.
+//
+// The API reports counts per triage status (Nest application.proto AlertStatusStats),
+// not a single flat total, and it carries no "did this exceed the threshold" flag --
+// that decision belongs to the scan's own hawk.failureThreshold config, so we
+// reproduce it here for a scan we are reusing rather than re-running.
+
+// Findings triaged into these statuses are deliberately not counted against the
+// threshold: they represent risk a human already reviewed and dismissed.
+const IGNORED_STATUSES = new Set(['FALSE_POSITIVE', 'RISK_ACCEPTED']);
+
+// Severities a given threshold fails on, lowest threshold being the strictest.
+const THRESHOLD_SEVERITIES = {
+  high: ['high'],
+  medium: ['high', 'medium'],
+  low: ['high', 'medium', 'low'],
+};
+
+function summarizeFindings(scanResult) {
+  const counts = { total: 0, high: 0, medium: 0, low: 0 };
+  const statusStats = scanResult?.alertStats?.alertStatusStats;
+
+  if (!Array.isArray(statusStats)) {
+    return counts;
+  }
+
+  for (const stat of statusStats) {
+    if (IGNORED_STATUSES.has(stat?.alertStatus)) {
+      continue;
+    }
+
+    for (const [severity, count] of Object.entries(stat?.severityStats || {})) {
+      const key = severity.toLowerCase();
+      if (key in counts && key !== 'total') {
+        counts[key] += count;
+        counts.total += count;
+      }
+    }
+  }
+
+  return counts;
+}
+
+function exceedsThreshold(counts, failureThreshold) {
+  if (!failureThreshold) {
+    return false;
+  }
+
+  const severities = THRESHOLD_SEVERITIES[String(failureThreshold).toLowerCase()];
+  if (!severities) {
+    return false;
+  }
+
+  return severities.some((severity) => counts[severity] > 0);
 }
 
 ;// CONCATENATED MODULE: ./src/scan_summary.js
@@ -46629,11 +46737,14 @@ async function checkForExistingScan({ apiKey, organizationId, applicationId, com
 
 
 
+
 function buildScanSummaryMarkdown({ scanResult, commitSha, thresholdExceeded = false, failureMessage = '' }) {
-  const { scan, findings } = scanResult;
+  const { scan } = scanResult;
+  const findings = summarizeFindings(scanResult);
   const appName = scan.applicationName || 'Unknown App';
   const env = scan.env || 'Unknown';
-  const scanUrl = scan.scanURL || `https://app.stackhawk.com/scans/${scan.id}`;
+  // The API returns no scan URL; the platform builds it from the scan id.
+  const scanUrl = `https://app.stackhawk.com/scans/${scan.id}`;
 
   const statusLine = thresholdExceeded
     ? `**Check Failed:** "${failureMessage}"`
@@ -46648,13 +46759,13 @@ function buildScanSummaryMarkdown({ scanResult, commitSha, thresholdExceeded = f
     ``,
     `${statusIcon} ${statusLine}`,
     ``,
-    `### Findings: ${findings.totalCount}`,
+    `### Findings: ${findings.total}`,
     ``,
     `| Severity | Count |`,
     `|----------|-------|`,
-    `| High | ${findings.highCount || 0} |`,
-    `| Medium | ${findings.mediumCount || 0} |`,
-    `| Low | ${findings.lowCount || 0} |`,
+    `| High | ${findings.high} |`,
+    `| Medium | ${findings.medium} |`,
+    `| Low | ${findings.low} |`,
     ``,
     `**[View Full Results on StackHawk](${scanUrl})**`,
     ``,
@@ -46663,9 +46774,9 @@ function buildScanSummaryMarkdown({ scanResult, commitSha, thresholdExceeded = f
     `| Field | Value |`,
     `|-------|-------|`,
     `| Commit | \`${commitSha}\` |`,
-    `| Scanned Paths | ${scan.scannedPaths || 'N/A'} |`,
-    `| HawkScan Version | ${scan.hawkscanVersion || 'N/A'} |`,
-    `| Host | ${scan.host || 'N/A'} |`,
+    `| URLs Scanned | ${scanResult.urlCount ?? 'N/A'} |`,
+    `| HawkScan Version | ${scan.version || 'N/A'} |`,
+    `| Host | ${scanResult.appHost || 'N/A'} |`,
     ``,
     `> *Results from a previously completed scan. No new scan was run.*`,
   ];
@@ -46732,6 +46843,7 @@ function getPrNumber() {
 
 
 
+
 function getHeadSha() {
   try {
     const eventPath = process.env['GITHUB_EVENT_PATH'];
@@ -46776,18 +46888,34 @@ async function runShaCheck(inputs) {
   }
 
   const scanId = scanResult.scan?.id || 'unknown';
-  const scanUrl = scanResult.scan?.scanURL || `https://app.stackhawk.com/scans/${scanId}`;
-  const thresholdExceeded = scanResult.scan?.status === 'FAILED' ||
-    (scanResult.findings?.totalCount > 0 && scanResult.scan?.failureThresholdExceeded);
+  const scanUrl = `https://app.stackhawk.com/scans/${scanId}`;
+
+  // A scan result carries no pass/fail verdict of its own, so apply the same
+  // hawk.failureThreshold the scan itself ran under. A scan that ERRORed never
+  // produced a trustworthy result, so treat that as a failure regardless.
+  const findings = summarizeFindings(scanResult);
+  const failureThreshold = parseFailureThreshold(inputs.workspace, inputs.configurationFiles);
+  const scanErrored = scanResult.scan?.status === 'ERROR';
+  const thresholdExceeded = scanErrored || exceedsThreshold(findings, failureThreshold);
+
+  info(
+    `Reusing scan ${scanId}: ${findings.total} findings ` +
+    `(high ${findings.high}, medium ${findings.medium}, low ${findings.low}); ` +
+    `failureThreshold ${failureThreshold || 'not configured'}`
+  );
 
   setOutput('scanId', scanId);
   setOutput('resultsLink', scanUrl);
+
+  const failureMessage = scanErrored
+    ? 'The existing scan for this commit ended in an error'
+    : `Findings meet or exceed the ${failureThreshold} failure threshold`;
 
   const markdown = buildScanSummaryMarkdown({
     scanResult,
     commitSha,
     thresholdExceeded,
-    failureMessage: thresholdExceeded ? `Findings exceed failure threshold` : '',
+    failureMessage: thresholdExceeded ? failureMessage : '',
   });
 
   await writeScanSummary(markdown);

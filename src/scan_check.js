@@ -2,6 +2,16 @@ import * as core from '@actions/core';
 
 const STACKHAWK_API_BASE = 'https://api.stackhawk.com';
 
+// Reserved scan tag the platform uses for the commit SHA (Nest ReservedScanTagNames.kt).
+// HawkScan does not set this automatically — it must be declared in stackhawk.yml:
+//
+//   tags:
+//     - name: _STACKHAWK_GIT_COMMIT_SHA
+//       value: ${COMMIT_SHA:local}
+//
+// which is how StackHawk's own services configure it.
+const COMMIT_SHA_TAG = '_STACKHAWK_GIT_COMMIT_SHA';
+
 export async function authenticate(apiKey) {
   try {
     const response = await fetch(`${STACKHAWK_API_BASE}/api/v1/auth/login`, {
@@ -27,7 +37,7 @@ export async function authenticate(apiKey) {
 }
 
 export async function searchScanBySha({ token, organizationId, applicationId, commitSha }) {
-  const url = `${STACKHAWK_API_BASE}/api/v1/scan/${organizationId}?appIds=${applicationId}&tag=GIT_SHA:${commitSha}*&sortDir=desc&pageSize=1`;
+  const url = `${STACKHAWK_API_BASE}/api/v1/scan/${organizationId}?appIds=${applicationId}&tag=${COMMIT_SHA_TAG}:${commitSha}*&sortDir=desc&pageSize=1`;
 
   try {
     const response = await fetch(url, {
@@ -44,22 +54,33 @@ export async function searchScanBySha({ token, organizationId, applicationId, co
     }
 
     const data = await response.json();
+    // ListScanResultsResponse.applicationScanResults (Nest application.proto:717).
+    // There is no `content` field -- reading one returns undefined for every
+    // response, which made this search silently yield nothing on every run.
+    const results = data.applicationScanResults;
 
-    if (!data.content || data.content.length === 0) {
+    if (!results || results.length === 0) {
       core.info('No existing scan found for this commit SHA');
       return null;
     }
 
     core.info(`Found existing scan for commit SHA: ${commitSha}`);
-    return data.content[0];
+    return results[0];
   } catch (error) {
     core.warning(`StackHawk scan search error: ${error.message}`);
     return null;
   }
 }
 
+// Resolves the organization that owns an application.
+//
+// Uses the app-scoped endpoint rather than GET /api/v1/app/{appId}: that response
+// omits organizationId entirely (yarak never populates the proto field), and because
+// the path variable here is the application id, the platform evaluates plan
+// enforcement against the owning org rather than whichever org we asked about. This
+// mirrors PlatformApi.resolveApplicationAsync in the hawkscan CLI.
 export async function lookupOrganizationId(token, applicationId) {
-  const url = `${STACKHAWK_API_BASE}/api/v1/app/${applicationId}`;
+  const url = `${STACKHAWK_API_BASE}/api/v1/app/${applicationId}/org`;
 
   try {
     const response = await fetch(url, {
@@ -71,36 +92,37 @@ export async function lookupOrganizationId(token, applicationId) {
     });
 
     if (!response.ok) {
-      core.warning(`StackHawk app lookup failed: ${response.status} ${response.statusText}`);
+      core.warning(`StackHawk organization lookup failed: ${response.status} ${response.statusText}`);
       return null;
     }
 
     const data = await response.json();
+    const orgId = data.organization?.id;
 
-    if (!data.organizationId) {
-      core.warning('Application lookup did not return an organizationId');
+    if (!orgId) {
+      core.warning(`Organization lookup for application ${applicationId} did not return an organization`);
       return null;
     }
 
-    core.debug(`Found organizationId ${data.organizationId} for application ${applicationId}`);
-    return data.organizationId;
+    core.debug(`Found organizationId ${orgId} for application ${applicationId}`);
+    return orgId;
   } catch (error) {
-    core.warning(`StackHawk app lookup error: ${error.message}`);
+    core.warning(`StackHawk organization lookup error: ${error.message}`);
     return null;
   }
 }
 
-export async function checkForExistingScan({ apiKey, organizationId, applicationId, commitSha }) {
+export async function checkForExistingScan({ apiKey, applicationId, commitSha }) {
   const token = await authenticate(apiKey);
   if (!token) {
     return null;
   }
 
-  const resolvedOrgId = organizationId || await lookupOrganizationId(token, applicationId);
-  if (!resolvedOrgId) {
+  const organizationId = await lookupOrganizationId(token, applicationId);
+  if (!organizationId) {
     core.warning('Could not determine organizationId, falling back to normal scan');
     return null;
   }
 
-  return searchScanBySha({ token, organizationId: resolvedOrgId, applicationId, commitSha });
+  return searchScanBySha({ token, organizationId, applicationId, commitSha });
 }

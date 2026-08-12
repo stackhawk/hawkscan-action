@@ -37,6 +37,52 @@ app:
     expect(result).toBe('aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee');
   });
 
+  // HawkScan interpolates ${VAR} and ${VAR:default} in stackhawk.yml, so configs
+  // in the wild routinely keep applicationId in an env var. Reading the raw YAML
+  // value yields the literal placeholder, which is not a usable application id.
+  describe('environment variable interpolation', () => {
+    const ORIGINAL_ENV = process.env.APPLICATION_ID;
+
+    afterEach(() => {
+      if (ORIGINAL_ENV === undefined) {
+        delete process.env.APPLICATION_ID;
+      } else {
+        process.env.APPLICATION_ID = ORIGINAL_ENV;
+      }
+    });
+
+    function writeConfig(applicationId) {
+      fs.writeFileSync(
+        path.join(tmpDir, 'stackhawk.yml'),
+        `app:\n  applicationId: "${applicationId}"\n  host: https://localhost:9000\n`
+      );
+    }
+
+    test('substitutes the environment variable value', () => {
+      process.env.APPLICATION_ID = '4030d674-88b7-4e07-8065-7761f9c63788';
+      writeConfig('${APPLICATION_ID}');
+      expect(parseApplicationId(tmpDir, ['stackhawk.yml'])).toBe('4030d674-88b7-4e07-8065-7761f9c63788');
+    });
+
+    test('prefers the environment variable over the default', () => {
+      process.env.APPLICATION_ID = '4030d674-88b7-4e07-8065-7761f9c63788';
+      writeConfig('${APPLICATION_ID:test-app-id}');
+      expect(parseApplicationId(tmpDir, ['stackhawk.yml'])).toBe('4030d674-88b7-4e07-8065-7761f9c63788');
+    });
+
+    test('falls back to the default when the variable is unset', () => {
+      delete process.env.APPLICATION_ID;
+      writeConfig('${APPLICATION_ID:test-app-id}');
+      expect(parseApplicationId(tmpDir, ['stackhawk.yml'])).toBe('test-app-id');
+    });
+
+    test('leaves the placeholder intact when unset with no default', () => {
+      delete process.env.APPLICATION_ID;
+      writeConfig('${APPLICATION_ID}');
+      expect(parseApplicationId(tmpDir, ['stackhawk.yml'])).toBe('${APPLICATION_ID}');
+    });
+  });
+
   test('returns null when config file does not exist', () => {
     const result = parseApplicationId(tmpDir, ['nonexistent.yml']);
     expect(result).toBeNull();
