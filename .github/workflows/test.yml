@@ -175,49 +175,6 @@ jobs:
           APPLICATION_ID: 4030d674-88b7-4e07-8065-7761f9c63788
           COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      # Diagnostic: print what the platform actually recorded for the scans above.
-      # commitShaCheck depends on the scan carrying a searchable commit-SHA tag,
-      # and this is the only way to see whether it does. Never fails the build.
-      - name: Show scan tags recorded by the platform
-        continue-on-error: true
-        env:
-          HAWK_API_KEY: ${{ secrets.HAWK_API_KEY }}
-          APP_ID: 4030d674-88b7-4e07-8065-7761f9c63788
-          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-        run: |
-          API=https://api.stackhawk.com/api/v1
-          TOKEN=$(curl -sS -H "X-ApiKey: $HAWK_API_KEY" -H 'Accept: application/json' \
-            "$API/auth/login" | jq -r '.token')
-          if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
-            echo "could not authenticate; skipping diagnostic"; exit 0
-          fi
-          AUTH="Authorization: Bearer $TOKEN"
-
-          ORG_ID=$(curl -sS -H "$AUTH" -H 'Accept: application/json' \
-            "$API/app/$APP_ID/org" | jq -r '.organization.id')
-          echo "resolved organizationId: $ORG_ID"
-
-          echo "--- top-level response keys (no tag filter) ---"
-          curl -sS -H "$AUTH" -H 'Accept: application/json' \
-            "$API/scan/$ORG_ID?appIds=$APP_ID&sortDir=desc&pageSize=5" \
-            | jq 'keys'
-
-          echo "--- id/status/tags of the 5 most recent scans ---"
-          curl -sS -H "$AUTH" -H 'Accept: application/json' \
-            "$API/scan/$ORG_ID?appIds=$APP_ID&sortDir=desc&pageSize=5" \
-            | jq '[.applicationScanResults[]? | {id: .scan.id, status: .scan.status, tags: .tags}]'
-
-          echo "--- full shape of one result (what the action must parse) ---"
-          curl -sS -H "$AUTH" -H 'Accept: application/json' \
-            "$API/scan/$ORG_ID?appIds=$APP_ID&sortDir=desc&pageSize=1" \
-            | jq '.applicationScanResults[0]? | del(.applicationAlerts)'
-
-          echo "--- same query WITH the commit-SHA tag filter ---"
-          echo "expecting a match on _STACKHAWK_GIT_COMMIT_SHA:$EXPECTED_SHA"
-          curl -sS -H "$AUTH" -H 'Accept: application/json' \
-            "$API/scan/$ORG_ID?appIds=$APP_ID&tag=_STACKHAWK_GIT_COMMIT_SHA:$EXPECTED_SHA*&sortDir=desc&pageSize=5" \
-            | jq '{matched: (.applicationScanResults | length? // 0), ids: [.applicationScanResults[]?.scan.id]}'
-
       # Proves commitShaCheck end-to-end: the scans above are tagged with this
       # commit's SHA, so this run must find one and skip scanning entirely.
       #
