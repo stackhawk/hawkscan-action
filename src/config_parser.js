@@ -18,7 +18,9 @@ function interpolateEnv(value) {
   });
 }
 
-export function parseApplicationId(workspace, configurationFiles) {
+// Returns the first value `select` finds across the configuration files, in the
+// order HawkScan itself would apply them.
+function readFromConfigs(workspace, configurationFiles, select, label) {
   for (const configFile of configurationFiles) {
     const configPath = path.join(workspace, configFile);
 
@@ -29,20 +31,30 @@ export function parseApplicationId(workspace, configurationFiles) {
 
     try {
       const fileContents = fs.readFileSync(configPath, 'utf8');
-      const config = yaml.load(fileContents);
-      const applicationId = config?.app?.applicationId;
+      const value = select(yaml.load(fileContents));
 
-      if (applicationId) {
-        const resolved = interpolateEnv(String(applicationId));
-        core.debug(`Found applicationId ${resolved} in ${configFile}`);
+      if (value) {
+        const resolved = interpolateEnv(String(value));
+        core.debug(`Found ${label} ${resolved} in ${configFile}`);
         return resolved;
       }
 
-      core.debug(`No applicationId found in ${configFile}`);
+      core.debug(`No ${label} found in ${configFile}`);
     } catch (error) {
       core.warning(`Failed to parse config file ${configFile}: ${error.message}`);
     }
   }
 
   return null;
+}
+
+export function parseApplicationId(workspace, configurationFiles) {
+  return readFromConfigs(workspace, configurationFiles, (config) => config?.app?.applicationId, 'applicationId');
+}
+
+// hawk.failureThreshold is the severity at which HawkScan fails a scan (high,
+// medium, or low). A reused scan carries no pass/fail flag of its own, so we read
+// the same setting the scan itself would have used.
+export function parseFailureThreshold(workspace, configurationFiles) {
+  return readFromConfigs(workspace, configurationFiles, (config) => config?.hawk?.failureThreshold, 'failureThreshold');
 }

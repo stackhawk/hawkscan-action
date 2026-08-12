@@ -4,8 +4,9 @@ import * as utilities from './utilities.js';
 import * as sarif from './sarif.js';
 import { setup } from './setup.js';
 import { addSignalHandler } from './signal_handler.js';
-import { parseApplicationId } from './config_parser.js';
+import { parseApplicationId, parseFailureThreshold } from './config_parser.js';
 import { checkForExistingScan } from './scan_check.js';
+import { summarizeFindings, exceedsThreshold } from './findings.js';
 import { buildScanSummaryMarkdown, writeScanSummary, postPrComment } from './scan_summary.js';
 
 function getHeadSha() {
@@ -52,18 +53,34 @@ async function runShaCheck(inputs) {
   }
 
   const scanId = scanResult.scan?.id || 'unknown';
-  const scanUrl = scanResult.scan?.scanURL || `https://app.stackhawk.com/scans/${scanId}`;
-  const thresholdExceeded = scanResult.scan?.status === 'FAILED' ||
-    (scanResult.findings?.totalCount > 0 && scanResult.scan?.failureThresholdExceeded);
+  const scanUrl = `https://app.stackhawk.com/scans/${scanId}`;
+
+  // A scan result carries no pass/fail verdict of its own, so apply the same
+  // hawk.failureThreshold the scan itself ran under. A scan that ERRORed never
+  // produced a trustworthy result, so treat that as a failure regardless.
+  const findings = summarizeFindings(scanResult);
+  const failureThreshold = parseFailureThreshold(inputs.workspace, inputs.configurationFiles);
+  const scanErrored = scanResult.scan?.status === 'ERROR';
+  const thresholdExceeded = scanErrored || exceedsThreshold(findings, failureThreshold);
+
+  core.info(
+    `Reusing scan ${scanId}: ${findings.total} findings ` +
+    `(high ${findings.high}, medium ${findings.medium}, low ${findings.low}); ` +
+    `failureThreshold ${failureThreshold || 'not configured'}`
+  );
 
   core.setOutput('scanId', scanId);
   core.setOutput('resultsLink', scanUrl);
+
+  const failureMessage = scanErrored
+    ? 'The existing scan for this commit ended in an error'
+    : `Findings meet or exceed the ${failureThreshold} failure threshold`;
 
   const markdown = buildScanSummaryMarkdown({
     scanResult,
     commitSha,
     thresholdExceeded,
-    failureMessage: thresholdExceeded ? `Findings exceed failure threshold` : '',
+    failureMessage: thresholdExceeded ? failureMessage : '',
   });
 
   await writeScanSummary(markdown);

@@ -1,12 +1,15 @@
 import fs from 'fs';
 import * as core from '@actions/core';
 import { Octokit } from '@octokit/core';
+import { summarizeFindings } from './findings.js';
 
 export function buildScanSummaryMarkdown({ scanResult, commitSha, thresholdExceeded = false, failureMessage = '' }) {
-  const { scan, findings } = scanResult;
+  const { scan } = scanResult;
+  const findings = summarizeFindings(scanResult);
   const appName = scan.applicationName || 'Unknown App';
   const env = scan.env || 'Unknown';
-  const scanUrl = scan.scanURL || `https://app.stackhawk.com/scans/${scan.id}`;
+  // The API returns no scan URL; the platform builds it from the scan id.
+  const scanUrl = `https://app.stackhawk.com/scans/${scan.id}`;
 
   const statusLine = thresholdExceeded
     ? `**Check Failed:** "${failureMessage}"`
@@ -21,13 +24,13 @@ export function buildScanSummaryMarkdown({ scanResult, commitSha, thresholdExcee
     ``,
     `${statusIcon} ${statusLine}`,
     ``,
-    `### Findings: ${findings.totalCount}`,
+    `### Findings: ${findings.total}`,
     ``,
     `| Severity | Count |`,
     `|----------|-------|`,
-    `| High | ${findings.highCount || 0} |`,
-    `| Medium | ${findings.mediumCount || 0} |`,
-    `| Low | ${findings.lowCount || 0} |`,
+    `| High | ${findings.high} |`,
+    `| Medium | ${findings.medium} |`,
+    `| Low | ${findings.low} |`,
     ``,
     `**[View Full Results on StackHawk](${scanUrl})**`,
     ``,
@@ -36,9 +39,9 @@ export function buildScanSummaryMarkdown({ scanResult, commitSha, thresholdExcee
     `| Field | Value |`,
     `|-------|-------|`,
     `| Commit | \`${commitSha}\` |`,
-    `| Scanned Paths | ${scan.scannedPaths || 'N/A'} |`,
-    `| HawkScan Version | ${scan.hawkscanVersion || 'N/A'} |`,
-    `| Host | ${scan.host || 'N/A'} |`,
+    `| URLs Scanned | ${scanResult.urlCount ?? 'N/A'} |`,
+    `| HawkScan Version | ${scan.version || 'N/A'} |`,
+    `| Host | ${scanResult.appHost || 'N/A'} |`,
     ``,
     `> *Results from a previously completed scan. No new scan was run.*`,
   ];

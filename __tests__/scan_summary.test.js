@@ -28,24 +28,27 @@ beforeEach(() => {
 });
 
 describe('buildScanSummaryMarkdown', () => {
+  // Mirrors a real ApplicationScanResult: no scanURL, version/urlCount/appHost
+  // live where the API actually puts them, and severity counts come from
+  // alertStats.alertStatusStats rather than a `findings` object.
   const baseScanResult = {
     scan: {
       id: 'scan-789',
       status: 'COMPLETED',
-      scanURL: 'https://app.stackhawk.com/scans/scan-789',
       applicationName: 'deeperapidemo',
       env: 'Development',
-      startedTimestamp: '2023-10-26T16:39:00Z',
-      completedTimestamp: '2023-10-26T16:46:16Z',
-      scannedPaths: 28,
-      hawkscanVersion: '3.4.0',
-      host: 'https://localhost:9000',
+      version: '3.4.0',
+      timestamp: '1786572899138',
     },
-    findings: {
-      totalCount: 4,
-      highCount: 1,
-      mediumCount: 2,
-      lowCount: 1,
+    scanDuration: '37',
+    urlCount: 28,
+    appHost: 'https://localhost:9000',
+    alertStats: {
+      totalAlerts: 4,
+      uniqueAlerts: 4,
+      alertStatusStats: [
+        { alertStatus: 'UNKNOWN', totalCount: 4, severityStats: { High: 1, Medium: 2, Low: 1 } },
+      ],
     },
   };
 
@@ -94,7 +97,7 @@ describe('buildScanSummaryMarkdown', () => {
   test('shows pass status when threshold not exceeded', () => {
     const scanWithNoFindings = {
       ...baseScanResult,
-      findings: { totalCount: 0, highCount: 0, mediumCount: 0, lowCount: 0 },
+      alertStats: { totalAlerts: 0, uniqueAlerts: 0, alertStatusStats: [] },
     };
     const md = buildScanSummaryMarkdown({ scanResult: scanWithNoFindings, commitSha: 'abc1234' });
     expect(md).not.toContain('Failed');

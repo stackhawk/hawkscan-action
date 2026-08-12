@@ -76,24 +76,33 @@ describe('searchScanBySha', () => {
     commitSha: 'abc1234',
   };
 
+  // Shape captured from a real GET /api/v1/scan/{orgId} response. The list field is
+  // applicationScanResults (Nest application.proto:717) -- there is no `content`,
+  // and per-result stats live under alertStats, not `findings`.
   test('returns scan data when matching scan found', async () => {
     const scanResponse = {
-      content: [
+      applicationScanResults: [
         {
           scan: {
             id: 'scan-789',
             status: 'COMPLETED',
-            scanURL: 'https://app.stackhawk.com/scans/scan-789',
+            env: 'Action Test',
+            applicationName: 'integration_javaspring',
+            version: '6.3.0',
           },
-          findings: {
-            totalCount: 4,
-            highCount: 1,
-            mediumCount: 2,
-            lowCount: 1,
+          scanDuration: '37',
+          urlCount: 15,
+          alertStats: {
+            totalAlerts: 2,
+            uniqueAlerts: 0,
           },
+          tags: [
+            { name: '_STACKHAWK_GIT_COMMIT_SHA', value: 'abc1234' },
+          ],
         },
       ],
-      totalElements: 1,
+      nextPageToken: '1',
+      totalCount: '1',
     };
 
     mockFetch.mockResolvedValueOnce({
@@ -102,7 +111,7 @@ describe('searchScanBySha', () => {
     });
 
     const result = await searchScanBySha(baseParams);
-    expect(result).toEqual(scanResponse.content[0]);
+    expect(result).toEqual(scanResponse.applicationScanResults[0]);
     // _STACKHAWK_GIT_COMMIT_SHA is the reserved tag name the platform uses
     // (Nest ReservedScanTagNames.kt); the trailing * is a prefix match, which
     // yarak translates to a SQL LIKE on the tag value.
@@ -119,7 +128,7 @@ describe('searchScanBySha', () => {
   test('returns null when no matching scan found', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ content: [], totalElements: 0 }),
+      json: async () => ({ applicationScanResults: [], totalCount: "0" }),
     });
 
     const result = await searchScanBySha(baseParams);
@@ -223,7 +232,7 @@ describe('checkForExistingScan', () => {
   test('resolves the owning org, then searches that org for the commit SHA', async () => {
     const scanData = {
       scan: { id: 'scan-789', status: 'COMPLETED' },
-      findings: { totalCount: 2 },
+      alertStats: { totalAlerts: 2, uniqueAlerts: 0 },
     };
 
     // auth
@@ -239,7 +248,7 @@ describe('checkForExistingScan', () => {
     // scan search
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ content: [scanData], totalElements: 1 }),
+      json: async () => ({ applicationScanResults: [scanData], totalCount: "1" }),
     });
 
     const result = await checkForExistingScan({
@@ -308,7 +317,7 @@ describe('checkForExistingScan', () => {
     });
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ content: [], totalElements: 0 }),
+      json: async () => ({ applicationScanResults: [], totalCount: "0" }),
     });
 
     const result = await checkForExistingScan({

@@ -54,14 +54,18 @@ export async function searchScanBySha({ token, organizationId, applicationId, co
     }
 
     const data = await response.json();
+    // ListScanResultsResponse.applicationScanResults (Nest application.proto:717).
+    // There is no `content` field -- reading one returns undefined for every
+    // response, which made this search silently yield nothing on every run.
+    const results = data.applicationScanResults;
 
-    if (!data.content || data.content.length === 0) {
+    if (!results || results.length === 0) {
       core.info('No existing scan found for this commit SHA');
       return null;
     }
 
     core.info(`Found existing scan for commit SHA: ${commitSha}`);
-    return data.content[0];
+    return results[0];
   } catch (error) {
     core.warning(`StackHawk scan search error: ${error.message}`);
     return null;
