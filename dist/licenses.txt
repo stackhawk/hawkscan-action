@@ -270,6 +270,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 
 
+@simple-git/args-pathspec
+MIT
+
+@simple-git/argv-parser
+MIT
+
 before-after-hook
 Apache-2.0
                                  Apache License
