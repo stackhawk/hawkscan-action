@@ -26,18 +26,18 @@
   },
   "homepage": "https://github.com/actions/javascript-action#readme",
   "dependencies": {
-    "@actions/core": "^3.0.0",
+    "@actions/core": "^3.0.1",
     "@actions/tool-cache": "^4.0.0",
     "@octokit/core": "^7.0.6",
-    "js-yaml": "^4.1.1",
+    "js-yaml": "^4.3.1",
     "semver": "^7.8.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@vercel/ncc": "^0.38.4",
-    "eslint": "^10.1.0",
-    "globals": "^17.4.0",
-    "jest": "^30.3.0",
-    "simple-git": "^3.22.0"
+    "eslint": "^10.8.1",
+    "globals": "^17.9.0",
+    "jest": "^30.4.2",
+    "simple-git": "^3.36.0"
   }
 }
