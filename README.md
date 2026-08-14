@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.0
+    - uses: stackhawk/hawkscan-action@v3.1.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.0
+    - uses: stackhawk/hawkscan-action@v3.1.1
       with:
         args: |
           --hawk-mem 1g
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.0
+    - uses: stackhawk/hawkscan-action@v3.1.1
       with:
         command: rescan
 ```
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.0
+    - uses: stackhawk/hawkscan-action@v3.1.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.0
+    - uses: stackhawk/hawkscan-action@v3.1.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         configurationFiles: stackhawk.yml stackhawk-extra.yml
@@ -112,7 +112,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.0
+    - uses: stackhawk/hawkscan-action@v3.1.1
     with:
       installCLIOnly: true
     - name: Run CLI Scan
@@ -132,7 +132,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.0
+    - uses: stackhawk/hawkscan-action@v3.1.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         codeScanningAlerts: true
@@ -162,7 +162,7 @@ tags:
 and supply `COMMIT_SHA` wherever you run HawkScan. In GitHub Actions, use the pull request head SHA rather than `github.sha` — on `pull_request` events `github.sha` is the merge commit, not the commit being tested:
 
 ```yaml
-    - uses: stackhawk/hawkscan-action@v3.1.0
+    - uses: stackhawk/hawkscan-action@v3.1.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
       env:
@@ -180,7 +180,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
-    - uses: stackhawk/hawkscan-action@v3.1.0
+    - uses: stackhawk/hawkscan-action@v3.1.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         commitShaCheck: true
@@ -199,7 +199,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v3.1.0
+      - uses: stackhawk/hawkscan-action@v3.1.1
         with:
           apiKey: ${{ secrets.HAWK_API_KEY }}
           verbose: true
@@ -216,7 +216,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v3.1.0
+      - uses: stackhawk/hawkscan-action@v3.1.1
         with:
           workspace: ./app/config/
 ```
@@ -231,7 +231,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v3.1.0
+      - uses: stackhawk/hawkscan-action@v3.1.1
         with:
           version: 2.7.0
 ```
@@ -253,7 +253,7 @@ jobs:
         pip3 install -r requirements.txt
         nohup python3 app.py &
     - name: Scan my app
-      uses: stackhawk/hawkscan-action@v3.1.0
+      uses: stackhawk/hawkscan-action@v3.1.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -277,7 +277,7 @@ jobs:
         APP_HOST: 'http://localhost:5000'
         APP_ID: AE624DB7-11FC-4561-B8F2-2C8ECF77C2C7
         APP_ENV: Development
-      uses: stackhawk/hawkscan-action@v3.1.0
+      uses: stackhawk/hawkscan-action@v3.1.1
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
