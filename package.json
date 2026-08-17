@@ -28,13 +28,13 @@
   "dependencies": {
     "@actions/core": "^3.0.1",
     "@actions/tool-cache": "^4.0.0",
-    "@octokit/core": "^7.0.6",
+    "@octokit/core": "^7.0.7",
     "js-yaml": "^4.3.1",
     "semver": "^7.8.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@vercel/ncc": "^0.38.4",
+    "@vercel/ncc": "^0.45.0",
     "eslint": "^10.8.1",
     "globals": "^17.9.0",
     "jest": "^30.4.2",
