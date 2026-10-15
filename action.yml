@@ -26,15 +26,16 @@ inputs:
     required: false
     default: stackhawk.yml
   codeScanningAlerts:
-    description: If `true`, Register a Code Scanning Alert in GitHub if scan alerts exceed `hawk.failureThreshold`
+    description: DEPRECATED - pass `--sarif-ghas` in `args` and upload `stackhawk-ghas.sarif` with `github/codeql-action/upload-sarif` instead. If `true`, Register a Code Scanning Alert in GitHub if scan alerts exceed `hawk.failureThreshold`
     required: false
     default: false
+    deprecationMessage: '`codeScanningAlerts` is deprecated and will be removed in a future release. Pass `--sarif-ghas` in `args` and upload `stackhawk-ghas.sarif` with `github/codeql-action/upload-sarif` instead. See https://docs.stackhawk.com/integrations/ci-cd/github-actions/github-code-scanning/#upload-individual-findings-as-sarif'
   commitShaCheck:
     description: If `true`, check the StackHawk platform for existing scan results matching the commit SHA before running a new scan
     required: false
     default: false
   githubToken:
-    description: GitHub Token for uploading Code Scanning Alert info - required if `codeScanningAlerts` is enabled
+    description: GitHub Token for uploading Code Scanning Alert info - required if the deprecated `codeScanningAlerts` is enabled
     required: false
     default: ${{ github.token }}
   installCLIOnly:
