@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.1
+    - uses: stackhawk/hawkscan-action@v3.2.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.1
+    - uses: stackhawk/hawkscan-action@v3.2.0
       with:
         args: |
           --hawk-mem 1g
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.1
+    - uses: stackhawk/hawkscan-action@v3.2.0
       with:
         command: rescan
 ```
@@ -78,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.1
+    - uses: stackhawk/hawkscan-action@v3.2.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.1
+    - uses: stackhawk/hawkscan-action@v3.2.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         configurationFiles: stackhawk.yml stackhawk-extra.yml
@@ -112,16 +112,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.1
+    - uses: stackhawk/hawkscan-action@v3.2.0
     with:
       installCLIOnly: true
     - name: Run CLI Scan
       run: hawk --api-key=${{ secrets.HAWK_API_KEY }} scan
 ```
 
-### `codeScanningAlerts`
+### `codeScanningAlerts` (deprecated)
 
-**Optional** *(requires [`githubToken`](#githubtoken))* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.stackhawk.com/integrations/workflows/microsoft/defender-for-cloud/).
+> **Deprecated:** `codeScanningAlerts` will be removed in a future release. Use [`--sarif-ghas`](#github-code-scanning) instead, which raises one Code Scanning alert per finding rather than a single alert per scan.
+
+**Optional** *(requires [`githubToken`](#githubtoken))* If set to `true`, uploads SARIF scan data to GitHub so that scan results are available from [Code Scanning](https://docs.stackhawk.com/integrations/ci-cd/github-actions/github-code-scanning/).
 
 The `codeScanningAlerts` feature works in conjunction with the HawkScan's [`hawk.failureThreshold`](https://docs.stackhawk.com/hawkscan/configuration/#hawk) configuration option. If your scan produces alerts that meet or exceed your `hawk.failureThreshold` alert level, it will fail the scan with exit code 42, and trigger a Code Scanning alert in GitHub with a link to your scan results.
 
@@ -132,7 +134,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: stackhawk/hawkscan-action@v3.1.1
+    - uses: stackhawk/hawkscan-action@v3.2.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         codeScanningAlerts: true
@@ -143,7 +145,7 @@ jobs:
 
 ### `githubToken`
 
-**Optional** If set to `${{ github.token }}`, gives HawkScan Action a temporary GitHub API token to enable uploading SARIF data. This input is required if `codeScanningAlerts` is set to `true`.
+**Optional** If set to `${{ github.token }}`, gives HawkScan Action a temporary GitHub API token to enable uploading SARIF data. This input is required if the deprecated `codeScanningAlerts` is set to `true`.
 
 ### `commitShaCheck`
 
@@ -162,7 +164,7 @@ tags:
 and supply `COMMIT_SHA` wherever you run HawkScan. In GitHub Actions, use the pull request head SHA rather than `github.sha` — on `pull_request` events `github.sha` is the merge commit, not the commit being tested:
 
 ```yaml
-    - uses: stackhawk/hawkscan-action@v3.1.1
+    - uses: stackhawk/hawkscan-action@v3.2.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
       env:
@@ -180,12 +182,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
-    - uses: stackhawk/hawkscan-action@v3.1.1
+    - uses: stackhawk/hawkscan-action@v3.2.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         commitShaCheck: true
         configurationFiles: stackhawk.yml
-        codeScanningAlerts: true
         githubToken: ${{ github.token }}
 ```
 
@@ -199,7 +200,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v3.1.1
+      - uses: stackhawk/hawkscan-action@v3.2.0
         with:
           apiKey: ${{ secrets.HAWK_API_KEY }}
           verbose: true
@@ -216,7 +217,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v3.1.1
+      - uses: stackhawk/hawkscan-action@v3.2.0
         with:
           workspace: ./app/config/
 ```
@@ -231,7 +232,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: stackhawk/hawkscan-action@v3.1.1
+      - uses: stackhawk/hawkscan-action@v3.2.0
         with:
           version: 2.7.0
 ```
@@ -253,7 +254,7 @@ jobs:
         pip3 install -r requirements.txt
         nohup python3 app.py &
     - name: Scan my app
-      uses: stackhawk/hawkscan-action@v3.1.1
+      uses: stackhawk/hawkscan-action@v3.2.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
 ```
@@ -277,7 +278,7 @@ jobs:
         APP_HOST: 'http://localhost:5000'
         APP_ID: AE624DB7-11FC-4561-B8F2-2C8ECF77C2C7
         APP_ENV: Development
-      uses: stackhawk/hawkscan-action@v3.1.1
+      uses: stackhawk/hawkscan-action@v3.2.0
       with:
         apiKey: ${{ secrets.HAWK_API_KEY }}
         dryRun: true
@@ -287,6 +288,36 @@ jobs:
 ```
 
 The configuration above will perform a dry run, meaning it will only print out the Docker command that it would run if `dryRun` were set to `false`, which is the default.  Finally, it tells HawkScan to use the `stackhawk.yml` configuration file and overlay the `stackhawk-extra.yml` configuration file on top of it.
+
+### GitHub Code Scanning
+
+To report each HawkScan finding as its own [GitHub Code Scanning](https://docs.stackhawk.com/integrations/ci-cd/github-actions/github-code-scanning/#upload-individual-findings-as-sarif) alert, pass `--sarif-ghas` (HawkScan 6.6.0 and later) so HawkScan writes `stackhawk-ghas.sarif`, then upload that file with GitHub's `upload-sarif` action. This replaces the deprecated [`codeScanningAlerts`](#codescanningalerts-deprecated) input.
+
+```yaml
+jobs:
+  stackhawk-hawkscan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write   # Required to upload SARIF
+    steps:
+    - uses: actions/checkout@v4
+    - name: Scan my app
+      uses: stackhawk/hawkscan-action@v3.2.0
+      continue-on-error: true
+      with:
+        apiKey: ${{ secrets.HAWK_API_KEY }}
+        args: |
+          --sarif-ghas
+    - name: Upload SARIF to GitHub Code Scanning
+      if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: stackhawk-ghas.sarif
+        category: stackhawk
+```
+
+> NOTE: GitHub Code Scanning features are free for public repositories. For private repositories, a [GitHub Advanced Security](https://docs.github.com/en/get-started/learning-about-github/about-github-advanced-security) license is required.
 
 ## Java Requirements for HawkScan
 
